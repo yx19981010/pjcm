@@ -1,0 +1,92 @@
+server:
+  port: 8080
+  address: 0.0.0.0
+spring:
+  datasource:
+#    url: jdbc:mysql://192.168.0.107:3306/review_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=CTT&serverTimezone=GMT%2B8
+#    username: samsph
+#    password: samsph
+    url: jdbc:mysql://127.0.0.1:3306/newsroom?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=CTT&serverTimezone=GMT%2B8
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database: mysql
+    show-sql: true
+    open-in-view: false # 关闭警告
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 50MB
+  mail:
+    host: smtp.qq.com
+    username: 554976107@qq.com
+    password: hrzyvqtexmrqbcib
+    protocol: smtp
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.port: 465 #端口号465或587
+    properties.mail.display.sendmail: Javen #可以任意
+    properties.mail.display.sendname: Spring Boot Guide Email #可以任意
+    properties.mail.smtp.starttls.enable: true
+    properties.mail.smtp.starttls.required: true
+    properties.mail.smtp.ssl.enable: true
+    default-encoding: utf-8
+    from: 554976107@qq.com #与上面的username保持一致
+
+logging:
+  config: classpath:log4j2.xml
+
+swagger:
+  title: 编辑部Web前后端接口文档
+  description: 四川省人民医院实用医学临床杂志论文编辑投审平台
+  version: "1.0"
+  contact:
+    name: "胡家豪、杨玺"
+  host: "192.168.0.102:8080"
+#  host: "192.168.0.107:8080"
+  apply-default-response-messages: false
+  global-response-message:
+    get:
+      - code: 200
+        message: OK
+      - code: 400
+        message: Bad Request
+      - code: 500
+        message: Internal Server Error
+      - code: 999
+        message: Unknown Error
+    post:
+      - code: 200
+        message: OK
+      - code: 400
+        message: Bad Request
+      - code: 500
+        message: Internal Server Error
+      - code: 999
+        message: Unknown Error
+    put:
+      - code: 200
+        message: OK
+      - code: 400
+        message: Bad Request
+      - code: 500
+        message: Internal Server Error
+      - code: 999
+        message: Unknown Error
+    delete:
+      - code: 200
+        message: OK
+      - code: 400
+        message: Bad Request
+      - code: 500
+        message: Internal Server Error
+      - code: 999
+        message: Unknown Error
+
+debug: true

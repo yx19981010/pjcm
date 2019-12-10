@@ -2,12 +2,6 @@ package com.samsph.pjcm.config.constant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-<<<<<<< HEAD
-=======
-import com.samsph.pjcm.config.exception.CustomException;
-import com.samsph.pjcm.config.exception.CustomExceptionType;
->>>>>>> yx
-import lombok.Getter;
 
 /**
  * 投稿领域

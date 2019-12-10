@@ -115,9 +115,8 @@ class PostReviewerServiceTest {
         Assert.assertThat(postReviewerService.aggregate(post.getId()), is(true));
 
         postReviewer.setFlag(true);
+        postReviewerService.updatePostReviewer(postReviewer);
         Assert.assertThat(postReviewerService.aggregate(post.getId()), is(false));
-
-        postReviewerService.save(postReviewerQuery);
     }
 
     @Test

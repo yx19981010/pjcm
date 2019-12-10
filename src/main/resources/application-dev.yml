@@ -3,6 +3,7 @@ server:
   address: 0.0.0.0
 spring:
   datasource:
+<<<<<<< HEAD
     url: jdbc:mysql://127.0.0.1:3306/review_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=CTT&serverTimezone=GMT%2B8
     username: samsph
     password: samsph
@@ -10,6 +11,18 @@ spring:
     #    username: root
     #    password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
+=======
+#    url: jdbc:mysql://192.168.0.107:3306/review_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=CTT&serverTimezone=GMT%2B8
+#    username: samsph
+#    password: samsph
+    url: jdbc:mysql://127.0.0.1:3306/newsroom?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=CTT&serverTimezone=GMT%2B8
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+>>>>>>> yx
   jpa:
     hibernate:
       ddl-auto: none
@@ -24,7 +37,7 @@ spring:
   mail:
     host: smtp.qq.com
     username: 554976107@qq.com
-    password: dsxgkrqyqhgsbcid
+    password: hrzyvqtexmrqbcib
     protocol: smtp
     properties.mail.smtp.auth: true
     properties.mail.smtp.port: 465 #端口号465或587
@@ -45,7 +58,12 @@ swagger:
   version: "1.0"
   contact:
     name: "胡家豪、杨玺"
+<<<<<<< HEAD
   host: "127.0.0.1:8080"
+=======
+  host: "192.168.0.102:8080"
+#  host: "192.168.0.107:8080"
+>>>>>>> yx
   apply-default-response-messages: false
   global-response-message:
     get:

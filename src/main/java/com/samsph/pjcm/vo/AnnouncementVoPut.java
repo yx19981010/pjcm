@@ -25,12 +25,12 @@ public class AnnouncementVoPut {
      * 公告标题
      */
     @ApiModelProperty("公告标题")
-    @Size(min = 1,max = 10)
+    @Size(min = 1,max = 50)
     private String title;
     /**
      * 公告描述
      */
     @ApiModelProperty("公告描述")
-    @Size(min = 1,max = 50)
+    @Size(min = 1,max = 100)
     private String content;
 }

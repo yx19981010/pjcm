@@ -51,12 +51,12 @@ public class UserContributorVoGet {
     /**
      * 学历
      */
-    private  Integer education;
+    private Integer education;
 
     /**
      * 职称
      */
-    private int title;
+    private Integer title;
 
     /**
      * 电话

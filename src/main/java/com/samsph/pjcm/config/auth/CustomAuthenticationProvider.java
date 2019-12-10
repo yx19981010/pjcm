@@ -19,26 +19,19 @@ import java.util.List;
 public class CustomAuthenticationProvider implements AuthenticationProvider {
     private ApplicationContext applicationContext = SpringUtil.getApplicationContext();
     private UserService userService = applicationContext.getBean(UserService.class);
-    private UserRoleService userRoleService = applicationContext.getBean(UserRoleService.class);
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         // 获取认证的用户名 & 密码
         String email = authentication.getName();
         String password = authentication.getCredentials().toString();
-        if(!userService.findUserByEmail(email).isPresent()){
-            throw new BadCredentialsException("邮箱错误~");
+        List<SimpleGrantedAuthority> authorities = (List<SimpleGrantedAuthority>) authentication.getAuthorities();
+        User user = userService.findUserByEmail(email).get();
+        if(user.getPasswordHash().equals(Sha256Util.getSHA256StrJava(password))){
+            // 生成令牌
+            return new UsernamePasswordAuthenticationToken(email, password, authorities);
         }else{
-            User user = userService.findUserByEmail(email).get();
-            if(user.getPasswordHash().equals(Sha256Util.getSHA256StrJava(password))){
-                // 这里设置权限和角色
-                List<SimpleGrantedAuthority> authorities = userRoleService.getRoles(user.getId());
-                // 生成令牌
-                Authentication auth = new UsernamePasswordAuthenticationToken(email, password, authorities);
-                return auth;
-            }else{
-                throw new BadCredentialsException("密码错误~");
-            }
+            throw new BadCredentialsException("密码错误~");
         }
     }
 

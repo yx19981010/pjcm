@@ -1,5 +1,6 @@
 package com.samsph.pjcm.vo;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@JsonPropertyOrder(value={"id","title","content","createTime"})
 @ApiModel(description = "公告返回实体")
 public class AnnouncementVoGet {
     /**

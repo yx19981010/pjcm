@@ -10,7 +10,7 @@ import com.samsph.pjcm.model.Material;
 import com.samsph.pjcm.service.MaterialService;
 import com.samsph.pjcm.config.utils.DozerUtil;
 import com.samsph.pjcm.config.utils.FileUtil;
-import com.samsph.pjcm.vo.MaterialVo;
+import com.samsph.pjcm.vo.MaterialVoGet;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -45,10 +45,10 @@ public class MaterialController {
             @ApiImplicitParam(name="content",value="材料描述"),
             @ApiImplicitParam(name="filename",value="材料文件")
     })
-    @PreAuthorize("hasAnyRole('ROLE_1')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/materials")
-    public AjaxResponse addMaterial(@Size(min = 1,max = 10) @RequestParam("name") String name,
-                                    @Size(min = 1,max = 50) @RequestParam(name = "content",required = false) String content,
+    public AjaxResponse addMaterial(@Size(min = 1,max = 50) @RequestParam("name") String name,
+                                    @Size(min = 1,max = 100) @RequestParam(name = "content",required = false) String content,
                                     @RequestParam("filename") MultipartFile file) {
         //权限检测 用户身份是管理员且登录
         String pathname = FileUtil.FileUpload(FileUploadPath.MaterialFileUploadPath, file);
@@ -56,7 +56,8 @@ public class MaterialController {
         Material material = new Material();
         material.setContent(content);
         //定义为登录后管理员的id
-        material.setCreateByUid(currentUser.getCurrentUser().getUserId());
+//        material.setCreateByUid(currentUser.getCurrentUser().getUserId());
+        material.setCreateByUid(7);
         material.setCreateTime(time);
         material.setName(name);
         material.setPath(pathname);
@@ -72,15 +73,15 @@ public class MaterialController {
             @ApiImplicitParam(name="filename",value="材料文件")
     })
     @PutMapping("/materials")
-    @PreAuthorize("hasAnyRole('ROLE_1')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public AjaxResponse updateMaterial(@NotNull(message = "未传入材料id")@Min(value = 1,message = "材料id必须是正整数")@RequestParam("id") Integer id,
-                                       @Size(min = 1,max = 10)@RequestParam(value = "name",required = false) String name,
-                                       @Size(min = 1,max = 50)@RequestParam(value = "content",required = false) String content,
+                                       @Size(min = 1,max = 50)@RequestParam(value = "name",required = false) String name,
+                                       @Size(min = 1,max = 100)@RequestParam(value = "content",required = false) String content,
                                        @RequestParam(value = "filename",required = false) MultipartFile file) {
         //权限检测用户身份是管理员且登录
         //id为空或者id不存在
         if (!materialService.findMaterial(id).isPresent()) {
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "材料id无效或未材料证书id!!!!");
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "材料id无效或未输入材料证书id!!!!");
         } else {
             Material material = materialService.findMaterial(id).get();
             if(file != null){
@@ -104,12 +105,12 @@ public class MaterialController {
             @ApiImplicitParam(name="id",value="材料id")
     })
     @DeleteMapping("/materials/id={id}")
-    @PreAuthorize("hasAnyRole('ROLE_1')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public AjaxResponse deleteMaterial(@NotNull(message = "id不能为空")@Min(value = 1,message = "材料id必须是正整数")@PathVariable Integer id) {
         //权限检测TODO 用户身份是管理员且登录
         //id为空或者id不存在
         if (!materialService.findMaterial(id).isPresent()) {
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "材料id无效或未材料证书id!!!!");
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "材料id无效或未输入材料证书id!!!!");
         } else {
             FileUtil.deleteFile(materialService.findMaterial(id).get().getPath());
             materialService.deleteMaterial(id);
@@ -125,11 +126,10 @@ public class MaterialController {
     public AjaxResponse findMaterial(@NotNull(message = "id不能为空")@Min(value = 1,message = "材料id必须是正整数")@PathVariable Integer id) {
         if (materialService.findMaterial(id).isPresent()) {
             Material material = materialService.findMaterial(id).get();
-            return AjaxResponse.success(DozerUtil.map(material,MaterialVo.class));
+            return AjaxResponse.success(DozerUtil.map(material, MaterialVoGet.class));
         } else {
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "材料id无效或未材料证书id!!!!");
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "材料id无效或未输入材料证书id!!!!");
         }
-
     }
 
     @ApiOperation(value = "得到材料列表")
@@ -143,8 +143,8 @@ public class MaterialController {
         PageRequest pageRequest = PageRequest.of(page-1, size, Sort.Direction.DESC, "createTime");
         Page<Material> materialPage = materialService.findMaterials(pageRequest);
         List<Material> materialList = materialPage.getContent();
-        List<MaterialVo> materialVos = DozerUtil.mapList(materialList,MaterialVo.class);
-        PageData pageData = new PageData(materialPage.getTotalPages(), (int) materialPage.getTotalElements(),page,materialVos.size(),materialVos);
+        List<MaterialVoGet> materialVoGets = DozerUtil.mapList(materialList, MaterialVoGet.class);
+        PageData pageData = new PageData(materialPage.getTotalPages(), (int) materialPage.getTotalElements(),page, materialVoGets.size(), materialVoGets);
         return AjaxResponse.success(pageData);
     }
 }

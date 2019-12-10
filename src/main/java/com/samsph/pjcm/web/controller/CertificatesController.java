@@ -10,7 +10,7 @@ import com.samsph.pjcm.model.Certificate;
 import com.samsph.pjcm.service.CertificateService;
 import com.samsph.pjcm.config.utils.DozerUtil;
 import com.samsph.pjcm.config.utils.FileUtil;
-import com.samsph.pjcm.vo.CertificateVo;
+import com.samsph.pjcm.vo.CertificateVoGet;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -46,16 +46,17 @@ public class CertificatesController {
             @ApiImplicitParam(name="description",value="证书描述"),
             @ApiImplicitParam(name="filename",value="证书图片")
     })
-    @PreAuthorize("hasAnyRole('ROLE_1')")
-    public AjaxResponse addCertificate(@Size(min = 1,max = 10) @RequestParam("name") String name,
-                                       @Size(min = 1,max = 50) @RequestParam(name = "description",required = false) String description,
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public AjaxResponse addCertificate(@Size(min = 1,max = 50) @RequestParam("name") String name,
+                                       @Size(min = 1,max = 100) @RequestParam(name = "description",required = false) String description,
                                        @RequestParam("filename") MultipartFile file) {
         //权限检测 用户身份是管理员且登录
         String pathname = FileUtil.FileUpload(FileUploadPath.CertificateFileUploadPath, file);
         Date time = new Date(new java.util.Date().getTime());
         Certificate certificate = new Certificate();
         //定义为登录后管理员的id
-        certificate.setCreateByUid(currentUser.getCurrentUser().getUserId());
+//        certificate.setCreateByUid(currentUser.getCurrentUser().getUserId());
+        certificate.setCreateByUid(7);
         certificate.setCreateTime(time);
         certificate.setDescription(description);
         certificate.setName(name);
@@ -72,10 +73,10 @@ public class CertificatesController {
             @ApiImplicitParam(name="filename",value="证书图片")
     })
     @PutMapping("/certificates")
-    @PreAuthorize("hasAnyRole('ROLE_1')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public AjaxResponse updateCertificate(@NotNull(message = "未传入证书id")@Min(value = 1,message = "证书id必须是正整数") @RequestParam("id") Integer id,
-                                          @Size(min = 1,max = 10) @RequestParam(value = "name",required = false) String name,
-                                          @Size(min = 1,max = 50) @RequestParam(value = "description",required = false) String description,
+                                          @Size(min = 1,max = 50) @RequestParam(value = "name",required = false) String name,
+                                          @Size(min = 1,max = 100) @RequestParam(value = "description",required = false) String description,
                                           @RequestParam(value = "filename",required = false) MultipartFile file) {
         //权限检测 用户身份是管理员且登录
         //id为空或者id不存在
@@ -104,7 +105,7 @@ public class CertificatesController {
             @ApiImplicitParam(name="id",value="证书id")
     })
     @DeleteMapping("/certificates/id={id}")
-    @PreAuthorize("hasAnyRole('ROLE_1')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public AjaxResponse deleteCertificate(@NotNull(message = "id不能为空")@Min(value = 1,message = "证书id必须是正整数")@PathVariable Integer id) {
         //权限检测 用户身份是管理员且登录
         //id为空或者id不存在
@@ -125,7 +126,7 @@ public class CertificatesController {
     public AjaxResponse findCertificate(@NotNull(message = "id不能为空")@Min(value = 1,message = "证书id必须是正整数")@PathVariable Integer id) {
         if (certificateService.findCertificate(id).isPresent()) {
             Certificate certificate = certificateService.findCertificate(id).get();
-            return AjaxResponse.success(DozerUtil.map(certificate,CertificateVo.class));
+            return AjaxResponse.success(DozerUtil.map(certificate, CertificateVoGet.class));
         } else {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "证书id无效或未输入证书id!!!!");
         }
@@ -142,8 +143,8 @@ public class CertificatesController {
         PageRequest pageRequest = PageRequest.of(page-1, size, Sort.Direction.DESC, "createTime");
         Page<Certificate> certificatePage = certificateService.findCertificates(pageRequest);
         List<Certificate> certificateList = certificatePage.getContent();
-        List<CertificateVo> certificateVos = DozerUtil.mapList(certificateList,CertificateVo.class);
-        PageData pageData = new PageData(certificatePage.getTotalPages(), (int) certificatePage.getTotalElements(),page,certificateVos.size(),certificateVos);
+        List<CertificateVoGet> certificateVoGets = DozerUtil.mapList(certificateList, CertificateVoGet.class);
+        PageData pageData = new PageData(certificatePage.getTotalPages(), (int) certificatePage.getTotalElements(),page, certificateVoGets.size(), certificateVoGets);
         return AjaxResponse.success(pageData);
     }
 }

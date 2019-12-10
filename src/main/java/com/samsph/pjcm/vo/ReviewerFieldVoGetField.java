@@ -11,10 +11,10 @@ public class ReviewerFieldVoGetField {
     /**
      * 标识
      */
-    private int id;
+    private Integer id;
 
     /**
      * 领域
      */
-    private int field;
+    private Integer field;
 }

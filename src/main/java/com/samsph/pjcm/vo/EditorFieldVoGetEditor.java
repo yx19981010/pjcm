@@ -11,10 +11,10 @@ public class EditorFieldVoGetEditor {
     /**
      * 标识
      */
-    private int id;
+    private Integer id;
 
     /**
      * 编辑id
      */
-    private int editorUid;
+    private Integer editorUid;
 }

@@ -18,13 +18,13 @@ public class AnnouncementVoPost {
      */
     @ApiModelProperty("公告标题")
     @NotNull(message = "公告标题不为空")
-    @Size(min = 1,max = 10)
+    @Size(min = 1,max = 50)
     private String title;
     /**
      * 公告描述
      */
     @ApiModelProperty("公告描述")
-    @Size(min = 1,max = 50)
+    @Size(min = 1,max = 100)
     @NotNull(message = "公告描述不为空")
     private String content;
 }

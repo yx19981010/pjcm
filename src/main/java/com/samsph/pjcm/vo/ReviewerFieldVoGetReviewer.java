@@ -11,10 +11,10 @@ public class ReviewerFieldVoGetReviewer {
     /**
      * 标识
      */
-    private int id;
+    private Integer id;
 
     /**
      * 审稿人id
      */
-    private int reviewerUid;
+    private Integer reviewerUid;
 }

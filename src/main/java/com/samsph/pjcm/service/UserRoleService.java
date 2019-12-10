@@ -7,19 +7,18 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.List;
 
 public interface UserRoleService {
-    public void addUserRole(UserRole userRole);
+     void addUserRole(UserRole userRole);
 
-    public void updateUserRole(UserRole userRole);
+     void updateUserRole(UserRole userRole);
 
-    public void deleteUserRole(int id);
+     void deleteUserRole(int id);
 
-    public UserRole findUserRole(int id);
+     UserRole findUserRole(int id);
 
-    public List<UserRole> findUserRolesByUid(int uid);
+     List<UserRole> findUserRolesByUid(int uid);
 
-    public List<UserRole> findUserRolesByRole(int role);
+     List<UserRole> findUserRolesByRole(int role);
 
-    public boolean findUserHasRole(int uid,int role);
+     boolean findUserHasRole(int uid,int role);
 
-    public List<SimpleGrantedAuthority> getRoles(Integer uid);
 }

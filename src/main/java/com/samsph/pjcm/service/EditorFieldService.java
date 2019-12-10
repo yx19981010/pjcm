@@ -12,15 +12,17 @@ import java.util.Optional;
 
 public interface EditorFieldService {
 
-    public void addEditorField(EditorField editorField);
+     void addEditorField(EditorField editorField);
 
-    public void updateEditorField(EditorField editorField);
+     void updateEditorField(EditorField editorField);
 
-    public void deleteEditorField(int id);
+     void deleteEditorField(int id);
 
-    public Optional<EditorField> findEditorField(int id);
+     Optional<EditorField> findEditorField(int id);
 
-    public Page<EditorField> findEditorFieldsByEditorUid(int editorUid, PageRequest pageRequest);
+     List<EditorField> findByEditorUid(Integer editorUid);
 
-    public Page<EditorField> findEditorFieldsByFieldId(int fieldId, PageRequest pageRequest);
+     Page<EditorField> findEditorFieldsByEditorUid(int editorUid, PageRequest pageRequest);
+
+     Page<EditorField> findEditorFieldsByFieldId(int fieldId, PageRequest pageRequest);
 }

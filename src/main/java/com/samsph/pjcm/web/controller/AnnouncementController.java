@@ -39,7 +39,7 @@ public class AnnouncementController {
     private CurrentUser currentUser;
 
     @ApiOperation(value = "添加公告")
-    @PreAuthorize("hasAnyRole('ROLE_1')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/announcements")
     public AjaxResponse addAnnouncement(@Valid @RequestBody AnnouncementVoPost announcementVoPost){
         //权限检测TODO 用户身份是管理员且登录
@@ -49,13 +49,14 @@ public class AnnouncementController {
         announcement.setTitle(announcementVoPost.getTitle());
         announcement.setContent(announcementVoPost.getContent());
         //定义为登录后管理员的id
-        announcement.setCreateByUid(currentUser.getCurrentUser().getUserId());
+//        announcement.setCreateByUid(currentUser.getCurrentUser().getUserId());
+        announcement.setCreateByUid(7);
         announcementService.addAnnouncement(announcement);
         return AjaxResponse.success();
     }
 
     @ApiOperation(value = "更新公告")
-    @PreAuthorize("hasAnyRole('ROLE_1')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PutMapping("/announcements")
     public AjaxResponse updateAnnouncement(@Valid @RequestBody AnnouncementVoPut announcementVoPut){
         //id为空或者id不存在
@@ -79,7 +80,7 @@ public class AnnouncementController {
     @ApiImplicitParams({
             @ApiImplicitParam(name="id",value="公告id")
     })
-    @PreAuthorize("hasAnyRole('ROLE_1')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @DeleteMapping("/announcements/id={id}")
     public AjaxResponse deleteAnnouncement(@NotNull(message = "id不能为空")@Min(value = 1,message = "公告id必须是正整数") @PathVariable Integer id){
         //id为空或者id不存在

@@ -2,6 +2,11 @@ package com.samsph.pjcm.config.constant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+<<<<<<< HEAD
+=======
+import com.samsph.pjcm.config.exception.CustomException;
+import com.samsph.pjcm.config.exception.CustomExceptionType;
+>>>>>>> yx
 import lombok.Getter;
 
 /**
@@ -52,6 +57,8 @@ public enum Field {
     NURSING(13);
 
     private final int code;
+
+    public static final int TOTAL_FIELD = 13;
 
     @JsonCreator
     public static Field getItem(int code){

@@ -11,6 +11,7 @@ import com.samsph.pjcm.service.UserRoleService;
 import com.samsph.pjcm.service.UserService;
 import com.samsph.pjcm.config.utils.Sha256Util;
 import com.samsph.pjcm.config.utils.UUIDUtil;
+import com.samsph.pjcm.vo.UserERVoPost;
 import com.samsph.pjcm.vo.UserVoPost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,14 +41,17 @@ public class UserServiceImpl implements UserService {
     private MailService mailService;
 
     @Override
-    public void addUser(UserVoPost userVoPost) {
+    public void addUser(UserERVoPost userERVoPost) {
         java.sql.Date time = new java.sql.Date(new java.util.Date().getTime());
         String code = UUIDUtil.getUUID()+ UUIDUtil.getUUID();
         User user = new User();
         user.setActive(0);
         user.setCreateTime(time);
-        user.setEmail(userVoPost.getEmail());
-        user.setPasswordHash(Sha256Util.getSHA256StrJava(userVoPost.getPassword()));
+        user.setPhone(userERVoPost.getPhone());
+        user.setUserName(userERVoPost.getUserName());
+        user.setSex(userERVoPost.getSex());
+        user.setEmail(userERVoPost.getEmail());
+        user.setPasswordHash(Sha256Util.getSHA256StrJava("12345678"));
         user.setCode(code);
         userRepository.save(user);
         mailService.sendHtmlMailForActive(user.getEmail(),code);
@@ -62,12 +66,6 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(int id) {
         //用户注销
         if(findUserByUid(id).isPresent()) {
-            List<UserRole> userRoles = userRoleService.findUserRolesByUid(id);
-            if(userRoles != null && userRoles.size()>0) {
-                for (UserRole a : userRoles) {
-                    userRoleService.deleteUserRole(a.getId());
-                }
-            }
             User user = findUserByUid(id).get();
             user.setActive(-1);
             updateUser(user);

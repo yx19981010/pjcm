@@ -25,16 +25,28 @@ public class ReviewRecord {
     private Integer id;
 
     /**
-     * 稿件id
+     * 审稿人-稿件id
      */
-    @Column(name = "pid")
-    private Integer pid;
+    @Column(name="r_pid")
+    private Integer rPid;
 
     /**
-     * 审稿人id
+     * 审稿结果
      */
-    @Column(name = "uid")
-    private Integer uid;
+    @Column(name="result")
+    private Integer result;
+
+    /**
+     * 转送类型
+     */
+    @Column(name="forward_type")
+    private Integer forwardType;
+
+    /**
+     * 转送id（领域或者审稿人）
+     */
+    @Column(name="forward_to")
+    private Integer forwardTo;
 
     /**
      * 属于第几轮审阅
@@ -47,41 +59,4 @@ public class ReviewRecord {
      */
     @Column(name = "create_time")
     private Date createTime;
-
-    /**
-     * 是否否决
-     */
-    @Column(name = "reject")
-    private Integer reject;
-
-    /**
-     * 否决意见
-     */
-    @Column(name = "reject_comment")
-    private String rejectComment;
-
-
-    /**
-     * 是否要转送
-     */
-    @Column(name = "to_forward")
-    private Integer toForward;
-
-    /**
-     * 转送意见
-     */
-    @Column(name = "forward_comment")
-    private String forwardComment;
-
-    /**
-     * 是否要修改
-     */
-    @Column(name = "to_revise")
-    private Integer toRevise;
-
-    /**
-     * 修改意见
-     */
-    @Column(name = "revise_comment")
-    private String reviseComment;
 }

@@ -4,20 +4,23 @@ import com.samsph.pjcm.model.ReviewerField;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 
 public interface ReviewerFieldService {
 
-    public void addReviewerField(ReviewerField reviewerField);
+     void addReviewerField(ReviewerField reviewerField);
 
-    public void updateReviewerField(ReviewerField reviewerField);
+     void updateReviewerField(ReviewerField reviewerField);
 
-    public void deleteReviewerField(int id);
+     void deleteReviewerField(int id);
 
-    public Optional<ReviewerField> findReviewerField(int id);
+     Optional<ReviewerField> findReviewerField(int id);
 
-    public Page<ReviewerField> findReviewerFieldsByReviewerUid(int reviewerUid, PageRequest pageRequest);
+    List<ReviewerField> findByReviewerUid(Integer reviewerUid);
 
-    public Page<ReviewerField> findReviewerFieldsByFieldId(int fieldId, PageRequest pageRequest);
+     Page<ReviewerField> findReviewerFieldsByReviewerUid(int reviewerUid, PageRequest pageRequest);
+
+     Page<ReviewerField> findReviewerFieldsByFieldId(int fieldId, PageRequest pageRequest);
 }

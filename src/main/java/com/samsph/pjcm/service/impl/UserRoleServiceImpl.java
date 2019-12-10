@@ -90,13 +90,4 @@ public class UserRoleServiceImpl implements UserRoleService {
         }
         return false;
     }
-
-    public List<SimpleGrantedAuthority> getRoles(Integer uid) {
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        List<UserRole> list = userRoleRepository.findByUid(uid);
-        for(UserRole a : list){
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + a.getRole()));
-        }
-        return authorities;
-    }
 }

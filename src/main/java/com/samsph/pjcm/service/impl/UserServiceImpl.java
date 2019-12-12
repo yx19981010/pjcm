@@ -43,18 +43,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addUser(UserERVoPost userERVoPost) {
         java.sql.Date time = new java.sql.Date(new java.util.Date().getTime());
-        String code = UUIDUtil.getUUID()+ UUIDUtil.getUUID();
+//        String code = UUIDUtil.getUUID()+ UUIDUtil.getUUID();
+        String password = UUIDUtil.getPasswordUUID();
         User user = new User();
-        user.setActive(0);
+//        user.setActive(0);
+        user.setActive(1);
         user.setCreateTime(time);
         user.setPhone(userERVoPost.getPhone());
         user.setUserName(userERVoPost.getUserName());
         user.setSex(userERVoPost.getSex());
         user.setEmail(userERVoPost.getEmail());
         user.setPasswordHash(Sha256Util.getSHA256StrJava("12345678"));
-        user.setCode(code);
+//        user.setCode(code);
         userRepository.save(user);
-        mailService.sendHtmlMailForActive(user.getEmail(),code);
+//        mailService.sendHtmlMailForSystemUserActive(user.getEmail(),code,"12345678");
     }
 
     @Override
@@ -159,7 +161,7 @@ public class UserServiceImpl implements UserService {
             userRole.setRole(RoleType.CONTRIBUTOR_ROLE);
             userRole.setUid(userRepository.findByEmail(user.getEmail()).get().getId());
             userRoleService.addUserRole(userRole);
-            mailService.sendHtmlMailForActive(user.getEmail(),code);
+            mailService.sendHtmlMailForContributorActive(user.getEmail(),code);
         }
     }
 }

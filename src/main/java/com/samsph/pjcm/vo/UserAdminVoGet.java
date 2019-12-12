@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,4 +33,9 @@ public class UserAdminVoGet {
      * 电话
      */
     private String phone;
+
+    /**
+     * 状态(-1注销，0未激活，1激活)
+     */
+    private Integer active;
 }

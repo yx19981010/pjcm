@@ -121,4 +121,6 @@ public class AnnouncementController {
         PageData pageData = new PageData(announcements.getTotalPages(), (int) announcements.getTotalElements(),page,announcementVoGets.size(),announcementVoGets);
         return AjaxResponse.success(pageData);
     }
+
+
 }

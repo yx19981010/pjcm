@@ -19,6 +19,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.dozer.Mapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,12 +56,13 @@ public class PostReviewerController {
     PostReviewerService postReviewerService;
 
     @PostMapping()
+    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "编辑为稿件选择审稿人（第一次选/前人拒审/审稿人转送）")
     public AjaxResponse addReviewer(@Validated({Add.class}) @RequestBody PostReviewerQuery postReviewerQuery) {
         int pid = postReviewerQuery.getPid();
         int reviewerUid = postReviewerQuery.getReviewerUid();
 
-        // TODO: 以某种方式获得当前操作用户id
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
         // 检查操作者为该稿件编辑
@@ -84,17 +86,18 @@ public class PostReviewerController {
 
         post.setStatus(PostStatus.FIRST_REVIEW.getCode());
         postService.updatePost(post);
-
+        //TODO 给审稿人发邮件提示审稿
         return AjaxResponse.success(dozerMapper.map(postReviewer, PostReviewerVO.class));
     }
 
     @PutMapping()
+    @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "审稿人接收/拒绝审稿")
     public AjaxResponse acceptOrRefuse(@Validated({Update.class}) @RequestBody PostReviewerQuery postReviewerQuery) {
         int pid = postReviewerQuery.getPid();
         boolean accept = postReviewerQuery.getAccept();
 
-        // TODO: 以某种方式获得当前操作用户id
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = REVIEWER_ID;
 
         // 检查该审稿人未答复
@@ -125,8 +128,16 @@ public class PostReviewerController {
 
     @DeleteMapping("/{id}")
     @ApiOperation("编辑取消稿件的审稿人")
+    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     public AjaxResponse deleteReviewer(@NotNull(message = "id不能为空") @PathVariable Integer id) {
+        //        int uid = currentUser.getCurrentUser().getUserId();
+        int uid = EDITOR_ID;
+        // 检查操作者为该稿件编辑
+        Post post = postService.getPost(id);
+        if (uid != post.getEditorUid()) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_EDITOR);
+        }
         postReviewerService.deletePostReviewer(id);
-        return AjaxResponse.success("TODO");
+        return AjaxResponse.success();
     }
 }

@@ -2,6 +2,8 @@ package com.samsph.pjcm.web.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.samsph.pjcm.config.DevUserId;
+import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.constant.*;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.exception.CustomException;
@@ -11,6 +13,7 @@ import com.samsph.pjcm.model.Journal;
 import com.samsph.pjcm.model.Post;
 import com.samsph.pjcm.model.PostReviewer;
 import com.samsph.pjcm.query.*;
+import com.samsph.pjcm.service.EditorFieldService;
 import com.samsph.pjcm.service.JournalService;
 import com.samsph.pjcm.service.PostReviewerService;
 import com.samsph.pjcm.service.PostService;
@@ -19,7 +22,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.dozer.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,7 +58,14 @@ public class PostController {
     @Resource
     PostReviewerService postReviewerService;
 
+    @Autowired
+    private CurrentUser currentUser;
+
+    @Autowired
+    private EditorFieldService editorFieldService;
+
     @PostMapping()
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "投稿人创建一次投稿")
     @ApiImplicitParam(name = "postQuery",
             value = "必填：field、title、genre、fundLevel、writersInfo\n" +
@@ -62,7 +74,7 @@ public class PostController {
             dataType = "PostQuery")
     public AjaxResponse savePost(@Validated({Add.class}) @RequestBody PostQuery postQuery) {
 
-        // TODO: 获得当前操作用户，并检查其为投稿人
+//        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         Post post = postService.savePost(postQuery, uid);
@@ -71,12 +83,13 @@ public class PostController {
     }
 
     @PutMapping("type=1")
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "稿件状态为待提交，投稿人修改投稿基本信息")
     public AjaxResponse updatePost1(@Validated({Update.class}) @RequestBody PostQuery postQuery) {
         int pid = postQuery.getId();
         Post post = postService.getPost(pid);
 
-        // TODO: 获得当前操作用户
+//        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         // 检查其为稿件投稿人
@@ -98,11 +111,12 @@ public class PostController {
     }
 
     @PutMapping("type=2")
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "稿件状态为待提交，投稿人提交以待初审")
     public AjaxResponse updatePost2(@NotNull(message = "id不能为空") @RequestBody Integer id) {
         Post post = postService.getPost(id);
 
-        // TODO: 获得当前操作用户
+//        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         // 检查其为稿件投稿人
@@ -118,9 +132,12 @@ public class PostController {
         // 检查投稿信息填写完整，能提交初审
         checkPostCanSubmit(post);
 
-        // TODO：以某种方式选择一个编辑id
-        int editorId = EDITOR_ID;
-
+        int size = editorFieldService.findByFieldId(post.getField()).size();
+        if(size == 0){
+            throw new CustomException(CustomExceptionType.SYSTEM_ERROR,"该领域下无编辑");
+        }
+        int num = (int)(1+Math.random()*(size-1+1));
+        int editorId = editorFieldService.findByFieldId(post.getField()).get(num-1).getEditorUid();
         post.setEditorUid(editorId);
         post.setStatus(PostStatus.PENDING_FIRST_EXAM.getCode());
 
@@ -130,9 +147,10 @@ public class PostController {
     }
 
     @PutMapping("type=3")
+    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "稿件状态为待初审，编辑进行初审")
     public AjaxResponse updatePost3(@RequestBody EditorAuditQuery editorAuditQuery) {
-        // TODO: 以某种方式获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
         // 获得稿件
@@ -168,9 +186,10 @@ public class PostController {
     }
 
     @PutMapping("type=4")
+    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "稿件状态为待退回，编辑选择退改或退稿")
     public AjaxResponse updatePost4(@RequestBody EditorAuditQuery editorAuditQuery) {
-        // TODO: 以某种方式获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
         // 检查操作者为该稿件编辑
@@ -205,12 +224,13 @@ public class PostController {
     }
 
     @PutMapping("type=5")
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "稿件状态为待修改，投稿人修改稿件基本信息")
     public AjaxResponse updatePost5(@Validated({Update2.class}) @RequestBody PostQuery postQuery) {
 
         Post post = postService.getPost(postQuery.getId());
 
-        // TODO: 获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         // 检查其为稿件投稿人
@@ -232,10 +252,11 @@ public class PostController {
     }
 
     @PutMapping("type=6")
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "稿件状态为待修改，投稿人提交待再审")
     public AjaxResponse updatePost6(@NotNull(message = "id不能为空") @RequestBody Integer id) {
 
-        // TODO: 以某种方式获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         // 检查其为稿件投稿人
@@ -257,9 +278,10 @@ public class PostController {
     }
 
     @PutMapping("type=7")
+    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "稿件状态为格式待审核，编辑进行格式审核")
     public AjaxResponse updatePost7(@RequestBody EditorAuditQuery editorAuditQuery) {
-        // TODO: 以某种方式获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
         // 获取稿件
@@ -293,10 +315,11 @@ public class PostController {
     }
 
     @PutMapping("type=8")
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "稿件状态为格式待修改，投稿人提交待格式审核")
     public AjaxResponse updatePost8(@NotNull(message = "id不能为空") @RequestBody Integer id) {
 
-        // TODO: 以某种方式获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         // 检查其为稿件投稿人
@@ -318,11 +341,12 @@ public class PostController {
     }
 
     @PutMapping("type=9")
+    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "稿件状态为待确定版面费，编辑确定版面费")
     public AjaxResponse updatePost9(@RequestBody PostLayOutFeeQuery postLayOutFeeQuery) {
         Post post = postService.getPost(postLayOutFeeQuery.getId());
 
-        // TODO: 以某种方式获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
         // 检查操作用户为编辑
@@ -345,11 +369,12 @@ public class PostController {
     }
 
     @PutMapping("type=10")
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "稿件状态为缴费证明待上传，投稿人填写收据信息")
     public AjaxResponse updatePost10(@RequestBody PostReceiptQuery postReceiptQuery) {
         Post post = postService.getPost(postReceiptQuery.getId());
 
-        // TODO: 以某种方式获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         // 检查操作用户为投稿人
@@ -362,7 +387,7 @@ public class PostController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
 
-        // 更新收据信息 TODO: boolean到int
+        // 更新收据信息
         BeanUtil.copyProperties(postReceiptQuery, post);
         postService.updatePost(post);
 
@@ -370,9 +395,10 @@ public class PostController {
     }
 
     @PutMapping("type=11")
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "稿件状态为缴费证明待上传，投稿人确认提交")
     public AjaxResponse updatePost11(@NotNull(message = "id不能为空") @RequestBody Integer id) {
-        // TODO: 以某种方式获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         // 检查其为稿件投稿人
@@ -397,10 +423,11 @@ public class PostController {
     }
 
     @PutMapping("type=12")
+    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "稿件状态为缴费证明待审核，编辑进行审核")
     public AjaxResponse updatePost12(@RequestBody EditorAuditQuery editorAuditQuery) {
 
-        // TODO: 以某种方式获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
         // 获取稿件
@@ -434,10 +461,9 @@ public class PostController {
     }
 
     @PutMapping("type=13")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @ApiOperation(value = "稿件状态为投稿成功，管理员将稿件加入到某一期期刊")
     public AjaxResponse updatePost13(@RequestBody PostJournalQuery postJournalQuery) {
-        // TODO: 以某种方式获得当前操作用户，检查其为管理员
-        int uid = ADMIN_ID;
 
         Post post = postService.getPost(postJournalQuery.getId());
 
@@ -486,7 +512,7 @@ public class PostController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "游客根据id获取投稿成功的稿件")
-    AjaxResponse getPost(@NotNull @PathVariable Integer id) {
+    public AjaxResponse getPost(@NotNull @PathVariable Integer id) {
         Post post = postService.getPost(id);
 
         if (post.getStatus() != PostStatus.SUCCESS.getCode()) {
@@ -498,7 +524,7 @@ public class PostController {
 
     @GetMapping()
     @ApiOperation(value = "游客根据期刊获取所包含投稿列表")
-    AjaxResponse getAll(@NotNull(message = "jid不能为空") @RequestParam("jid") Integer jid,
+    public AjaxResponse getAll(@NotNull(message = "jid不能为空") @RequestParam("jid") Integer jid,
                         @NotNull(message = "number不能为空") @RequestParam("number") Integer number,
                         @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
                         @RequestParam(value = "ascend", required = false) Boolean ascend) {
@@ -512,11 +538,12 @@ public class PostController {
     }
 
     @GetMapping("/{id}/type=1")
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "投稿人根据id获取自己的投稿")
-    AjaxResponse getPost1(@NotNull @PathVariable Integer id) {
+    public AjaxResponse getPost1(@NotNull @PathVariable Integer id) {
         Post post = postService.getPost(id);
 
-        // TODO: 获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         // 检查其为稿件投稿人
@@ -528,13 +555,14 @@ public class PostController {
     }
 
     @GetMapping("type=1")
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "投稿人获取自己的投稿列表")
-    AjaxResponse getAll1(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
+    public AjaxResponse getAll1(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
                          @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
                          @RequestParam(value = "ascend", required = false) Boolean ascend,
                          @RequestParam(value = "status", required = false) PostStatus status) {
 
-        // TODO: 获得当前操作用户，并检查其为投稿人角色
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         if (ascend == null) {
@@ -552,11 +580,12 @@ public class PostController {
     }
 
     @GetMapping("/{id}/type=2")
+    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "编辑根据id获取负责编辑的稿件")
-    AjaxResponse getPost2(@NotNull @PathVariable Integer id) {
+    public AjaxResponse getPost2(@NotNull @PathVariable Integer id) {
         Post post = postService.getPost(id);
 
-        // TODO: 获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
         // 检查其为稿件编辑
@@ -568,12 +597,13 @@ public class PostController {
     }
 
     @GetMapping("type=2")
+    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "编辑获取负责编辑的稿件列表")
-    AjaxResponse getAll2(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
+    public AjaxResponse getAll2(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
                          @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
                          @RequestParam(value = "ascend", required = false) Boolean ascend,
                          @RequestParam(value = "status", required = false) PostStatus status) {
-        // TODO: 获得当前操作用户，并检查其为编辑角色
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
         if (ascend == null) {
@@ -591,10 +621,11 @@ public class PostController {
     }
 
     @GetMapping("/{id}/type=3")
+    @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "审稿人根据id获取待答复的稿件")
-    AjaxResponse getPost3(@NotNull @PathVariable Integer id) {
+    public AjaxResponse getPost3(@NotNull @PathVariable Integer id) {
 
-        // TODO: 以某种方式获得当前操作用户id
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = REVIEWER_ID;
 
         // 检查该审稿人未答复
@@ -609,11 +640,12 @@ public class PostController {
     }
 
     @GetMapping("type=3")
+    @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "审稿人获取待答复的稿件列表")
-    AjaxResponse getAll3(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
+    public AjaxResponse getAll3(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
                          @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
                          @RequestParam(value = "ascend", required = false) Boolean ascend) {
-        // TODO: 获得当前操作用户，并检查其为审稿人角色
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = REVIEWER_ID;
 
         if (ascend == null) {
@@ -625,9 +657,10 @@ public class PostController {
     }
 
     @GetMapping("/{id}/type=4")
+    @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "审稿人根据id获取负责审稿的稿件")
-    AjaxResponse getPost4(@NotNull @PathVariable Integer id) {
-        // TODO: 以某种方式获得当前操作用户id
+    public AjaxResponse getPost4(@NotNull @PathVariable Integer id) {
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = REVIEWER_ID;
 
         // 检查稿件状态
@@ -646,12 +679,13 @@ public class PostController {
     }
 
     @GetMapping("type=4")
+    @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "审稿人获取已接受且正处于审稿中的稿件列表")
-    AjaxResponse getAll4(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
+    public AjaxResponse getAll4(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
                          @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
                          @RequestParam(value = "ascend", required = false) Boolean ascend,
                          @RequestParam(value = "reviewRequired", required = false) Boolean reviewRequired) {
-        // TODO: 获得当前操作用户，并检查其为审稿人角色
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = REVIEWER_ID;
 
         if (ascend == null) {
@@ -672,9 +706,8 @@ public class PostController {
 
     @ApiOperation(value = "根据id删除期刊记录")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public AjaxResponse deletePost(@NotNull(message = "id不能为空") @PathVariable Integer id) {
-        // TODO: 以某种方式获得当前操作用户，检查其是否为管理员
-        int uid = ADMIN_ID;
 
         postService.deletePost(id);
 

@@ -62,7 +62,7 @@ public class UserController {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"账户待激活或已注销无法添加!!!");
             }else{
                 if(userRoleService.findUserHasRole(user1.getId(),role)) {
-                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "该邮箱已被注册!!!");
+                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "该邮箱已被注册");
                 }else{
                     UserRole userRole = new UserRole();
                     userRole.setUid(user1.getId());
@@ -99,6 +99,48 @@ public class UserController {
         }
     }
 
+    @ApiOperation(value = "修改邮箱激活")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="code",value="激活码"),
+            @ApiImplicitParam(name="email",value="邮箱")
+    })
+    @GetMapping("/users/checkCodeForNewEmail")
+    public AjaxResponse checkCodeForNewEmail(@RequestParam("code") String code,@Email @RequestParam("email") String email){
+        if(userService.findUserByCode(code).isPresent()){
+            User user = userService.findUserByCode(code).get();
+            String code1 = UUIDUtil.getUUID()+ UUIDUtil.getUUID();
+            String password = UUIDUtil.getPasswordUUID();
+            user.setPasswordHash(Sha256Util.getSHA256StrJava(password));
+            user.setEmail(email);
+            user.setActive(0);
+            user.setCode(code1);
+            userService.updateUser(user);
+            mailService.sendHtmlMailForNewEmailActive(email,code1,password);
+            return AjaxResponse.success();
+        }else{
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"code错误!!!");
+        }
+    }
+
+    @ApiOperation(value = "修改密码激活")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="code",value="激活码")
+    })
+    @GetMapping("/users/checkCodeForNewPassword")
+    public AjaxResponse checkCodeForNewPassword(@RequestParam("code") String code){
+        String newPassword = code.substring(code.length()-8,code.length());
+        String code1 = code.substring(0,code.length()-8);
+        if(userService.findUserByCode(code1).isPresent()){
+            User user = userService.findUserByCode(code1).get();
+            user.setPasswordHash(Sha256Util.getSHA256StrJava(newPassword));
+            user.setCode("");
+            userService.updateUser(user);
+            return AjaxResponse.success();
+        }else{
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"code错误!!!");
+        }
+    }
+
     @ApiOperation(value = "检查邮箱是否已被注册——只为注册提供")
     @ApiImplicitParams({
             @ApiImplicitParam(name="email",value="邮箱")
@@ -117,6 +159,30 @@ public class UserController {
         map.put("result",0);
         map.put("reason","邮箱不存在");
         return AjaxResponse.success(map);
+    }
+
+
+    @ApiOperation(value = "用户忘记密码")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="email",value="邮箱")
+    })
+    @GetMapping("/users/forgetPassword")
+    public AjaxResponse forgetPassword( @Email @RequestParam("email") String email){
+        if(!userService.findUserByEmail(email).isPresent()){
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户不存在");
+        }else{
+            User user = userService.findUserByEmail(email).get();
+            if(user.getActive() != 1){
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户未激活或已注销");
+            }else {
+                String code = UUIDUtil.getUUID();
+                String password = UUIDUtil.getPasswordUUID();
+                user.setCode(code);
+                userService.updateUser(user);
+                mailService.sendHtmlMailForChangePassword(email,code,password);
+                return AjaxResponse.success();
+            }
+        }
     }
 
     @ApiOperation(value = "用户修改密码成功修改后返回首页")
@@ -139,7 +205,7 @@ public class UserController {
         }else{
             User user = userService.findUserByUid(id).get();
             if(user.getActive() != 1){
-                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户未激活");
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户未激活或已注销");
             }else {
                 if (user.getPasswordHash().equals(Sha256Util.getSHA256StrJava(oldPassword))) {
                     user.setPasswordHash(Sha256Util.getSHA256StrJava(newPassword));
@@ -152,7 +218,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "用户修改邮箱成功修改后返回首页")
+    @ApiOperation(value = "用户修改邮箱修改后返回首页")
     @ApiImplicitParams({
             @ApiImplicitParam(name="newEmail",value="新邮箱"),
             @ApiImplicitParam(name="id",value="用户id")
@@ -170,17 +236,15 @@ public class UserController {
         }else{
             User user = userService.findUserByUid(id).get();
             if(user.getActive() != 1){
-                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户未激活");
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户未激活或已注销");
             }else {
                     if(userService.findUserByEmail(newEmail).isPresent()){
                         throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"邮箱已注册");
                     }else{
                         String code = UUIDUtil.getUUID()+ UUIDUtil.getUUID();
                         user.setCode(code);
-                        user.setActive(0);
-                        user.setEmail(newEmail);
                         userService.updateUser(user);
-                        mailService.sendHtmlMailForActive(newEmail,code);
+                        mailService.sendHtmlMailForChangeEmail(user.getEmail(),code,newEmail);
                         //返回首页
                         return AjaxResponse.success("redirect:/");
                     }
@@ -203,7 +267,7 @@ public class UserController {
         }else{
             User user = userService.findUserByUid(id).get();
             if(user.getActive() != 1){
-                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户未激活");
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户未激活或已注销");
             }else {
                 user.setPasswordHash(Sha256Util.getSHA256StrJava(newPassword));
                 userService.updateUser(user);
@@ -227,14 +291,16 @@ public class UserController {
         }else{
             User user = userService.findUserByUid(id).get();
             if(user.getActive() != 1){
-                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户未激活");
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户未激活或已注销");
             }else {
                 if (!userService.findUserByEmail(email).isPresent()) {
+                    String password = UUIDUtil.getPasswordUUID();
+                    user.setPasswordHash(Sha256Util.getSHA256StrJava(password));
                     user.setCode(UUIDUtil.getUUID() + UUIDUtil.getUUID());
                     user.setActive(0);
                     user.setEmail(email);
                     userService.updateUser(user);
-                    mailService.sendHtmlMailForActive(email,user.getCode());
+                    mailService.sendHtmlMailForNewEmailActive(email,user.getCode(),password);
                     return AjaxResponse.success();
                 } else {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "邮箱已注册");
@@ -256,7 +322,7 @@ public class UserController {
         }else{
             User user = userService.findUserByUid(userVoPut.getId()).get();
             if(user.getActive() != 1){
-                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户未激活");
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户未激活或已注销");
             }else {
                 if (userVoPut.getAddress() != null) {
                     user.setAddress(userVoPut.getAddress());

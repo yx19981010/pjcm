@@ -60,7 +60,6 @@ public class ReviewRecord {
     @Column(name = "reject_comment")
     private String rejectComment;
 
-
     /**
      * 是否要转送
      */
@@ -84,4 +83,46 @@ public class ReviewRecord {
      */
     @Column(name = "revise_comment")
     private String reviseComment;
+
+    /**
+     * 给编辑部的建议
+     */
+    @Column(name = "advice_to_newsroom")
+    private String adviceToNewsroom;
+
+    /**
+     * 政治方面
+     */
+    @Column(name = "political")
+    private Integer political;
+
+    /**
+     * 学术方面
+     */
+    @Column(name = "academic")
+    private Integer academic;
+
+    /**
+     * 科学性方面
+     */
+    @Column(name = "scientific")
+    private Integer scientific;
+
+    /**
+     * 文字方面
+     */
+    @Column(name = "text")
+    private Integer text;
+
+    /**
+     * 实用性方面
+     */
+    @Column(name = "practicality")
+    private Integer practicality;
+
+    /**
+     * 总评价
+     */
+    @Column(name = "evaluation")
+    private Integer evaluation;
 }

@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.dozer.Mapper;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,6 +53,7 @@ public class ReviewRecordController {
     ReviewRecordService reviewRecordService;
 
     @PostMapping("type=1")
+    @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "首轮审稿可以否决和转送")
     public AjaxResponse review(@Validated({Add.class}) @RequestBody ReviewRecordQuery reviewRecordQuery) {
         int pid = reviewRecordQuery.getPid();
@@ -67,7 +69,7 @@ public class ReviewRecordController {
             if (rejectComment == null || rejectComment.isBlank()) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
-            if (toForward || toRevise || !forwardComment.isBlank() || reviseComment.isBlank()) {
+            if (toForward || toRevise || !forwardComment.isBlank() || !reviseComment.isBlank()) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CANNOT_REVISE_OR_FORWARD);
             }
         } else {
@@ -83,7 +85,7 @@ public class ReviewRecordController {
             }
         }
 
-        // TODO：获取当前操作用户id
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = REVIEWER_ID;
 
         // 检查稿件状态
@@ -122,16 +124,18 @@ public class ReviewRecordController {
                 } else {
                     // 汇总结果为建议修改
                     post.setStatus(PostStatus.TO_BE_RETURNED.getCode());
+
                 }
             }
         }
         postService.updatePost(post);
-
+//        return AjaxResponse.success();
         return AjaxResponse.success(dozerMapper.map(reviewRecord, ReviewRecordVO.class));
     }
 
 
     @PostMapping("type=2")
+    @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "再审稿只能通过或建议修改，不能否决或转送")
     public AjaxResponse review2(@Validated({Add2.class}) @RequestBody ReviewRecordQuery reviewRecordQuery) {
         int pid = reviewRecordQuery.getPid();
@@ -145,7 +149,7 @@ public class ReviewRecordController {
             }
         }
 
-        // TODO：获取当前操作用户id
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = REVIEWER_ID;
 
         // 检查稿件状态
@@ -185,12 +189,13 @@ public class ReviewRecordController {
     }
 
     @GetMapping("/{pid}/type=1")
+    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "编辑根据pid获得某一稿件的审稿记录")
     public AjaxResponse getAll1(@NotNull(message = "id不能为空") @PathVariable Integer pid,
                                 @NotNull(message = "number不能为空") @RequestParam("number") Integer number,
                                 @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
                                 @RequestParam(value = "ascend", required = false) Boolean ascend) {
-        // TODO: 以某种方式获得当前操作用户id
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
         // 检查操作者为该稿件编辑

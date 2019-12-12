@@ -76,7 +76,6 @@ public enum ErrMsg {
 
     INCOMPLETE_KEYWORDS_AND_ABSTRACTS(1000, "关键词或摘要不完整"),
 
-
     UNSUPPORTED_GENRE(1000, "不支持的体裁"),
 
     PAYMENT_FILE_NOT_UPLOADED(1000, "缴费证明未上传"),

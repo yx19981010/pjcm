@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,6 +53,7 @@ public class PostFileController {
     private PostReviewerService postReviewerService;
 
     @PutMapping("upload")
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "投稿人上传稿件/推荐信/伦理委员会批文/基金批文/缴费证明")
     public AjaxResponse upload(@NotNull @RequestParam Integer id,
                                @NotNull @RequestParam PostFileType type,
@@ -59,7 +61,7 @@ public class PostFileController {
 
         Post post = postService.getPost(id);
 
-        // TODO: 以某种方式获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         // 检查其为稿件投稿人
@@ -150,6 +152,7 @@ public class PostFileController {
     }
 
     @GetMapping("download/type=1")
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "投稿人下载稿件/推荐信/伦理委员会批文/基金批文/缴费证明")
     public void ctrDownload(@NotNull @RequestParam Integer id,
                             @NotNull @RequestParam PostFileType type,
@@ -157,7 +160,7 @@ public class PostFileController {
                             HttpServletRequest request) {
         Post post = postService.getPost(id);
 
-        // TODO: 获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         // 检查其为稿件投稿人
@@ -169,6 +172,7 @@ public class PostFileController {
     }
 
     @GetMapping("download/type=2")
+    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "编辑下载稿件/推荐信/伦理委员会批文/基金批文/缴费证明")
     public void edDownload(@NotNull @RequestParam Integer id,
                            @NotNull @RequestParam PostFileType type,
@@ -176,7 +180,7 @@ public class PostFileController {
                            HttpServletRequest request) {
         Post post = postService.getPost(id);
 
-        // TODO: 获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
         // 检查其为稿件编辑
@@ -193,13 +197,14 @@ public class PostFileController {
     }
 
     @GetMapping("download/type=3")
+    @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "审稿人下载稿件")
     public void revDownload(@NotNull @RequestParam Integer id,
                             HttpServletResponse response,
                             HttpServletRequest request) {
         Post post = postService.getPost(id);
 
-        // TODO: 获得当前操作用户
+        //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = REVIEWER_ID;
 
         // 检查当前用户是否接受了审稿

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.*;
 
-@ApiModel(description = "编辑或者管理员用户添加模型")
+@ApiModel(description = "编辑、审稿人或者管理员用户添加模型")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

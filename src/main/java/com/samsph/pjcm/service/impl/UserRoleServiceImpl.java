@@ -71,9 +71,7 @@ public class UserRoleServiceImpl implements UserRoleService {
         if(userRoles != null && userRoles.size()>0){
             for(UserRole a : userRoles){
                 if(userRepository.findById(a.getUid()).isPresent()){
-                    if(userRepository.findById(a.getUid()).get().getActive() == 1){
                         userRoleList.add(a);
-                    }
                 }
             }
         }

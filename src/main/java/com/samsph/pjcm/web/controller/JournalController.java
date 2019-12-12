@@ -2,6 +2,8 @@ package com.samsph.pjcm.web.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.samsph.pjcm.config.DevUserId;
+import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.utils.DozerUtil;
 import com.samsph.pjcm.model.Journal;
@@ -16,7 +18,9 @@ import com.samsph.pjcm.vo.JournalVO;
 import com.samsph.pjcm.vo.Post4TurSimpleVO;
 import io.swagger.annotations.*;
 import org.dozer.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,30 +52,29 @@ public class JournalController {
     @Resource
     JournalService journalService;
 
+    @Autowired
+    private CurrentUser currentUser;
+
     @PostMapping()
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @ApiOperation(value = "创建期刊")
     @ApiImplicitParam(name = "journalQuery", value = "必填：year、month、day；不填：id", dataType = "JournalQuery")
     public AjaxResponse saveJournal(@Validated({Add.class}) @RequestBody JournalQuery journalQuery) {
-        // TODO: 以某种方式获得当前操作用户，检查其为管理员
+//        int uid = currentUser.getCurrentUser().getUserId();
         int uid = ADMIN_ID;
-
         Journal journal = journalService.saveJournal(journalQuery, uid);
-
         return AjaxResponse.success(dozerMapper.map(journal, JournalSimpleVO.class));
     }
 
     @PutMapping()
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @ApiOperation(value = "更新期刊")
     @ApiImplicitParam(name = "journalQuery", value = "必填：id；选填：year、month、day", dataType = "JournalQuery")
     public AjaxResponse updateJournal(@Validated({Update.class}) @RequestBody JournalQuery journalQuery) {
-        // TODO: 以某种方式获得当前操作用户，检查其为管理员
-        int uid = ADMIN_ID;
-
         // 更新期刊信息
         Journal journal = journalService.getJournal(journalQuery.getId());
         BeanUtil.copyProperties(journalQuery, journal, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
         journalService.updateJournal(journal);
-
         return AjaxResponse.success();
     }
 
@@ -103,6 +106,7 @@ public class JournalController {
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @ApiOperation(value = "根据年月卷期获取期刊详细信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "year", required = true, value = "年号，2000到2050", dataType = "int"),
@@ -121,9 +125,6 @@ public class JournalController {
     @ApiOperation(value = "根据id删除期刊记录")
     @DeleteMapping("/{id}")
     public AjaxResponse deleteJournal(@NotNull(message = "id不能为空") @PathVariable int id) {
-        // TODO: 以某种方式获得当前操作用户，检查其为管理员
-        int uid = ADMIN_ID;
-
         journalService.deleteJournal(id);
         return AjaxResponse.success();
     }

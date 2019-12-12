@@ -42,5 +42,6 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
 //        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/static/");
 //        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
         registry.addResourceHandler("/images/**").addResourceLocations("file:./file/certificate/");
+        registry.addResourceHandler("/test/**").addResourceLocations("classpath:/static/");
     }
 }

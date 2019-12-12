@@ -22,6 +22,8 @@ public interface EditorFieldService {
 
      List<EditorField> findByEditorUid(Integer editorUid);
 
+     List<EditorField> findByFieldId(Integer fieldId);
+
      Page<EditorField> findEditorFieldsByEditorUid(int editorUid, PageRequest pageRequest);
 
      Page<EditorField> findEditorFieldsByFieldId(int fieldId, PageRequest pageRequest);

@@ -9,4 +9,6 @@ import java.util.Optional;
 
 public interface EditorFieldRepository extends JpaRepository<EditorField,Integer> {
     List<EditorField> findByEditorUid(Integer editorUid);
+
+    List<EditorField> findByField(Integer fieldId);
 }

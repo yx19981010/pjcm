@@ -44,4 +44,9 @@ public class UserReviewerVoGet {
      * 银行名
      */
     private String bankName;
+
+    /**
+     * 状态(-1注销，0未激活，1激活)
+     */
+    private Integer active;
 }

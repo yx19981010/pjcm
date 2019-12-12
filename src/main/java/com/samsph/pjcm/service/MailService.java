@@ -16,5 +16,17 @@ public interface MailService {
      */
     void sendHtmlMail(String to, String subject, String content);
 
-    void sendHtmlMailForActive(String to,String code);
+    void sendHtmlMailForContributorActive(String to,String code);
+
+    void sendHtmlMailForSystemUserActive(String to,String code,String password);
+
+    void sendHtmlMailForChangeEmail(String to,String code,String newEmail);
+
+    void sendHtmlMailForChangePassword(String to, String code, String newPassword);
+
+    void sendHtmlMailForNewEmailActive(String to, String code, String password);
+
+    void sendHtmlMailForContributor(String to,String postName,String contributorName);
+
+    void sendHtmlMailForReviewer(String to,String postName,String reviewerName);
 }

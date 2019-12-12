@@ -56,6 +56,14 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
         reviewRecord.setToRevise(reviewRecordQuery.getToRevise() ? 1 : 0);
         reviewRecord.setReviseComment(reviewRecordQuery.getReviseComment());
 
+        reviewRecord.setText(reviewRecordQuery.getText());
+        reviewRecord.setScientific(reviewRecordQuery.getScientific());
+        reviewRecord.setPracticality(reviewRecordQuery.getPracticality());
+        reviewRecord.setPolitical(reviewRecordQuery.getPolitical());
+        reviewRecord.setEvaluation(reviewRecordQuery.getEvaluation());
+        reviewRecord.setAdviceToNewsroom(reviewRecordQuery.getAdviceToNewsroom());
+        reviewRecord.setAcademic(reviewRecordQuery.getAcademic());
+
         return reviewRecordRepository.save(reviewRecord);
     }
 
@@ -70,7 +78,7 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
 
         int thisRoundTotal = reviewRecordRepository.findByPidAndCount(pid, cnt).size();
         int lastRoundRevise = reviewRecordRepository.findByPidAndCountAndToRevise(
-                pid, cnt - 1, MyBoolean.FALSE.getCode()).size();
+                pid, cnt - 1, MyBoolean.TRUE.getCode()).size();
 
         return thisRoundTotal == lastRoundRevise;
     }
@@ -78,14 +86,14 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
     @Override
     public Page<ReviewRecord> getAllByPid(int pid, int number, int size, boolean ascend) {
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
-        PageRequest pageRequest = PageRequest.of(number - 1, size, direction);
+        PageRequest pageRequest = PageRequest.of(number - 1, size,direction,"createTime");
         return reviewRecordRepository.findByPid(pid, pageRequest);
     }
 
     @Override
     public Page<ReviewRecord> getAllByPidAndUid(int pid, int uid, int number, int size, boolean ascend) {
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
-        PageRequest pageRequest = PageRequest.of(number - 1, size, direction);
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction,"createTime");
         return reviewRecordRepository.findByPidAndUid(pid, uid, pageRequest);
     }
 }

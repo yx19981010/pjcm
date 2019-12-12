@@ -50,6 +50,11 @@ public class EditorFieldServiceImpl implements EditorFieldService {
     }
 
     @Override
+    public List<EditorField> findByFieldId(Integer fieldId) {
+        return editorFieldRepository.findByField(fieldId);
+    }
+
+    @Override
     public Page<EditorField> findEditorFieldsByEditorUid(int editorUid, PageRequest pageRequest) {
         EditorField editorField = new EditorField();
         editorField.setEditorUid(editorUid);

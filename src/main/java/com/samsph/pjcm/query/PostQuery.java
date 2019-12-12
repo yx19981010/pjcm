@@ -59,6 +59,10 @@ PostQuery {
     @NotBlank(message = "title不能为空", groups = {Add.class})
     private String title;
 
+    @ApiModelProperty("英文文章标题") // 综述和论文（？专著）需要英文标题
+    @Length(max = 100, message = "英文标题不能超过100字")
+    private String titleEn;
+
     // TODO：中英文关键字须符合某一格式
 
     @ApiModelProperty("中文关键字")

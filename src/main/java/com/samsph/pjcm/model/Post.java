@@ -33,6 +33,12 @@ public class Post {
     private String title;
 
     /**
+     * 稿件英文标题
+     */
+    @Column(name = "titleEn")
+    private String titleEn;
+
+    /**
      * 作者信息
      */
     @Column(name = "writers_info")

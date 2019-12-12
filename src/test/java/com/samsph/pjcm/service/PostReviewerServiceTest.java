@@ -5,7 +5,6 @@ import com.samsph.pjcm.config.constant.FundLevel;
 import com.samsph.pjcm.config.constant.Genre;
 import com.samsph.pjcm.config.constant.MyBoolean;
 import com.samsph.pjcm.config.exception.CustomException;
-import com.samsph.pjcm.dao.JournalRepository;
 import com.samsph.pjcm.dao.PostRepository;
 import com.samsph.pjcm.dao.PostReviewerRepository;
 import com.samsph.pjcm.model.Post;
@@ -22,8 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 
-import static com.samsph.pjcm.config.DevUserId.CONTRIBUTOR_ID;
-import static com.samsph.pjcm.config.DevUserId.REVIEWER_ID;
+import static com.samsph.pjcm.config.DevUserId.*;
 import static org.hamcrest.CoreMatchers.is;
 
 @SpringBootTest
@@ -112,11 +110,22 @@ class PostReviewerServiceTest {
 
     @Test
     void aggregate() {
-        Assert.assertThat(postReviewerService.aggregate(post.getId()), is(true));
-
         postReviewer.setFlag(true);
         postReviewerService.updatePostReviewer(postReviewer);
         Assert.assertThat(postReviewerService.aggregate(post.getId()), is(false));
+
+        postReviewer.setFlag(false);
+        postReviewerService.updatePostReviewer(postReviewer);
+        Assert.assertThat(postReviewerService.aggregate(post.getId()), is(true));
+
+        postReviewerQuery.setReviewerUid(REVIEWER2_ID);
+        PostReviewer postReviewer1 = postReviewerService.save(postReviewerQuery);
+        postReviewer1.setFlag(true);
+        postReviewerService.updatePostReviewer(postReviewer1);
+        Assert.assertThat(postReviewerService.aggregate(post.getId()), is(false));
+        postReviewer1.setFlag(false);
+        postReviewerService.updatePostReviewer(postReviewer1);
+        Assert.assertThat(postReviewerService.aggregate(post.getId()), is(true));
     }
 
     @Test
@@ -124,7 +133,7 @@ class PostReviewerServiceTest {
         postReviewerService.deletePostReviewer(postReviewer.getId());
 
         try {
-            postReviewerService.getPostReviewer(post.getId(),REVIEWER_ID);
+            postReviewerService.getPostReviewer(post.getId(), REVIEWER_ID);
         } catch (CustomException ex) {
             Assert.assertThat(ex.getCode(), is(400));
             Assert.assertThat(ex.getMessage(), is("稿件-审稿人记录未找到"));

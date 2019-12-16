@@ -20,6 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -33,7 +34,7 @@ import java.util.Optional;
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
-    @Autowired
+    @Resource
     private UserRepository userRepository;
     @Autowired
     private UserRoleService userRoleService;
@@ -67,12 +68,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(int id) {
         //用户注销
-        if(findUserByUid(id).isPresent()) {
+        if (findUserByUid(id).isPresent()) {
             User user = findUserByUid(id).get();
             user.setActive(-1);
             updateUser(user);
-        }else{
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"用户id不存在!!!");
+        } else {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "用户id不存在!!!");
         }
     }
 
@@ -89,9 +90,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<User> findUsersByRid(int rid, Pageable pageable) {
         List<UserRole> list = userRoleService.findUserRolesByRole(rid);
-        if(list!=null && list.size() > 0){
+        if (list != null && list.size() > 0) {
             List<Integer> editorList = new ArrayList<>();
-            for(UserRole i : list){
+            for (UserRole i : list) {
                 editorList.add(i.getUid());
             }
             Specification<User> specification = new Specification<User>() {
@@ -108,8 +109,8 @@ public class UserServiceImpl implements UserService {
                 }
             };
             return userRepository.findAll(specification, pageable);
-        }else{
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"系统无对应角色的用户!!!");
+        } else {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "系统无对应角色的用户!!!");
         }
     }
 
@@ -120,14 +121,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveUser(UserVoPost userVoPost) {
-        if(userVoPost.getRoleId()!= RoleType.CONTRIBUTOR_ROLE){
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"只能注册作者用户!!!");
+        if (userVoPost.getRoleId() != RoleType.CONTRIBUTOR_ROLE) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "只能注册作者用户!!!");
         }
         Optional<User> optionalUser = userRepository.findByEmail(userVoPost.getEmail());
         if (optionalUser.isPresent()) {
-            if(optionalUser.get().getActive() != 1){
-                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"账户待激活或已注销无法添加!!!");
-            }else {
+            if (optionalUser.get().getActive() != 1) {
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "账户待激活或已注销无法添加!!!");
+            } else {
                 if (userRoleService.findUserHasRole(optionalUser.get().getId(), RoleType.CONTRIBUTOR_ROLE)) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "用户已经被注册!!!");
                 } else {
@@ -137,9 +138,9 @@ public class UserServiceImpl implements UserService {
                     userRoleService.addUserRole(userRole);
                 }
             }
-        }else{
+        } else {
             User user = new User();
-            String code = UUIDUtil.getUUID()+ UUIDUtil.getUUID();
+            String code = UUIDUtil.getUUID() + UUIDUtil.getUUID();
             user.setEmail(userVoPost.getEmail());
             user.setPasswordHash(Sha256Util.getSHA256StrJava(userVoPost.getPassword()));
             user.setActive(0);
@@ -161,7 +162,7 @@ public class UserServiceImpl implements UserService {
             userRole.setRole(RoleType.CONTRIBUTOR_ROLE);
             userRole.setUid(userRepository.findByEmail(user.getEmail()).get().getId());
             userRoleService.addUserRole(userRole);
-            mailService.sendHtmlMailForContributorActive(user.getEmail(),code);
+            mailService.sendHtmlMailForContributorActive(user.getEmail(), code);
         }
     }
 }

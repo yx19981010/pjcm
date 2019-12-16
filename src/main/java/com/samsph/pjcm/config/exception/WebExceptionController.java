@@ -89,11 +89,11 @@ public class WebExceptionController {
         return AjaxResponse.error(new CustomException(CustomExceptionType.USER_INPUT_ERROR, ex.getMessage()));
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseBody
-    public AjaxResponse exception(Exception e) {
-        // TODO 将异常信息持久化处理，方便运维人员处理
-        // 没有被程序员发现并转换为CustomException的异常，都是未知异常
-        return AjaxResponse.error(new CustomException(CustomExceptionType.OTHER_ERROR, "未知异常"));
-    }
+//    @ExceptionHandler(Exception.class)
+//    @ResponseBody
+//    public AjaxResponse exception(Exception e) {
+//        // TODO 将异常信息持久化处理，方便运维人员处理
+//        // 没有被程序员发现并转换为CustomException的异常，都是未知异常
+//        return AjaxResponse.error(new CustomException(CustomExceptionType.OTHER_ERROR, "未知异常"));
+//    }
 }

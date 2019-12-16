@@ -42,7 +42,7 @@ public class PostReviewerServiceImpl implements PostReviewerService {
         // 设置稿件审稿标识、创建时间、接受状态
         postReviewer.setFlag(false);
         postReviewer.setCreateTime(new Date());
-        postReviewer.setAccepted(MyBoolean.DEFAULT.getCode());
+        postReviewer.setAccept(MyBoolean.DEFAULT.getCode());
 
         return postReviewerRepository.save(postReviewer);
     }

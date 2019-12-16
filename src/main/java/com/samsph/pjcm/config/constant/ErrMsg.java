@@ -24,15 +24,15 @@ public enum ErrMsg {
 
     REVIEW_RECORD_EXISTS(1001, "审稿记录已存在"),
 
+    POST_REVIEWER_EXISTS(1005, "已为稿件选择该审稿人"),
+
     JOURNAL_NOT_FOUND(1002, "期刊未找到"),
 
-    POST_NOT_FOUND(1004, "投稿未找到"),
+    POST_NOT_FOUND(1004, "稿件未找到"),
 
     POST_REVIEWER_NOT_FOUND(1006, "稿件-审稿人记录未找到"),
 
-    POST_REVIEWER_EXISTS(1005, "稿件已选择该审稿人"),
-
-    REVIEWER_HAS_REPLIED(1010, "审稿人已答复审稿请求"),
+    REVIEWER_HAS_REPLIED(1010, "审稿人已答复审稿"),
 
     POST_FILE_CANNOT_UPLOAD(1003, "无法上传稿件"),
 
@@ -50,7 +50,7 @@ public enum ErrMsg {
 
     POST_FILE_READ_ERROR(2000, "文件读取异常"),
 
-    NO_FUND(1013, "不是基金项目"),
+    NOT_FUND_PROJECT(1013, "不是基金项目"),
 
     WRONG_STATUS(1014, "错误的稿件状态"),
 
@@ -72,9 +72,9 @@ public enum ErrMsg {
 
     FUND_LEVEL_NEEDED(1000, "缺少基金等级信息"),
 
-    INCOMPLETE_POST_FILES(1000, "投稿相关文件上传不全"),
+    INCOMPLETE_POST_FILES(1000, "文件上传不全"),
 
-    INCOMPLETE_KEYWORDS_AND_ABSTRACTS(1000, "关键词或摘要不完整"),
+    INCOMPLETE_INFO_REQUIRED_FOR_THE_GENRE(1000, "该体裁所需信息不完整"),
 
     UNSUPPORTED_GENRE(1000, "不支持的体裁"),
 
@@ -82,8 +82,13 @@ public enum ErrMsg {
 
     INVOICE_REQUIRED_OR_NOT_NEEDED(1000, "缺少是否需要发票"),
 
-    INCOMPLETE_INVOICE_INFO(2000, "发票信息不完整");
+    INCOMPLETE_INVOICE_INFO(2000, "发票信息不完整"),
 
+    WRONG_TIME(1000, "错误的起止时间"),
+
+    UNSUPPORTED_STATUS(1000, "不支持的稿件状态"),
+
+    REVIEWER_NOT_FOUND(1000, "审稿人未找到");
 
     @Getter
     private final int code;

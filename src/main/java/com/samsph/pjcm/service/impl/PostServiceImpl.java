@@ -59,86 +59,136 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> getAllByJid(int jid, Integer number, Integer size, Boolean ascend) {
-
+    public Page<Post> getAllByCtrUid(int uid, int number, int size, boolean ascend) {
         // 新建分页选项
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        return postRepository.findAllByJid(jid, pageRequest);
+        return postRepository.findByContributorUid(uid, pageRequest);
     }
 
     @Override
-    public Page<Post> getAllByCtr(int uid, int number, int size, boolean ascend) {
+    public Page<Post> getAllByCtrUidAndSubmitTime(int uid, Date start, Date end, int number, int size, boolean ascend) {
         // 新建分页选项
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        return postRepository.findAllByCtr(uid, pageRequest);
+        return postRepository.findByContributorUidAndSubmitTimeAfterAndSubmitTimeBefore(uid, start, end, pageRequest);
     }
 
     @Override
-    public Page<Post> getAllByCtrAndStatus(int uid, PostStatus status, int number, int size, boolean ascend) {
+    public Page<Post> getAllByCtrUidAndStatus(int uid, PostStatus status, int number, int size, boolean ascend) {
         // 新建分页选项
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        return postRepository.findAllByCtrAndStatus(uid, status.getCode(), pageRequest);
+        return postRepository.findByContributorUidAndStatus(uid, status.getCode(), pageRequest);
     }
 
     @Override
-    public Page<Post> getAllByEd(int uid, Integer number, Integer size, Boolean ascend) {
+    public Page<Post> getAllByCtrUidAndStatusAndSubmitTime(int uid, PostStatus status, Date start, Date end, int number, int size, boolean ascend) {
         // 新建分页选项
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        return postRepository.findAllByEd(uid, pageRequest);
+        return postRepository.findByContributorUidAndStatusAndSubmitTimeAfterAndSubmitTimeBefore(uid, status.getCode(), start, end, pageRequest);
+    }
+
+
+    @Override
+    public Page<Post> getAllByEdUid(int uid, int number, int size, boolean ascend) {
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByEditorUid(uid, pageRequest);
     }
 
     @Override
-    public Page<Post> getAllByEdAndStatus(int uid, PostStatus status, Integer number, Integer size, Boolean ascend) {
+    public Page<Post> getAllByEdUidAndSubmitTime(int uid, Date start, Date end, int number, int size, boolean ascend) {
         // 新建分页选项
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        return postRepository.findAllByEdAndStatus(uid, status.getCode(), pageRequest);
+        return postRepository.findByEditorUidAndSubmitTimeAfterAndSubmitTimeBefore(uid, start, end, pageRequest);
+    }
+
+
+    @Override
+    public Page<Post> getAllByEdUidAndStatus(int uid, PostStatus status, int number, int size, boolean ascend) {
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByEditorUidAndStatus(uid, status.getCode(), pageRequest);
     }
 
     @Override
-    public Page<Post> getAllByRevUnanswer(int uid, Integer number, Integer size, Boolean ascend) {
+    public Page<Post> getAllByEdUidAndStatusAndSubmitTime(int uid, PostStatus status, Date start, Date end, int number, int size, boolean ascend) {
         // 新建分页选项
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        return postRepository.findAllByRevUidAndAccept(uid, MyBoolean.DEFAULT.getCode(), pageRequest);
+        return postRepository.findByEditorUidAndStatusAndSubmitTimeAfterAndSubmitTimeBefore(uid, status.getCode(), start, end, pageRequest);
     }
 
     @Override
-    public Page<Post> getAllByRev(int uid, Integer number, Integer size, Boolean ascend) {
+    public Page<Post> getAllByRevUidAndAccept(int uid, MyBoolean accept, int number, int size, boolean ascend) {
         // 新建分页选项
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        return postRepository.findAllByRev(uid, pageRequest);
+        return postRepository.findByReviewerUidAndAccept(uid, accept.getCode(), pageRequest);
     }
 
     @Override
-    public Page<Post> getAllRequiredToReview(int uid, boolean reviewRequired, Integer number, Integer size, Boolean ascend) {
+    public Page<Post> getAllByRevUidAndAcceptAndSubmitTime(int uid, MyBoolean accept, Date start, Date end, int number, int size, boolean ascend) {
         // 新建分页选项
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        return postRepository.findAllRequiredToReview(uid,
-                reviewRequired ? MyBoolean.TRUE.getCode() : MyBoolean.FALSE.getCode(),
-                pageRequest);
+        return postRepository.findByReviewerUidAndAcceptAndSubmitTimeAfterAndSubmitTimeBefore(uid, accept.getCode(), start, end, pageRequest);
+    }
+
+    @Override
+    public Page<Post> getAllByRevUidAndFlag(int uid, boolean flag, int number, int size, boolean ascend) {
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByReviewerUidAndFlag(uid, flag ? MyBoolean.TRUE.getCode() : MyBoolean.FALSE.getCode(), pageRequest);
+    }
+
+    @Override
+    public Page<Post> getAllByRevUidAndFlagAndSubmitTime(int uid, boolean flag, Date start, Date end, int number, int size, boolean ascend) {
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByReviewerUidAndFlagAndSubmitTimeAfterAndSubmitTimeBefore(uid, flag ? MyBoolean.TRUE.getCode() : MyBoolean.FALSE.getCode(), start, end, pageRequest);
+    }
+
+    @Override
+    public Page<Post> getAllByJid(int jid, int number, int size, boolean ascend) {
+
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByJid(jid, pageRequest);
     }
 
     @Override

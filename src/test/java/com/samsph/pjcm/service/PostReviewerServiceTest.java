@@ -67,7 +67,7 @@ class PostReviewerServiceTest {
 
     @Test
     void save() {
-        Assert.assertThat(postReviewer.getAccepted(), is(MyBoolean.DEFAULT.getCode()));
+        Assert.assertThat(postReviewer.getAccept(), is(MyBoolean.DEFAULT.getCode()));
         Assert.assertThat(postReviewer.getFlag(), is(false));
         Assert.assertThat(postReviewer.getPid(), is(post.getId()));
         Assert.assertThat(postReviewer.getReviewerUid(), is(REVIEWER_ID));
@@ -83,7 +83,7 @@ class PostReviewerServiceTest {
     @Test
     void getPostReviewer() {
         PostReviewer postReviewer2 = postReviewerService.getPostReviewer(post.getId(), REVIEWER_ID);
-        Assert.assertThat(postReviewer2.getAccepted(), is(MyBoolean.DEFAULT.getCode()));
+        Assert.assertThat(postReviewer2.getAccept(), is(MyBoolean.DEFAULT.getCode()));
         Assert.assertThat(postReviewer2.getFlag(), is(false));
         Assert.assertThat(postReviewer2.getPid(), is(post.getId()));
         Assert.assertThat(postReviewer2.getReviewerUid(), is(REVIEWER_ID));
@@ -99,10 +99,10 @@ class PostReviewerServiceTest {
     @Test
     void updatePostReviewer() {
         postReviewer.setFlag(true);
-        postReviewer.setAccepted(MyBoolean.TRUE.getCode());
+        postReviewer.setAccept(MyBoolean.TRUE.getCode());
         postReviewerService.updatePostReviewer(postReviewer);
 
-        Assert.assertThat(postReviewer.getAccepted(), is(MyBoolean.TRUE.getCode()));
+        Assert.assertThat(postReviewer.getAccept(), is(MyBoolean.TRUE.getCode()));
         Assert.assertThat(postReviewer.getFlag(), is(true));
         Assert.assertThat(postReviewer.getPid(), is(post.getId()));
         Assert.assertThat(postReviewer.getReviewerUid(), is(REVIEWER_ID));

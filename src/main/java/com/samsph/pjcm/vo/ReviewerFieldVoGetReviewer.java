@@ -17,4 +17,14 @@ public class ReviewerFieldVoGetReviewer {
      * 审稿人id
      */
     private Integer reviewerUid;
+
+    /**
+     * 用户名
+     */
+    private String userName;
+
+    /**
+     * 电子邮件
+     */
+    private String email;
 }

@@ -136,6 +136,7 @@ public class PostController {
         if(size == 0){
             throw new CustomException(CustomExceptionType.SYSTEM_ERROR,"该领域下无编辑");
         }
+        //随机获取当前领域下的编辑
         int num = (int)(1+Math.random()*(size-1+1));
         int editorId = editorFieldService.findByFieldId(post.getField()).get(num-1).getEditorUid();
         post.setEditorUid(editorId);

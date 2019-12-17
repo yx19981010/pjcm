@@ -6,11 +6,11 @@ import com.samsph.pjcm.config.constant.RoleType;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.exception.CustomException;
 import com.samsph.pjcm.config.exception.CustomExceptionType;
+import com.samsph.pjcm.model.EditorField;
+import com.samsph.pjcm.model.ReviewerField;
 import com.samsph.pjcm.model.User;
 import com.samsph.pjcm.model.UserRole;
-import com.samsph.pjcm.service.MailService;
-import com.samsph.pjcm.service.UserRoleService;
-import com.samsph.pjcm.service.UserService;
+import com.samsph.pjcm.service.*;
 import com.samsph.pjcm.config.utils.DozerUtil;
 import com.samsph.pjcm.config.utils.Sha256Util;
 import com.samsph.pjcm.config.utils.UUIDUtil;
@@ -29,10 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Api(tags = "用户管理")
 @RestController
@@ -45,6 +42,10 @@ public class UserController {
     private UserRoleService userRoleService;
     @Autowired
     private MailService mailService;
+    @Autowired
+    private EditorFieldService editorFieldService;
+    @Autowired
+    private ReviewerFieldService reviewerFieldService;
     @Autowired
     private CurrentUser currentUser;
 
@@ -210,7 +211,7 @@ public class UserController {
                 if (user.getPasswordHash().equals(Sha256Util.getSHA256StrJava(oldPassword))) {
                     user.setPasswordHash(Sha256Util.getSHA256StrJava(newPassword));
                     userService.updateUser(user);
-                    return AjaxResponse.success("redirect:/");
+                    return AjaxResponse.success();
                 } else {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "原密码错误");
                 }
@@ -246,7 +247,7 @@ public class UserController {
                         userService.updateUser(user);
                         mailService.sendHtmlMailForChangeEmail(user.getEmail(),code,newEmail);
                         //返回首页
-                        return AjaxResponse.success("redirect:/");
+                        return AjaxResponse.success();
                     }
             }
         }
@@ -429,10 +430,30 @@ public class UserController {
                         UserAdminVoGet userAdminVoGet = DozerUtil.map(userOptional.get(), UserAdminVoGet.class);
                         return AjaxResponse.success(userAdminVoGet);
                     case RoleType.EDITOR_ROLE:
-                        UserEditorVoGet userEditorVoGets = DozerUtil.map(userOptional.get(), UserEditorVoGet.class);
-                        return AjaxResponse.success(userEditorVoGets);
+                        UserEditorVoGet userEditorVoGet = new UserEditorVoGet();
+                        List<EditorField> list1 = editorFieldService.findByEditorUid(uid);
+                        List<EditorFieldVoGetField> list2 = DozerUtil.mapList(list1,EditorFieldVoGetField.class);
+                        userEditorVoGet.setActive(userOptional.get().getActive());
+                        userEditorVoGet.setEmail(userOptional.get().getEmail());
+                        userEditorVoGet.setId(userOptional.get().getId());
+                        userEditorVoGet.setPhone(userOptional.get().getPhone());
+                        userEditorVoGet.setSex(userOptional.get().getSex());
+                        userEditorVoGet.setUserName(userOptional.get().getUserName());
+                        userEditorVoGet.setField(list2);
+                        return AjaxResponse.success(userEditorVoGet);
                     case RoleType.REVIEWER_ROLE:
-                        UserReviewerVoGet userReviewerVoGet = DozerUtil.map(userOptional.get(), UserReviewerVoGet.class);
+                        UserReviewerVoGet userReviewerVoGet = new UserReviewerVoGet();
+                        List<ReviewerField> list3 = reviewerFieldService.findByReviewerUid(uid);
+                        List<ReviewerFieldVoGetField> list4 = DozerUtil.mapList(list3,ReviewerFieldVoGetField.class);
+                        userReviewerVoGet.setEmail(userOptional.get().getEmail());
+                        userReviewerVoGet.setActive(userOptional.get().getActive());
+                        userReviewerVoGet.setId(userOptional.get().getId());
+                        userReviewerVoGet.setPhone(userOptional.get().getPhone());
+                        userReviewerVoGet.setSex(userOptional.get().getSex());
+                        userReviewerVoGet.setUserName(userOptional.get().getUserName());
+                        userReviewerVoGet.setField(list4);
+                        userReviewerVoGet.setBankAccount(userOptional.get().getBankAccount());
+                        userReviewerVoGet.setBankName(userOptional.get().getBankName());
                         return AjaxResponse.success(userReviewerVoGet);
                     case RoleType.CONTRIBUTOR_ROLE:
                         UserContributorVoGet userContributorVoGet = DozerUtil.map(userOptional.get(), UserContributorVoGet.class);
@@ -467,11 +488,39 @@ public class UserController {
                     List<UserAdminVoGet> userAdminVoGets = DozerUtil.mapList(userList, UserAdminVoGet.class);
                     return AjaxResponse.success(userAdminVoGets);
                 case RoleType.EDITOR_ROLE:
-                    List<UserEditorVoGet> userEditorVoGets = DozerUtil.mapList(userList,UserEditorVoGet.class);
+                    List<UserEditorVoGet> userEditorVoGets = new ArrayList<>();
+                    for(User user : userList){
+                        List<EditorField> list1 = editorFieldService.findByEditorUid(user.getId());
+                        List<EditorFieldVoGetField> list2 = DozerUtil.mapList(list1,EditorFieldVoGetField.class);
+                        UserEditorVoGet userEditorVoGet = new UserEditorVoGet();
+                        userEditorVoGet.setActive(user.getActive());
+                        userEditorVoGet.setEmail(user.getEmail());
+                        userEditorVoGet.setId(user.getId());
+                        userEditorVoGet.setPhone(user.getPhone());
+                        userEditorVoGet.setSex(user.getSex());
+                        userEditorVoGet.setUserName(user.getUserName());
+                        userEditorVoGet.setField(list2);
+                        userEditorVoGets.add(userEditorVoGet);
+                    }
                     pageData = new PageData(userPage.getTotalPages(), (int) userPage.getTotalElements(),page,userEditorVoGets.size(),userEditorVoGets);
                     return AjaxResponse.success(pageData);
                 case RoleType.REVIEWER_ROLE:
-                    List<UserReviewerVoGet> userReviewerVoGets = DozerUtil.mapList(userList,UserReviewerVoGet.class);
+                    List<UserReviewerVoGet> userReviewerVoGets = new ArrayList<>();
+                    for(User user : userList){
+                        List<ReviewerField> list1 = reviewerFieldService.findByReviewerUid(user.getId());
+                        List<ReviewerFieldVoGetField> list2 = DozerUtil.mapList(list1,ReviewerFieldVoGetField.class);
+                        UserReviewerVoGet userReviewerVoGet = new UserReviewerVoGet();
+                        userReviewerVoGet.setEmail(user.getEmail());
+                        userReviewerVoGet.setActive(user.getActive());
+                        userReviewerVoGet.setId(user.getId());
+                        userReviewerVoGet.setPhone(user.getPhone());
+                        userReviewerVoGet.setSex(user.getSex());
+                        userReviewerVoGet.setUserName(user.getUserName());
+                        userReviewerVoGet.setField(list2);
+                        userReviewerVoGet.setBankAccount(user.getBankAccount());
+                        userReviewerVoGet.setBankName(user.getBankName());
+                        userReviewerVoGets.add(userReviewerVoGet);
+                    }
                     pageData = new PageData(userPage.getTotalPages(), (int) userPage.getTotalElements(),page,userReviewerVoGets.size(),userReviewerVoGets);
                     return AjaxResponse.success(pageData);
                 case RoleType.CONTRIBUTOR_ROLE:

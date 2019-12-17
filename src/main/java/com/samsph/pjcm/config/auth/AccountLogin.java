@@ -7,4 +7,5 @@ public class AccountLogin {
     private String username;
     private String password;
     private int role;
+    private String code;
 }

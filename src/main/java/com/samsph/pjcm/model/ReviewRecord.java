@@ -125,4 +125,10 @@ public class ReviewRecord {
      */
     @Column(name = "evaluation")
     private Integer evaluation;
+
+    /**
+     * 刊用类型
+     */
+    @Column(name = "publish")
+    private Integer publish;
 }

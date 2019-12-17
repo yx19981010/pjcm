@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -63,6 +64,7 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
         reviewRecord.setEvaluation(reviewRecordQuery.getEvaluation());
         reviewRecord.setAdviceToNewsroom(reviewRecordQuery.getAdviceToNewsroom());
         reviewRecord.setAcademic(reviewRecordQuery.getAcademic());
+        reviewRecord.setPublish(reviewRecordQuery.getPublish());
 
         return reviewRecordRepository.save(reviewRecord);
     }
@@ -84,16 +86,17 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
     }
 
     @Override
-    public Page<ReviewRecord> getAllByPid(int pid, int number, int size, boolean ascend) {
-        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
-        PageRequest pageRequest = PageRequest.of(number - 1, size,direction,"createTime");
-        return reviewRecordRepository.findByPid(pid, pageRequest);
+    public List<ReviewRecord> findByPublishAndPidAndCount(int publish,int pid,int count) {
+        return reviewRecordRepository.findByPublishAndPidAndCount(publish,pid,count);
     }
 
     @Override
-    public Page<ReviewRecord> getAllByPidAndUid(int pid, int uid, int number, int size, boolean ascend) {
-        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
-        PageRequest pageRequest = PageRequest.of(number - 1, size, direction,"createTime");
-        return reviewRecordRepository.findByPidAndUid(pid, uid, pageRequest);
+    public List<ReviewRecord> getAllByPid(int pid) {
+        return reviewRecordRepository.findByPid(pid);
+    }
+
+    @Override
+    public List<ReviewRecord> getAllByPidAndUid(int pid, int uid) {
+        return reviewRecordRepository.findByPidAndUid(pid, uid);
     }
 }

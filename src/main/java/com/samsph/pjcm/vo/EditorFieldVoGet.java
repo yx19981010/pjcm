@@ -4,15 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EditorFieldVoGetEditor {
-    /**
-     * 标识
-     */
-    private Integer id;
-
+public class EditorFieldVoGet {
     /**
      * 编辑id
      */
@@ -27,4 +24,9 @@ public class EditorFieldVoGetEditor {
      * 电子邮件
      */
     private String email;
+
+    /**
+     * 领域
+     */
+    private List<EditorFieldVoGetField> field;
 }

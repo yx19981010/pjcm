@@ -46,6 +46,11 @@ public class UserReviewerVoGet {
     private String bankName;
 
     /**
+     * 领域
+     */
+    private List<ReviewerFieldVoGetField> field;
+
+    /**
      * 状态(-1注销，0未激活，1激活)
      */
     private Integer active;

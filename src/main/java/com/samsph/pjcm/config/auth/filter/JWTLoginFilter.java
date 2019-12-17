@@ -27,6 +27,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,11 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException, IOException,CustomException {
         // JSON反序列化成 AccountCredentials
         AccountLogin accountLogin = new ObjectMapper().readValue(httpServletRequest.getInputStream(), AccountLogin.class);
+        HttpSession session = httpServletRequest.getSession();
+        System.out.println(session.getAttribute("verCode"));
+        if(!accountLogin.getCode().toLowerCase().equals(session.getAttribute("verCode"))){
+            throw new BadCredentialsException("验证码错误");
+        }
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         role = accountLogin.getRole();
         if(userService.findUserByEmail(accountLogin.getUsername()).isPresent()){

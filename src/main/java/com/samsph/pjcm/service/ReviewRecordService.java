@@ -4,6 +4,8 @@ import com.samsph.pjcm.model.ReviewRecord;
 import com.samsph.pjcm.query.ReviewRecordQuery;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 /**
  * 审稿记录表service层接口
  *
@@ -31,25 +33,27 @@ public interface ReviewRecordService {
     boolean canReReviewClose(int pid);
 
     /**
+     * 根据publish的值获得审稿记录列表
+     *
+     * @param publish
+     * @return
+     */
+    List<ReviewRecord> findByPublishAndPidAndCount(int publish,int pid,int count);
+
+    /**
      * 获得某稿件的所有编辑记录
      *
      * @param pid    稿件id
-     * @param number 页号
-     * @param size   页面大小
-     * @param ascend 是否升序
      * @return 审稿记录页面
      */
-    Page<ReviewRecord> getAllByPid(int pid, int number, int size, boolean ascend);
+    List<ReviewRecord> getAllByPid(int pid);
 
     /**
      * 获得某稿件某审稿人的所有编辑记录
      *
      * @param pid    稿件id
      * @param uid    审稿人id
-     * @param number 页号
-     * @param size   页面大小
-     * @param ascend 是否升序
      * @return 审稿记录页面
      */
-    Page<ReviewRecord> getAllByPidAndUid(int pid, int uid, int number, int size, boolean ascend);
+    List<ReviewRecord> getAllByPidAndUid(int pid, int uid);
 }

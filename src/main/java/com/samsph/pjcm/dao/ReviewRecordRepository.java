@@ -44,21 +44,31 @@ public interface ReviewRecordRepository extends JpaRepository<ReviewRecord, Inte
     List<ReviewRecord> findByPidAndCount(int pid, int count);
 
     /**
-     * 以分页形式获得某稿件的审稿记录
+     * 根据publish的值获得审稿记录列表
+     *
+     * @param publish
+     * @return
+     */
+    List<ReviewRecord> findByPublishAndPidAndCount(int publish,int pid,int count);
+
+    /**
+     * 获得某稿件的审稿记录
      *
      * @param pid 稿件id
-     * @param pageRequest 分页对象
      * @return 稿件记录分页
      */
-    Page<ReviewRecord> findByPid(int pid, Pageable pageRequest);
+    @Query(value = "SELECT * FROM review_record p WHERE p.pid=?1",
+            nativeQuery = true)
+    List<ReviewRecord> findByPid(int pid);
 
     /**
      * 以分页形式获得某稿件某审稿人的审稿记录
      *
      * @param pid 稿件id
      * @param uid 审稿人id
-     * @param pageRequest 分页对象
      * @return 稿件记录分页
      */
-    Page<ReviewRecord> findByPidAndUid(int pid, int uid, Pageable pageRequest);
+    @Query(value = "SELECT * FROM review_record p WHERE p.pid=?1 AND p.uid=?2",
+            nativeQuery = true)
+    List<ReviewRecord> findByPidAndUid(int pid, int uid);
 }

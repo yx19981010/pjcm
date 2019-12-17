@@ -20,7 +20,7 @@ public class ReviewRecordQuery {
     @NotNull(groups = {Add.class,Add2.class},message = "pid不能为空")
     private Integer pid;
 
-    @ApiModelProperty("是否否决")
+    @ApiModelProperty("是否否决（退稿）")
     @NotNull(groups = {Add.class}, message = "reject不能为空")
     @Null(groups = {Add2.class}, message = "reject必须为空")
     private Boolean reject;
@@ -38,7 +38,7 @@ public class ReviewRecordQuery {
     @Null(groups = {Add2.class}, message = "forwardComment必须为空")
     private String forwardComment;
 
-    @ApiModelProperty("是否修改")
+    @ApiModelProperty("是否修改（修改后再审）")
     @NotNull(groups = {Add.class,Add2.class},message = "toRevise不能为空")
     private Boolean toRevise;
 
@@ -83,5 +83,10 @@ public class ReviewRecordQuery {
     @Min(groups = {Add.class,Add2.class},value = EvaluationType.MIN,message = "evaluation不低于"+ EvaluationType.MIN)
     @Max(groups = {Add.class,Add2.class},value = EvaluationType.MAX,message = "evaluation不超过"+ EvaluationType.MAX)
     private Integer evaluation;
+
+    @ApiModelProperty("在否决和需要修改的情况下可以为空，刊用类型(包括了１．全文发表  ２．摘要发表  ３．综合发表  4.退修后发表 4种类型)")
+    @Min(groups = {Add.class,Add2.class},value = PublishType.MIN,message = "publish不低于"+ PublishType.MIN)
+    @Max(groups = {Add.class,Add2.class},value = PublishType.MAX,message = "publish不超过"+ PublishType.MAX)
+    private Integer publish;
 
 }

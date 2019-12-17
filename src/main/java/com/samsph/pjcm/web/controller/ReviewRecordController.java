@@ -1,10 +1,14 @@
 package com.samsph.pjcm.web.controller;
 
+import com.samsph.pjcm.config.PageData;
 import com.samsph.pjcm.config.constant.ErrMsg;
+import com.samsph.pjcm.config.constant.MyBoolean;
 import com.samsph.pjcm.config.constant.PostStatus;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.exception.CustomException;
 import com.samsph.pjcm.config.exception.CustomExceptionType;
+import com.samsph.pjcm.config.utils.DozerUtil;
+import com.samsph.pjcm.dao.ReviewRecordRepository;
 import com.samsph.pjcm.model.Post;
 import com.samsph.pjcm.model.PostReviewer;
 import com.samsph.pjcm.model.ReviewRecord;
@@ -19,6 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.dozer.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,8 +32,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 
-import static com.samsph.pjcm.config.DevUserId.EDITOR_ID;
-import static com.samsph.pjcm.config.DevUserId.REVIEWER_ID;
+import java.util.List;
+
+import static com.samsph.pjcm.config.DevUserId.*;
 
 /**
  * @author hujiahao
@@ -52,6 +58,9 @@ public class ReviewRecordController {
     @Resource
     ReviewRecordService reviewRecordService;
 
+    @Autowired
+    ReviewRecordRepository reviewRecordRepository;
+
     @PostMapping("type=1")
     @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "首轮审稿可以否决和转送")
@@ -63,13 +72,26 @@ public class ReviewRecordController {
         String forwardComment = reviewRecordQuery.getForwardComment();
         Boolean toRevise = reviewRecordQuery.getToRevise();
         String reviseComment = reviewRecordQuery.getReviseComment();
+        Integer publish = reviewRecordQuery.getPublish();
 
         // 检查字段填写完整
+        if(publish != null){
+            if( reject || toRevise ){
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CANNOT_REVISE_OR_REJECT);
+            }
+        }
+
+        if(!reject && !toRevise){
+            if(publish == null){
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.PUBLISH_NEEDED);
+            }
+        }
+
         if (reject) {
             if (rejectComment == null || rejectComment.isBlank()) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
-            if (toForward || toRevise || !forwardComment.isBlank() || !reviseComment.isBlank()) {
+            if (toForward || toRevise ||  !forwardComment.isBlank() || !reviseComment.isBlank()) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CANNOT_REVISE_OR_FORWARD);
             }
         } else {
@@ -119,12 +141,16 @@ public class ReviewRecordController {
             } else {
                 // 不否决不转送，第一轮审稿结束，汇总该轮审稿结果
                 if (postReviewerService.aggregate(pid)) {
-                    // 汇总结果为通过
-                    post.setStatus(PostStatus.FORMAT_TO_BE_REVIEWED.getCode());
+                    //所有人都选择全文发表
+                    if(reviewRecordService.findByPublishAndPidAndCount(1,pid,1).size() == reviewRecordRepository.findByPidAndCount(pid,1).size()) {
+                        // 汇总结果为通过
+                        post.setStatus(PostStatus.FORMAT_TO_BE_REVIEWED.getCode());
+                    }else{
+                        post.setStatus(PostStatus.TO_BE_REVISED.getCode());
+                    }
                 } else {
                     // 汇总结果为建议修改
                     post.setStatus(PostStatus.TO_BE_RETURNED.getCode());
-
                 }
             }
         }
@@ -141,8 +167,19 @@ public class ReviewRecordController {
         int pid = reviewRecordQuery.getPid();
         Boolean toRevise = reviewRecordQuery.getToRevise();
         String reviseComment = reviewRecordQuery.getReviseComment();
+        Integer publish = reviewRecordQuery.getPublish();
 
         // 检查字段填写是否完整
+        if(publish != null){
+            if( toRevise ){
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CANNOT_REVISE_OR_REJECT);
+            }
+        }
+        if( !toRevise ){
+            if(publish == null){
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.PUBLISH_NEEDED);
+            }
+        }
         if (toRevise) {
             if (reviseComment == null || reviseComment.isBlank()) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REVISE_COMMENT_NEEDED);
@@ -177,24 +214,27 @@ public class ReviewRecordController {
         if (reviewRecordService.canReReviewClose(pid)) {
             // 此轮审稿可关闭，则汇总该轮审稿结果
             if (postReviewerService.aggregate(pid)) {
-                // 汇总结果为通过
-                post.setStatus(PostStatus.FORMAT_TO_BE_REVIEWED.getCode());
+                if(reviewRecordService.findByPublishAndPidAndCount(1,pid,post.getCount()).size() == reviewRecordRepository.findByPidAndCount(pid,post.getCount()).size()) {
+                    // 汇总结果为通过
+                    post.setStatus(PostStatus.FORMAT_TO_BE_REVIEWED.getCode());
+                }else{
+                    // 汇总结果为通过但需部分修改，进入稿件待修改状态
+                    post.setStatus(PostStatus.TO_BE_REVISED.getCode());
+                }
             } else {
                 // 汇总结果为建议修改
                 post.setStatus(PostStatus.TO_BE_RETURNED.getCode());
             }
             postService.updatePost(post);
         }
+        //        return AjaxResponse.success();
         return AjaxResponse.success(dozerMapper.map(reviewRecord, ReviewRecordVO.class));
     }
 
     @GetMapping("/{pid}/type=1")
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
-    @ApiOperation(value = "编辑根据pid获得某一稿件的审稿记录")
-    public AjaxResponse getAll1(@NotNull(message = "id不能为空") @PathVariable Integer pid,
-                                @NotNull(message = "number不能为空") @RequestParam("number") Integer number,
-                                @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
-                                @RequestParam(value = "ascend", required = false) Boolean ascend) {
+    @ApiOperation(value = "编辑根据pid获得某一稿件的所有审稿记录")
+    public AjaxResponse getAll1(@NotNull(message = "id不能为空") @PathVariable Integer pid) {
         //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
@@ -204,24 +244,39 @@ public class ReviewRecordController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_EDITOR);
         }
 
-        if (ascend == null) {
-            ascend = true;
-        }
-
-        Page<ReviewRecord> page = reviewRecordService.getAllByPid(pid, number, size, ascend);
-
-        return AjaxResponse.success();
+        return AjaxResponse.success(reviewRecordService.getAllByPid(pid));
     }
 
     @GetMapping("/{pid}/type=2")
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "投稿人根据id获得某一稿件的审稿记录")
-    public AjaxResponse getAll2() {
-        return null;
+    public AjaxResponse getAll2(@NotNull(message = "id不能为空") @PathVariable Integer pid) {
+        //        int uid = currentUser.getCurrentUser().getUserId();
+        int uid = CONTRIBUTOR_ID;
+
+        // 检查操作者为该稿件投稿人
+        Post post = postService.getPost(pid);
+        if (uid != post.getContributorUid()) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_CONTRIBUTOR);
+        }
+
+        return AjaxResponse.success(reviewRecordService.getAllByPid(pid));
     }
 
     @GetMapping("/{pid}/type=3")
+    @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "审稿人根据id获得自己对某一稿件的审稿记录")
-    public AjaxResponse getAll3() {
-        return null;
+    public AjaxResponse getAll3(@NotNull(message = "id不能为空") @PathVariable Integer pid) {
+        //        int uid = currentUser.getCurrentUser().getUserId();
+        int uid = REVIEWER_ID;
+
+        // 检查操作者为该稿件投稿人
+        // 检查当前用户是否接受了审稿
+        PostReviewer postReviewer = postReviewerService.getPostReviewer(pid, uid);
+        if (postReviewer.getAccepted() != MyBoolean.TRUE.getCode()) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CANNOT_REVIEW);
+        }
+
+        return AjaxResponse.success(reviewRecordService.getAllByPidAndUid(pid,uid));
     }
 }

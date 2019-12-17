@@ -9,9 +9,11 @@ import com.samsph.pjcm.config.exception.CustomException;
 import com.samsph.pjcm.config.exception.CustomExceptionType;
 import com.samsph.pjcm.model.EditorField;
 import com.samsph.pjcm.model.ReviewerField;
+import com.samsph.pjcm.model.User;
 import com.samsph.pjcm.service.ReviewerFieldService;
 import com.samsph.pjcm.service.UserRoleService;
 import com.samsph.pjcm.config.utils.DozerUtil;
+import com.samsph.pjcm.service.UserService;
 import com.samsph.pjcm.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -28,6 +30,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Api(tags = "审稿人-领域管理")
@@ -39,6 +43,8 @@ public class ReviewerFieldController {
     private ReviewerFieldService reviewerFieldService;
     @Autowired
     private UserRoleService userRoleService;
+    @Autowired
+    private UserService userService;
     @Autowired
     private CurrentUser currentUser;
 
@@ -103,48 +109,42 @@ public class ReviewerFieldController {
         }
     }
 
-    @ApiOperation(value = "得到审稿人-领域列表")
+    @ApiOperation(value = "得到所有审稿人-领域信息")
+    @GetMapping("/reviewerFields/all")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR')")
+    public AjaxResponse findAllReviewerFields(){
+        return AjaxResponse.success(reviewerFieldService.findAll());
+    }
+
+    @ApiOperation(value = "通过领域id得到审稿人-领域信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name="reviewerOrFieldId",value="审稿人id或领域id"),
-            @ApiImplicitParam(name="flag",value="标识，1代表查看该审稿人所属的领域，2代表查看该领域下的所有审稿人"),
+            @ApiImplicitParam(name="fieldId",value="领域id"),
             @ApiImplicitParam(name="page",value="页数"),
             @ApiImplicitParam(name="size",value="大小")
     })
     @GetMapping("/reviewerFields")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR','ROLE_REVIEWER')")
-    public AjaxResponse findReviewerFields(@NotNull(message = "id不能为空")@Min(value = 1,message = "审稿人或领域id必须是正整数") @RequestParam("reviewerOrFieldId") Integer reviewerOrFieldId,
-                                           @NotNull(message = "flag不能为空")@Min(value = 1,message = "flag最小值为1")@Max(value = 2,message = "flag最大值为2") @RequestParam("flag") Integer flag,
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR')")
+    public AjaxResponse findReviewerFields(@NotNull(message = "id不能为空")@Min(value = 1,message = "领域id必须是正整数") @RequestParam("fieldId") Integer fieldId,
                                            @NotNull(message = "未传入页数")@Min(value = 1,message = "页数必须是正整数") @RequestParam("page") Integer page,
                                            @NotNull(message = "未传入每页的大小")@Min(value = 1,message = "每页的大小必须是正整数") @RequestParam("size") Integer size){
         PageRequest pageRequest = PageRequest.of(page-1,size);
-        if(flag == 1){
-//            if(currentUser.getCurrentUser().getUserRole() == RoleType.REVIEWER_ROLE){
-//                if(currentUser.getCurrentUser().getUserId() != reviewerOrFieldId){
-//                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"无权查看其他审稿人的领域!!!");
-//                }
-//            }
-            if(!userRoleService.findUserHasRole(reviewerOrFieldId,RoleType.REVIEWER_ROLE)){
-                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"审稿人id错误或者审稿人未激活!!!");
-            }else {
-                Page<ReviewerField> reviewerFieldPage = reviewerFieldService.findReviewerFieldsByReviewerUid(reviewerOrFieldId, pageRequest);
-                List<ReviewerField> reviewerFields = reviewerFieldPage.getContent();
-                List<ReviewerFieldVoGetField> reviewerFieldVoGetFields = DozerUtil.mapList(reviewerFields, ReviewerFieldVoGetField.class);
-                PageData pageData = new PageData(reviewerFieldPage.getTotalPages(), (int) reviewerFieldPage.getTotalElements(), page, reviewerFieldVoGetFields.size(), reviewerFieldVoGetFields);
-                return AjaxResponse.success(pageData);
+        if(fieldId > Field.TOTAL_FIELD){
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"领域id错误!!!");
+        }else {
+            Page<ReviewerField> reviewerFieldPage = reviewerFieldService.findReviewerFieldsByFieldId(fieldId, pageRequest);
+            List<ReviewerField> reviewerFields = reviewerFieldPage.getContent();
+            List<ReviewerFieldVoGetReviewer> reviewerFieldVoGetReviewers =  new ArrayList<>();
+            for(ReviewerField reviewerField : reviewerFields){
+                User user = userService.findUserByUid(reviewerField.getReviewerUid()).get();
+                ReviewerFieldVoGetReviewer reviewerFieldVoGetReviewer = new ReviewerFieldVoGetReviewer();
+                reviewerFieldVoGetReviewer.setId(reviewerField.getId());
+                reviewerFieldVoGetReviewer.setReviewerUid(reviewerField.getReviewerUid());
+                reviewerFieldVoGetReviewer.setEmail(user.getEmail());
+                reviewerFieldVoGetReviewer.setUserName(user.getUserName());
+                reviewerFieldVoGetReviewers.add(reviewerFieldVoGetReviewer);
             }
-        }else{
-//            if(currentUser.getCurrentUser().getUserRole() == RoleType.REVIEWER_ROLE){
-//                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"无权查看该领域下的审稿人!!!");
-//            }
-            if(reviewerOrFieldId > Field.TOTAL_FIELD){
-                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"领域id错误!!!");
-            }else {
-                Page<ReviewerField> reviewerFieldPage = reviewerFieldService.findReviewerFieldsByFieldId(reviewerOrFieldId, pageRequest);
-                List<ReviewerField> reviewerFields = reviewerFieldPage.getContent();
-                List<ReviewerFieldVoGetReviewer> reviewerFieldVoGetReviewers = DozerUtil.mapList(reviewerFields, ReviewerFieldVoGetReviewer.class);
-                PageData pageData = new PageData(reviewerFieldPage.getTotalPages(), (int) reviewerFieldPage.getTotalElements(), page, reviewerFieldVoGetReviewers.size(), reviewerFieldVoGetReviewers);
-                return AjaxResponse.success(pageData);
-            }
+            PageData pageData = new PageData(reviewerFieldPage.getTotalPages(), (int) reviewerFieldPage.getTotalElements(), page, reviewerFieldVoGetReviewers.size(), reviewerFieldVoGetReviewers);
+            return AjaxResponse.success(pageData);
         }
     }
 }

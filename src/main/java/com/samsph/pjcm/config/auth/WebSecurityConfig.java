@@ -33,8 +33,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 添加一个过滤器验证其他请求的Token是否合法
                 .addFilterBefore(new JWTAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 // 不需要session（不创建会话）
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
                 // 授权异常处理
                 .exceptionHandling().authenticationEntryPoint(new JWTAuthenticationEntryPoint())
                 .accessDeniedHandler(new JWTAccessDeniedHandler());

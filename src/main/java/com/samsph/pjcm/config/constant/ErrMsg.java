@@ -56,6 +56,10 @@ public enum ErrMsg {
 
     CANNOT_REVISE_OR_FORWARD(1000, "不能转送或修改"),
 
+    CANNOT_REVISE_OR_REJECT(1000, "不能否决或修改"),
+
+    PUBLISH_NEEDED(1000, "刊用需要选择类型"),
+
     REVISE_COMMENT_NEEDED(1000, "建议修改需填写意见"),
 
     FORWARD_COMMENT_NEEDED(1000, "转送需填写意见"),

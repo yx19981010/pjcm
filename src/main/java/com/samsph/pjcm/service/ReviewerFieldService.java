@@ -1,8 +1,9 @@
 package com.samsph.pjcm.service;
-import com.samsph.pjcm.model.EditorField;
 import com.samsph.pjcm.model.ReviewerField;
+import com.samsph.pjcm.vo.ReviewerFieldVoGet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,9 +19,11 @@ public interface ReviewerFieldService {
 
      Optional<ReviewerField> findReviewerField(int id);
 
-    List<ReviewerField> findByReviewerUid(Integer reviewerUid);
+     List<ReviewerField> findByReviewerUid(Integer reviewerUid);
 
-     Page<ReviewerField> findReviewerFieldsByReviewerUid(int reviewerUid, PageRequest pageRequest);
+     List<ReviewerField> findByFieldId(Integer fieldId);
 
-     Page<ReviewerField> findReviewerFieldsByFieldId(int fieldId, PageRequest pageRequest);
+     List<ReviewerFieldVoGet> findAll();
+
+     Page<ReviewerField> findReviewerFieldsByFieldId(int fieldId, Pageable pageable);
 }

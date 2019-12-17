@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReviewerFieldVoGetField {
     /**
-     * 标识
+     * 审稿人领域标识
      */
     private Integer id;
 
     /**
-     * 领域
+     * 审稿人id
      */
     private Integer field;
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.util.Date;
 
 /**
@@ -100,4 +101,9 @@ public class ReviewRecordVO {
      * 总评价
      */
     private Integer evaluation;
+
+    /**
+     * 刊用类型
+     */
+    private Integer publish;
 }

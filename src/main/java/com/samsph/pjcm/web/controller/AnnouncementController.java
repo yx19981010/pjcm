@@ -122,5 +122,4 @@ public class AnnouncementController {
         return AjaxResponse.success(pageData);
     }
 
-
 }

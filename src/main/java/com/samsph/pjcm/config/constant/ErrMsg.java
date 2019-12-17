@@ -88,6 +88,8 @@ public enum ErrMsg {
 
     UNSUPPORTED_STATUS(1000, "不支持的稿件状态"),
 
+    CONTRIBUTOR_NOT_FOUND(1000, "投稿人未找到"),
+
     REVIEWER_NOT_FOUND(1000, "审稿人未找到");
 
     @Getter

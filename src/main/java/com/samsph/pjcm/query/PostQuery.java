@@ -21,7 +21,7 @@ PostQuery {
     // Add组：新建该post；
     // Update组：在提交初审前，用户可修改投稿基本信息；
     // Update2组：退回修改时，用户可修改部分投稿信息；
-    //           必填id，不填field、genre、fundLevel、writersInfo，
+    //           必填id，不填field、fundLevel、writersInfo，
     // 中英文关键字、摘要根据投稿题材而定，在controller层校验
 
     @ApiModelProperty("标识号")
@@ -33,12 +33,6 @@ PostQuery {
     @NotNull(message = "field不能为空", groups = {Add.class})
     @Null(message = "field必须为空", groups = {Update2.class})
     private Field field;
-
-
-    @ApiModelProperty("投稿体裁")
-    @NotNull(message = "genre不能为空", groups = {Add.class})
-    @Null(message = "genre必须为空", groups = {Update2.class})
-    private Genre genre;
 
     @ApiModelProperty("基金级别")
     @NotNull(message = "fundLevel不能为空", groups = {Add.class})
@@ -57,6 +51,10 @@ PostQuery {
     @NotBlank(message = "title不能为空", groups = {Add.class})
     private String title;
 
+    @ApiModelProperty("投稿体裁")
+    @NotNull(message = "genre不能为空", groups = {Add.class})
+    private Genre genre;
+
     @ApiModelProperty("英文文章标题")
     @Length(max = 100, message = "英文标题不能超过100字")
     private String titleEn;
@@ -67,7 +65,7 @@ PostQuery {
     private String keywordsZh;
 
     @ApiModelProperty("英文关键字")
-    private String keyWordsEn;
+    private String keywordsEn;
 
     @ApiModelProperty("中文摘要")
     @Length(max = 300, message = "abstractZh不能超过300字")

@@ -53,6 +53,11 @@ public class PostReviewerServiceImpl implements PostReviewerService {
     }
 
     @Override
+    public List<PostReviewer> getAllByPidAndFlag(int pid, boolean flag) {
+        return postReviewerRepository.findByPidAndFlag(pid, flag);
+    }
+
+    @Override
     public void updatePostReviewer(PostReviewer postReviewer) {
         postReviewerRepository.save(postReviewer);
     }

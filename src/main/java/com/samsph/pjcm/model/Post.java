@@ -196,6 +196,18 @@ public class Post {
     private Date rejectCommentTime;
 
     /**
+     * 发表前审阅意见
+     */
+    @Column(name = "bf_pub_comment")
+    private String bfPubComment;
+
+    /**
+     * 发表前审阅时间
+     */
+    @Column(name = "bf_pub_comment_time")
+    private Date bfPubCommentTime;
+
+    /**
      * 格式审阅意见
      */
     @Column(name = "format_comment")

@@ -49,7 +49,7 @@ swagger:
   contact:
     name: "胡家豪、杨玺"
 #  host: "192.168.0.102:8080"
-  host: "127.0.0.1:8080"
+  host: "192.168.0.107:8080"
   apply-default-response-messages: false
   global-response-message:
     get:

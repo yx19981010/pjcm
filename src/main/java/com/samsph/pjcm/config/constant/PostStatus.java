@@ -55,7 +55,10 @@ public enum PostStatus {
     PAYMENT_TO_BE_EXAMINED(14),
 
     // 投稿成功
-    SUCCESS(15);
+    SUCCESS(15),
+
+    // 待编辑发表前审核
+    REVIEW_BF_PUB(16);
 
     private final int code;
 

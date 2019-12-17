@@ -126,7 +126,7 @@ public class PostFileController {
             path = FileUtil.FileUpload(FileUploadPath.PostFileUploadPath, file);
         } else {
             // 覆盖文件
-            path = FileUtil.FileCover(FileUploadPath.PostFileUploadPath, file);
+            path = FileUtil.FileCover(oldPath, file);
         }
 
         // 更新数据表

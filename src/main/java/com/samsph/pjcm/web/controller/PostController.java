@@ -565,7 +565,7 @@ public class PostController {
             // 如果审稿人无需再审
             post.setStatus(PostStatus.REVIEW_BF_PUB.getCode());
         } else {
-            notifyReviewer(post);
+            // 提醒审稿人
             post.setStatus(PostStatus.RE_REVIEW.getCode());
         }
         postService.updatePost(post);
@@ -602,7 +602,7 @@ public class PostController {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.TO_BE_REVISED.getCode());
-            notifyContributor(post);
+            // TODO: 提醒投稿人
         }
 
         post.setBfPubComment(comment);
@@ -641,8 +641,7 @@ public class PostController {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.FORMAT_TO_BE_MODIFIED.getCode());
-            // 通知投稿人
-            notifyContributor(post);
+            // TODO: 通知投稿人
         }
         post.setFormatComment(comment);
         post.setFormatCommentTime(new Date());
@@ -737,7 +736,7 @@ public class PostController {
         post.setFee(postLayOutFeeQuery.getFee());
         post.setStatus(PostStatus.CERTIFICATE_TO_BE_UPLOADED.getCode());
 
-        notifyContributor(post);
+        // TODO: 提醒缴费
 
         postService.updatePost(post);
 

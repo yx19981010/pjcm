@@ -7,6 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Date;
+import java.util.List;
+
 
 /**
  * 投稿表数据操作接口
@@ -22,10 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param page 分页请求
      * @return List<Post>
      */
-    @Query(value = "SELECT * FROM post p WHERE p.jid=?1",
-            countQuery = "SELECT count(*) FROM post p WHERE p.jid=?1",
-            nativeQuery = true)
-    Page<Post> findAllByJid(int jid, Pageable page);
+    Page<Post> findByJid(int jid, Pageable page);
 
 
     /**
@@ -35,10 +35,18 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param page 分页请求
      * @return Page<Post>
      */
-    @Query(value = "SELECT * FROM post p WHERE p.contributor_uid=?1",
-            countQuery = "SELECT count(*) FROM post p WHERE p.contributor_uid=?1",
-            nativeQuery = true)
-    Page<Post> findAllByCtr(int uid, Pageable page);
+    Page<Post> findByContributorUid(int uid, Pageable page);
+
+    /**
+     * 以分页的方式查询投稿人的某段时间内的所有投稿
+     *
+     * @param uid   投稿人id
+     * @param page  分页请求
+     * @param start 开始日期
+     * @param end   结束日期
+     * @return Page<Post>
+     */
+    Page<Post> findByContributorUidAndSubmitTimeAfterAndSubmitTimeBefore(int uid, Date start, Date end, Pageable page);
 
     /**
      * 以分页的方式查询某一状态的投稿人的所有投稿
@@ -48,10 +56,19 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param status 投稿状态
      * @return Page<Post>
      */
-    @Query(value = "SELECT * FROM post p WHERE p.contributor_uid=?1 AND p.status=?2",
-            countQuery = "SELECT count(*) FROM post p WHERE p.contributor_uid=?1 AND p.status=?2",
-            nativeQuery = true)
-    Page<Post> findAllByCtrAndStatus(int uid, int status, Pageable page);
+    Page<Post> findByContributorUidAndStatus(int uid, int status, Pageable page);
+
+    /**
+     * 以分页的方式查询某一状态的投稿人的某一段时间内的所有投稿
+     *
+     * @param uid    投稿人id
+     * @param page   分页请求
+     * @param status 投稿状态
+     * @param start  开始日期
+     * @param end    结束日期
+     * @return Page<Post>
+     */
+    Page<Post> findByContributorUidAndStatusAndSubmitTimeAfterAndSubmitTimeBefore(int uid, int status, Date start, Date end, Pageable page);
 
     /**
      * 以分页的方式查询编辑负责的所有投稿
@@ -60,10 +77,18 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param page 分页请求
      * @return Page<Post>
      */
-    @Query(value = "SELECT * FROM post p WHERE p.editor_uid=?1",
-            countQuery = "SELECT count(*) FROM post p WHERE p.editor_uid=?1",
-            nativeQuery = true)
-    Page<Post> findAllByEd(int uid, Pageable page);
+    Page<Post> findByEditorUid(int uid, Pageable page);
+
+    /**
+     * 以分页的方式查询编辑负责的所有投稿
+     *
+     * @param uid   编辑id
+     * @param start 开始日期
+     * @param end   结束日期
+     * @param page  分页请求
+     * @return Page<Post>
+     */
+    Page<Post> findByEditorUidAndSubmitTimeAfterAndSubmitTimeBefore(int uid, Date start, Date end, Pageable page);
 
     /**
      * 以分页的方式查询某一状态的编辑负责的所有投稿
@@ -73,10 +98,19 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param status 投稿状态
      * @return Page<Post>
      */
-    @Query(value = "SELECT * FROM post p WHERE p.editor_uid=?1 AND p.status=?2",
-            countQuery = "SELECT count(*) FROM post p WHERE p.editor_uid=?1 AND p.status=?2",
-            nativeQuery = true)
-    Page<Post> findAllByEdAndStatus(int uid, int status, Pageable page);
+    Page<Post> findByEditorUidAndStatus(int uid, int status, Pageable page);
+
+    /**
+     * 以分页的方式查询某一状态的编辑负责的所有投稿
+     *
+     * @param uid    编辑id
+     * @param start  开始日期
+     * @param end    结束日期
+     * @param status 投稿状态
+     * @param page   分页请求
+     * @return Page<Post>
+     */
+    Page<Post> findByEditorUidAndStatusAndSubmitTimeAfterAndSubmitTimeBefore(int uid, int status, Date start, Date end, Pageable page);
 
     /**
      * 以分页的方式查询审稿人未答复的所有投稿
@@ -86,34 +120,57 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param page   分页请求
      * @return Page<Post>
      */
-    @Query(value = "SELECT * FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid WHERE pr.reviewer_uid = ?1 AND pr.accepted = ?2",
-            countQuery = "SELECT count(*) FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid WHERE pr.reviewer_uid = ?1 AND pr.accepted = ?2",
+    @Query(value = "SELECT * FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid WHERE pr.reviewer_uid = ?1 AND pr.accept = ?2",
+            countQuery = "SELECT count(*) FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid WHERE pr.reviewer_uid = ?1 AND pr.accept = ?2",
             nativeQuery = true)
-    Page<Post> findAllByRevUidAndAccept(int uid, int accept, Pageable page);
+    Page<Post> findByReviewerUidAndAccept(int uid, int accept, Pageable page);
 
     /**
-     * 以分页的方式查询审稿人已接受且处于审稿中的所有投稿
+     * 以分页的方式查询审稿人莫某段时间内未答复的所有投稿
      *
-     * @param uid  审稿人id
-     * @param page 分页请求
+     * @param uid    审稿人id
+     * @param start  开始日期
+     * @param end    结束日期
+     * @param accept 接受审稿标识
+     * @param page   分页请求
      * @return Page<Post>
      */
-    @Query(value = "SELECT * FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid WHERE pr.reviewer_uid = ?1 AND pr.accepted = 1 AND (p.status=4 OR p.status=9)",
-            countQuery = "SELECT count(*) FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid WHERE pr.reviewer_uid = ?1 AND pr.accepted = 1 AND (p.status=4 OR p.status=9)",
+    @Query(value = "SELECT * FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid " +
+            "WHERE pr.reviewer_uid = ?1 AND pr.accept = ?2 AND p.submit_time BETWEEN ?3 AND ?4",
+            countQuery = "SELECT count(*) FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid " +
+                    "WHERE pr.reviewer_uid = ?1 AND pr.accept = ?2 AND p.submit_time > ?3 AND p.submit_time < ?4",
             nativeQuery = true)
-    Page<Post> findAllByRev(int uid, Pageable page);
+    Page<Post> findByReviewerUidAndAcceptAndSubmitTimeAfterAndSubmitTimeBefore(int uid, int accept, Date start, Date end, Pageable page);
 
     /**
      * 以分页的方式查询审稿人已接受且处于审稿中的所有投稿
      *
      * @param uid  审稿人id
+     * @param flag 是否需要审稿标识
      * @param page 分页请求
      * @return Page<Post>
      */
     @Query(value = "SELECT * FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid" +
-            " WHERE pr.reviewer_uid = ?1 AND pr.accepted = 1 AND pr.flag=?2 AND (p.status=4 OR p.status=9)",
+            " WHERE pr.reviewer_uid = ?1 AND pr.accept = 1 AND pr.flag=?2",
             countQuery = "SELECT count(*) FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid" +
-                    " WHERE pr.reviewer_uid = ?1 AND pr.accepted = 1 AND pr.flag=?2 AND (p.status=4 OR p.status=9)",
+                    " WHERE pr.reviewer_uid = ?1 AND pr.accept = 1 AND pr.flag=?2",
             nativeQuery = true)
-    Page<Post> findAllRequiredToReview(int uid, int flag, Pageable page);
+    Page<Post> findByReviewerUidAndFlag(int uid, int flag, Pageable page);
+
+    /**
+     * 以分页的方式查询审稿人已接受且处于审稿中的所有投稿
+     *
+     * @param uid   审稿人id
+     * @param flag  是否需要审稿标识
+     * @param start 开始日期
+     * @param end   结束日期
+     * @param page  分页请求
+     * @return Page<Post>
+     */
+    @Query(value = "SELECT * FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid" +
+            " WHERE pr.reviewer_uid = ?1 AND pr.accept = 1 AND pr.flag=?2 AND p.submit_time BETWEEN ?3 AND ?4",
+            countQuery = "SELECT count(*) FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid" +
+                    " WHERE pr.reviewer_uid = ?1 AND pr.accept = 1 AND pr.flag=?2 AND p.submit_time > ?3 AND p.submit_time < ?4",
+            nativeQuery = true)
+    Page<Post> findByReviewerUidAndFlagAndSubmitTimeAfterAndSubmitTimeBefore(int uid, int flag, Date start, Date end, Pageable page);
 }

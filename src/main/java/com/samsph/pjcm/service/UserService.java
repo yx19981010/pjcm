@@ -25,5 +25,4 @@ public interface UserService {
      Optional<User> findUserByCode(String code);
 
      void saveUser(UserVoPost userVoPost);
-
 }

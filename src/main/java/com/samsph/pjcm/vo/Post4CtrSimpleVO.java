@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author hujiahao
  */
@@ -19,6 +21,6 @@ public class Post4CtrSimpleVO {
     @ApiModelProperty("稿件状态")
     private Integer status;
 
-    @ApiModelProperty("投稿时间")
-    private Integer submitTime;
+    @ApiModelProperty("创建时间")
+    private Date createTime;
 }

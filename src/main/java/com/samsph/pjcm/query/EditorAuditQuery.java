@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
  * @author hujahao
  */
 @Data
-@ApiModel(description = "编辑审核请求实体（初审/退回修改/审缴费证明）")
+@ApiModel(description = "编辑审核请求实体（初审/退回修改/发表前审核/审缴费证明）")
 public class EditorAuditQuery {
     @ApiModelProperty("标识号")
     @NotNull(message = "id不能为空")

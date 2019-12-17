@@ -22,52 +22,58 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import static com.samsph.pjcm.config.DevUserId.*;
 import static org.hamcrest.CoreMatchers.is;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
 class PostServiceTest {
-
     @Resource
     private PostService postService;
 
     @Resource
-    private JournalService journalService;
-
-    @Resource
-    private PostReviewerService postReviewerService;
-
-    @Resource
     private PostRepository postRepository;
-
-    @Resource
-    private JournalRepository journalRepository;
-
-    @Resource
-    private PostReviewerRepository postReviewerRepository;
-
-    private PostQuery saveQuery;
 
     private Post post;
 
+    @Resource
+    PostReviewerService postReviewerService;
+
+    @Resource
+    PostReviewerRepository postReviewerRepository;
+
+    @Resource
+    JournalService journalService;
+
+    @Resource
+    JournalRepository journalRepository;
+
+
+    private Date start = new Date(2019, Calendar.DECEMBER, 10);
+    private Date end = new Date(2019, Calendar.DECEMBER, 12);
+    private Date date = new Date(2019, Calendar.DECEMBER, 11);
+    private Date date2 = new Date(2019, Calendar.DECEMBER, 13);
+
     @BeforeEach
     void setUp() {
-        saveQuery = new PostQuery();
-        saveQuery.setField(Field.BASIC_MEDICINE);
-        saveQuery.setTitle("论文标题");
-        saveQuery.setGenre(Genre.PAPER);
-        saveQuery.setFundLevel(FundLevel.MUNICIPAL);
-        saveQuery.setWritersInfo("张三;李四");
+        PostQuery postSaveQuery = new PostQuery();
+        postSaveQuery.setField(Field.BASIC_MEDICINE);
+        postSaveQuery.setTitle("论文标题");
+        postSaveQuery.setGenre(Genre.PAPER);
+        postSaveQuery.setFundLevel(FundLevel.MUNICIPAL);
+        postSaveQuery.setWritersInfo("张三;李四");
 
-        post = postService.savePost(saveQuery, CONTRIBUTOR_ID);
+        post = postService.savePost(postSaveQuery, CONTRIBUTOR_ID);
     }
 
     @AfterEach
     void tearDown() {
         postRepository.deleteAll();
-        journalRepository.deleteAll();
         postReviewerRepository.deleteAll();
+        journalRepository.deleteAll();
     }
 
     @Test
@@ -77,309 +83,260 @@ class PostServiceTest {
         Assert.assertThat(post.getGenre(), is(Genre.PAPER.getCode()));
         Assert.assertThat(post.getFundLevel(), is(FundLevel.MUNICIPAL.getCode()));
         Assert.assertThat(post.getWritersInfo(), is("张三;李四"));
+        Assert.assertThat(post.getCount(), is(0));
+        Assert.assertThat(post.getInvoiceNeeded(), is(MyBoolean.DEFAULT.getCode()));
         Assert.assertThat(post.getStatus(), is(PostStatus.TO_BE_SUBMITTED.getCode()));
         Assert.assertThat(post.getContributorUid(), is(CONTRIBUTOR_ID));
     }
 
     @Test
     void getPost() {
-        Post post1 = postService.getPost(post.getId());
-        Assert.assertThat(post1.getField(), is(Field.BASIC_MEDICINE.getCode()));
-        Assert.assertThat(post1.getTitle(), is("论文标题"));
-        Assert.assertThat(post1.getGenre(), is(Genre.PAPER.getCode()));
-        Assert.assertThat(post1.getFundLevel(), is(FundLevel.MUNICIPAL.getCode()));
-        Assert.assertThat(post1.getWritersInfo(), is("张三;李四"));
-        Assert.assertThat(post1.getStatus(), is(PostStatus.TO_BE_SUBMITTED.getCode()));
-        Assert.assertThat(post1.getContributorUid(), is(CONTRIBUTOR_ID));
+        post = postService.getPost(post.getId());
+        Assert.assertThat(post.getField(), is(Field.BASIC_MEDICINE.getCode()));
+        Assert.assertThat(post.getTitle(), is("论文标题"));
+        Assert.assertThat(post.getGenre(), is(Genre.PAPER.getCode()));
+        Assert.assertThat(post.getFundLevel(), is(FundLevel.MUNICIPAL.getCode()));
+        Assert.assertThat(post.getWritersInfo(), is("张三;李四"));
+        Assert.assertThat(post.getCount(), is(0));
+        Assert.assertThat(post.getInvoiceNeeded(), is(MyBoolean.DEFAULT.getCode()));
+        Assert.assertThat(post.getStatus(), is(PostStatus.TO_BE_SUBMITTED.getCode()));
+        Assert.assertThat(post.getContributorUid(), is(CONTRIBUTOR_ID));
 
         try {
-            postService.getPost(0);
-        } catch (CustomException ex) {
-            Assert.assertThat(ex.getCode(), is(400));
-            Assert.assertThat(ex.getMessage(), is("投稿未找到"));
+            post = postService.getPost(0);
+        } catch (CustomException e) {
+            Assert.assertThat(e.getMessage(), is("稿件未找到"));
+            Assert.assertThat(e.getCode(), is(400));
         }
     }
 
     @Test
     void updatePost() {
-        Post post1 = postService.getPost(post.getId());
-        post1.setStatus(PostStatus.PENDING_FIRST_EXAM.getCode());
-        postService.updatePost(post1);
+        post.setStatus(PostStatus.SUCCESS.getCode());
+        postService.updatePost(post);
         post = postService.getPost(post.getId());
+        Assert.assertThat(post.getStatus(), is(PostStatus.SUCCESS.getCode()));
+    }
 
-        Assert.assertThat(post.getStatus(), is(PostStatus.PENDING_FIRST_EXAM.getCode()));
+    @Test
+    void getAllByCtrUid() {
+        Page<Post> posts = postService.getAllByCtrUid(CONTRIBUTOR_ID + 1, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        posts = postService.getAllByCtrUid(CONTRIBUTOR_ID, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
+    }
+
+    @Test
+    void getAllByCtrUidAndSubmitTime() {
+        Page<Post> posts = postService.getAllByCtrUidAndSubmitTime(CONTRIBUTOR_ID, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        post.setSubmitTime(date);
+        postService.updatePost(post);
+
+        posts = postService.getAllByCtrUidAndSubmitTime(CONTRIBUTOR_ID, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
+    }
+
+    @Test
+    void getAllByCtrUidAndStatus() {
+        Page<Post> posts = postService.getAllByCtrUidAndStatus(CONTRIBUTOR_ID, PostStatus.PENDING_FIRST_EXAM, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        posts = postService.getAllByCtrUidAndStatus(CONTRIBUTOR_ID, PostStatus.TO_BE_SUBMITTED, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
+    }
+
+    @Test
+    void getAllByCtrUidAndStatusAndSubmitTime() {
+        post.setSubmitTime(date2);
+        postService.updatePost(post);
+
+        Page<Post> posts = postService.getAllByCtrUidAndStatusAndSubmitTime(CONTRIBUTOR_ID, PostStatus.TO_BE_SUBMITTED, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        post.setSubmitTime(date);
+        postService.updatePost(post);
+
+        posts = postService.getAllByCtrUidAndStatusAndSubmitTime(CONTRIBUTOR_ID, PostStatus.SUCCESS, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        posts = postService.getAllByCtrUidAndStatusAndSubmitTime(CONTRIBUTOR_ID, PostStatus.TO_BE_SUBMITTED, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
+    }
+
+    @Test
+    void getAllByEdUid() {
+        Page<Post> posts = postService.getAllByEdUid(EDITOR_ID, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        post.setEditorUid(EDITOR_ID);
+        postService.updatePost(post);
+
+        posts = postService.getAllByEdUid(EDITOR_ID, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
+    }
+
+    @Test
+    void getAllByEdUidAndSubmitTime() {
+        post.setEditorUid(EDITOR_ID);
+        postService.updatePost(post);
+
+        Page<Post> posts = postService.getAllByEdUidAndSubmitTime(EDITOR_ID, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        post.setSubmitTime(start);
+        postService.updatePost(post);
+        posts = postService.getAllByEdUidAndSubmitTime(EDITOR_ID, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        post.setSubmitTime(date);
+        postService.updatePost(post);
+
+        posts = postService.getAllByEdUidAndSubmitTime(EDITOR_ID, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
+    }
+
+    @Test
+    void getAllByEdUidAndStatus() {
+        post.setEditorUid(EDITOR_ID);
+        postService.updatePost(post);
+
+        Page<Post> posts = postService.getAllByEdUidAndStatus(EDITOR_ID, PostStatus.SUCCESS, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        post.setStatus(PostStatus.SUCCESS.getCode());
+        postService.updatePost(post);
+
+        posts = postService.getAllByEdUid(EDITOR_ID, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
+    }
+
+    @Test
+    void getAllByEdUidAndStatusAndSubmitTime() {
+        post.setEditorUid(EDITOR_ID);
+        post.setStatus(PostStatus.SUCCESS.getCode());
+        post.setSubmitTime(end);
+        postService.updatePost(post);
+        Page<Post> posts = postService.getAllByEdUidAndStatusAndSubmitTime(EDITOR_ID, PostStatus.SUCCESS, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        post.setSubmitTime(date);
+        postService.updatePost(post);
+        posts = postService.getAllByEdUid(EDITOR_ID, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
+    }
+
+    @Test
+    void getAllByRevUidAndAccept() {
+        Page<Post> posts = postService.getAllByRevUidAndAccept(REVIEWER_ID, MyBoolean.DEFAULT, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        postReviewerService.save(new PostReviewerQuery(post.getId(), REVIEWER_ID, null));
+        posts = postService.getAllByRevUidAndAccept(REVIEWER_ID, MyBoolean.DEFAULT, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
+        posts = postService.getAllByRevUidAndAccept(REVIEWER_ID + 1, MyBoolean.DEFAULT, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+        posts = postService.getAllByRevUidAndAccept(REVIEWER_ID, MyBoolean.TRUE, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+    }
+
+    @Test
+    void getAllByRevUidAndAcceptAndSubmitTime() {
+        postReviewerService.save(new PostReviewerQuery(post.getId(), REVIEWER_ID, null));
+        Page<Post> posts = postService.getAllByRevUidAndAcceptAndSubmitTime(REVIEWER_ID, MyBoolean.DEFAULT, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        post.setSubmitTime(date);
+        postService.updatePost(post);
+        posts = postService.getAllByRevUidAndAcceptAndSubmitTime(REVIEWER_ID, MyBoolean.DEFAULT, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
+    }
+
+    @Test
+    void getAllByRevUidAndFlag() {
+        Page<Post> posts = postService.getAllByRevUidAndFlag(REVIEWER_ID, true, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        PostReviewer postReviewer = postReviewerService.save(new PostReviewerQuery(post.getId(), REVIEWER_ID, null));
+        posts = postService.getAllByRevUidAndFlag(REVIEWER_ID, false, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        postReviewer.setAccept(MyBoolean.TRUE.getCode());
+        postReviewerService.updatePostReviewer(postReviewer);
+        posts = postService.getAllByRevUidAndFlag(REVIEWER_ID, false, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
+
+        posts = postService.getAllByRevUidAndFlag(REVIEWER_ID, true, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        postReviewer.setFlag(true);
+        postReviewerService.updatePostReviewer(postReviewer);
+        posts = postService.getAllByRevUidAndFlag(REVIEWER_ID, true, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
+    }
+
+    @Test
+    void getAllByRevUidAndFlagAndSubmitTime() {
+        PostReviewer postReviewer = postReviewerService.save(new PostReviewerQuery(post.getId(), REVIEWER_ID, null));
+        postReviewer.setAccept(MyBoolean.TRUE.getCode());
+        postReviewerService.updatePostReviewer(postReviewer);
+
+        Page<Post> posts = postService.getAllByRevUidAndFlagAndSubmitTime(REVIEWER_ID, false, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        post.setSubmitTime(date2);
+        postService.updatePost(post);
+        posts = postService.getAllByRevUidAndFlagAndSubmitTime(REVIEWER_ID, false, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
+
+        post.setSubmitTime(date);
+        postService.updatePost(post);
+        posts = postService.getAllByRevUidAndFlagAndSubmitTime(REVIEWER_ID, false, start, end, 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
     }
 
     @Test
     void getAllByJid() {
-        Journal journal = journalService.saveJournal(
-                new JournalQuery(null, 2019, 12, 1, 1), ADMIN_ID);
+        Journal journal = journalService.saveJournal(new JournalQuery(2019, 11, 11, 1, 1), ADMIN_ID);
+        Page<Post> posts = postService.getAllByJid(journal.getId(), 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(0));
 
-        Page<Post> postPage = postService.getAllByJid(journal.getId(), 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(0));
-        Assert.assertThat(postPage.getTotalElements(), is(0L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(0));
-
-        post.setEditorUid(EDITOR_ID);
+        post.setJid(journal.getId());
         postService.updatePost(post);
-
-        postPage = postService.getAllByEd(EDITOR_ID, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(1));
-        Assert.assertThat(postPage.getTotalElements(), is(1L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(1));
-
-        post = postPage.getContent().get(0);
-        Assert.assertThat(post.getField(), is(Field.BASIC_MEDICINE.getCode()));
-        Assert.assertThat(post.getTitle(), is("论文标题"));
-        Assert.assertThat(post.getGenre(), is(Genre.PAPER.getCode()));
-        Assert.assertThat(post.getFundLevel(), is(FundLevel.MUNICIPAL.getCode()));
-        Assert.assertThat(post.getWritersInfo(), is("张三;李四"));
-        Assert.assertThat(post.getStatus(), is(PostStatus.TO_BE_SUBMITTED.getCode()));
-        Assert.assertThat(post.getEditorUid(), is(EDITOR_ID));
-        Assert.assertThat(post.getContributorUid(), is(CONTRIBUTOR_ID));
-    }
-
-    @Test
-    void getAllByCtr() {
-        saveQuery.setTitle("论人类的奇怪饲养欲");
-        saveQuery.setField(Field.BASIC_CHINESE_MEDICINE);
-        saveQuery.setGenre(Genre.OVERVIEW);
-        saveQuery.setFundLevel(FundLevel.NO);
-        saveQuery.setWritersInfo("阿猫;阿狗");
-        postService.savePost(saveQuery, CONTRIBUTOR_ID);
-        saveQuery.setTitle("苹果与香蕉");
-        saveQuery.setGenre(Genre.WORKS);
-        saveQuery.setFundLevel(FundLevel.NATIONAL);
-        saveQuery.setWritersInfo("苹果;香蕉");
-        postService.savePost(saveQuery, EDITOR_ID);
-
-        Page<Post> postPage = postService.getAllByCtr(CONTRIBUTOR_ID, 1, 3, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(3));
-        Assert.assertThat(postPage.getTotalPages(), is(1));
-        Assert.assertThat(postPage.getTotalElements(), is(2L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(2));
-        Post post = postPage.getContent().get(1);
-        Assert.assertThat(post.getField(), is(Field.BASIC_CHINESE_MEDICINE.getCode()));
-        Assert.assertThat(post.getTitle(), is("论人类的奇怪饲养欲"));
-        Assert.assertThat(post.getGenre(), is(Genre.OVERVIEW.getCode()));
-        Assert.assertThat(post.getFundLevel(), is(FundLevel.NO.getCode()));
-        Assert.assertThat(post.getWritersInfo(), is("阿猫;阿狗"));
-        Assert.assertThat(post.getStatus(), is(PostStatus.TO_BE_SUBMITTED.getCode()));
-        Assert.assertThat(post.getContributorUid(), is(CONTRIBUTOR_ID));
-
-        postPage = postService.getAllByCtr(EDITOR_ID, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(1));
-        Assert.assertThat(postPage.getTotalElements(), is(1L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(1));
-        post = postPage.getContent().get(0);
-        Assert.assertThat(post.getField(), is(Field.BASIC_CHINESE_MEDICINE.getCode()));
-        Assert.assertThat(post.getTitle(), is("苹果与香蕉"));
-        Assert.assertThat(post.getGenre(), is(Genre.WORKS.getCode()));
-        Assert.assertThat(post.getFundLevel(), is(FundLevel.NATIONAL.getCode()));
-        Assert.assertThat(post.getWritersInfo(), is("苹果;香蕉"));
-        Assert.assertThat(post.getStatus(), is(PostStatus.TO_BE_SUBMITTED.getCode()));
-        Assert.assertThat(post.getContributorUid(), is(EDITOR_ID));
-
-        postPage = postService.getAllByCtr(REVIEWER_ID, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(0));
-        Assert.assertThat(postPage.getTotalElements(), is(0L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(0));
-    }
-
-    @Test
-    void getAllByCtrAndStatus() {
-        saveQuery.setTitle("论人类的奇怪饲养欲");
-        saveQuery.setField(Field.BASIC_CHINESE_MEDICINE);
-        saveQuery.setGenre(Genre.OVERVIEW);
-        saveQuery.setFundLevel(FundLevel.NO);
-        saveQuery.setWritersInfo("阿猫;阿狗");
-        Post post1 = postService.savePost(saveQuery, CONTRIBUTOR_ID);
-
-        Page<Post> postPage = postService.getAllByCtrAndStatus(CONTRIBUTOR_ID, PostStatus.PENDING_FIRST_EXAM, 1, 3, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(3));
-        Assert.assertThat(postPage.getTotalPages(), is(0));
-        Assert.assertThat(postPage.getTotalElements(), is(0L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(0));
-
-        post1.setStatus(PostStatus.PENDING_FIRST_EXAM.getCode());
-        postService.updatePost(post1);
-
-        postPage = postService.getAllByCtrAndStatus(CONTRIBUTOR_ID, PostStatus.PENDING_FIRST_EXAM, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(1));
-        Assert.assertThat(postPage.getTotalElements(), is(1L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(1));
-        Post post = postPage.getContent().get(0);
-        Assert.assertThat(post.getField(), is(Field.BASIC_CHINESE_MEDICINE.getCode()));
-        Assert.assertThat(post.getTitle(), is("论人类的奇怪饲养欲"));
-        Assert.assertThat(post.getGenre(), is(Genre.OVERVIEW.getCode()));
-        Assert.assertThat(post.getFundLevel(), is(FundLevel.NO.getCode()));
-        Assert.assertThat(post.getWritersInfo(), is("阿猫;阿狗"));
-        Assert.assertThat(post.getStatus(), is(PostStatus.PENDING_FIRST_EXAM.getCode()));
-        Assert.assertThat(post.getContributorUid(), is(CONTRIBUTOR_ID));
-    }
-
-    @Test
-    void getAllByEd() {
-        Page<Post> postPage = postService.getAllByEd(EDITOR_ID, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(0));
-        Assert.assertThat(postPage.getTotalElements(), is(0L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(0));
-
-        post.setEditorUid(EDITOR_ID);
-        postService.updatePost(post);
-
-        postPage = postService.getAllByEd(EDITOR_ID, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(1));
-        Assert.assertThat(postPage.getTotalElements(), is(1L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(1));
-
-        post = postPage.getContent().get(0);
-        Assert.assertThat(post.getField(), is(Field.BASIC_MEDICINE.getCode()));
-        Assert.assertThat(post.getTitle(), is("论文标题"));
-        Assert.assertThat(post.getGenre(), is(Genre.PAPER.getCode()));
-        Assert.assertThat(post.getFundLevel(), is(FundLevel.MUNICIPAL.getCode()));
-        Assert.assertThat(post.getWritersInfo(), is("张三;李四"));
-        Assert.assertThat(post.getStatus(), is(PostStatus.TO_BE_SUBMITTED.getCode()));
-        Assert.assertThat(post.getEditorUid(), is(EDITOR_ID));
-        Assert.assertThat(post.getContributorUid(), is(CONTRIBUTOR_ID));
-    }
-
-    @Test
-    void getAllByEdAndStatus() {
-        Page<Post> postPage = postService.getAllByEdAndStatus(EDITOR_ID, PostStatus.PENDING_FIRST_EXAM, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(0));
-        Assert.assertThat(postPage.getTotalElements(), is(0L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(0));
-
-        post.setEditorUid(EDITOR_ID);
-        post.setStatus(PostStatus.PENDING_FIRST_EXAM.getCode());
-        postService.updatePost(post);
-
-        postPage = postService.getAllByEdAndStatus(EDITOR_ID, PostStatus.PENDING_FIRST_EXAM, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(1));
-        Assert.assertThat(postPage.getTotalElements(), is(1L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(1));
-
-        post = postPage.getContent().get(0);
-        Assert.assertThat(post.getField(), is(Field.BASIC_MEDICINE.getCode()));
-        Assert.assertThat(post.getTitle(), is("论文标题"));
-        Assert.assertThat(post.getGenre(), is(Genre.PAPER.getCode()));
-        Assert.assertThat(post.getFundLevel(), is(FundLevel.MUNICIPAL.getCode()));
-        Assert.assertThat(post.getWritersInfo(), is("张三;李四"));
-        Assert.assertThat(post.getStatus(), is(PostStatus.PENDING_FIRST_EXAM.getCode()));
-        Assert.assertThat(post.getContributorUid(), is(CONTRIBUTOR_ID));
-        Assert.assertThat(post.getEditorUid(), is(EDITOR_ID));
-    }
-
-    @Test
-    void getAllByRevUnanswer() {
-        Page<Post> postPage = postService.getAllByRevUnanswer(REVIEWER_ID, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(0));
-        Assert.assertThat(postPage.getTotalElements(), is(0L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(0));
-
-        int id = post.getId();
-        postReviewerService.save(new PostReviewerQuery(id, REVIEWER_ID, null));
-
-        postPage = postService.getAllByRevUnanswer(REVIEWER_ID, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(1));
-        Assert.assertThat(postPage.getTotalElements(), is(1L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(1));
-        post = postPage.getContent().get(0);
-        Assert.assertThat(post.getId(), is(id));
-    }
-
-    @Test
-    void getAllByRev() {
-        int id = post.getId();
-        PostReviewer postReviewer = postReviewerService.save(new PostReviewerQuery(id, REVIEWER_ID, null));
-
-        Page<Post> postPage = postService.getAllByRev(REVIEWER_ID, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(0));
-        Assert.assertThat(postPage.getTotalElements(), is(0L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(0));
-
-        postReviewer.setAccepted(MyBoolean.TRUE.getCode());
-        postReviewerService.updatePostReviewer(postReviewer);
-        post.setStatus(PostStatus.FIRST_REVIEW.getCode());
-        postService.updatePost(post);
-
-        postPage = postService.getAllByRev(REVIEWER_ID, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(1));
-        Assert.assertThat(postPage.getTotalElements(), is(1L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(1));
-        post = postPage.getContent().get(0);
-        Assert.assertThat(post.getId(), is(id));
-    }
-
-    @Test
-    void getAllRequiredToReview() {
-        int id = post.getId();
-        PostReviewer postReviewer = postReviewerService.save(new PostReviewerQuery(id, REVIEWER_ID, null));
-        postReviewer.setAccepted(MyBoolean.TRUE.getCode());
-        postReviewerService.updatePostReviewer(postReviewer);
-        post.setStatus(PostStatus.FIRST_REVIEW.getCode());
-        postService.updatePost(post);
-
-        Page<Post> postPage = postService.getAllRequiredToReview(REVIEWER_ID, true, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(0));
-        Assert.assertThat(postPage.getTotalElements(), is(0L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(0));
-
-        postReviewer.setFlag(true);
-        postReviewerService.updatePostReviewer(postReviewer);
-
-        postPage = postService.getAllRequiredToReview(REVIEWER_ID, true, 1, 2, true);
-        Assert.assertThat(postPage.getNumber(), is(0));
-        Assert.assertThat(postPage.getSize(), is(2));
-        Assert.assertThat(postPage.getTotalPages(), is(1));
-        Assert.assertThat(postPage.getTotalElements(), is(1L));
-        Assert.assertThat(postPage.getNumberOfElements(), is(1));
-        post = postPage.getContent().get(0);
-        Assert.assertThat(post.getId(), is(id));
+        posts = postService.getAllByJid(journal.getId(), 1, 5, true);
+        Assert.assertThat(posts.getNumberOfElements(), is(1));
+        Assert.assertThat(posts.getContent().get(0).getId(), is(post.getId()));
     }
 
     @Test
     void deletePost() {
-        Post post = postService.savePost(saveQuery, CONTRIBUTOR_ID);
-
         postService.deletePost(post.getId());
-
         try {
-            postService.getPost(post.getId());
-        } catch (CustomException ex) {
-            Assert.assertThat(ex.getCode(), is(400));
-            Assert.assertThat(ex.getMessage(), is("投稿未找到"));
+            post = postService.getPost(post.getId());
+        } catch (CustomException e) {
+            Assert.assertThat(e.getMessage(), is("稿件未找到"));
+            Assert.assertThat(e.getCode(), is(400));
+        }
+        try {
+            postService.deletePost(post.getId());
+        } catch (CustomException e) {
+            Assert.assertThat(e.getMessage(), is("稿件未找到"));
+            Assert.assertThat(e.getCode(), is(400));
         }
     }
 }

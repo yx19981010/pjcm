@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
  */
 
 @Data
-@ApiModel(description = "上传收据信息请求实体")
+@ApiModel(description = "上传收据信息请求实体\n必填：id, invoiceNeeded。若需要发票，则其他字段也需填写完整。")
 public class PostReceiptQuery {
     @ApiModelProperty("标识号")
     @NotNull(message = "id不能为空")

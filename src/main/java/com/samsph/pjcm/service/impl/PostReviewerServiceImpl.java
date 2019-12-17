@@ -42,7 +42,7 @@ public class PostReviewerServiceImpl implements PostReviewerService {
         // 设置稿件审稿标识、创建时间、接受状态
         postReviewer.setFlag(false);
         postReviewer.setCreateTime(new Date());
-        postReviewer.setAccepted(MyBoolean.DEFAULT.getCode());
+        postReviewer.setAccept(MyBoolean.DEFAULT.getCode());
 
         return postReviewerRepository.save(postReviewer);
     }
@@ -50,6 +50,11 @@ public class PostReviewerServiceImpl implements PostReviewerService {
     @Override
     public PostReviewer getPostReviewer(int pid, int uid) {
         return fetchPostReviewer(pid, uid);
+    }
+
+    @Override
+    public List<PostReviewer> getAllByPidAndFlag(int pid, boolean flag) {
+        return postReviewerRepository.findByPidAndFlag(pid, flag);
     }
 
     @Override

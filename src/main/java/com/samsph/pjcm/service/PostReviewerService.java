@@ -28,6 +28,15 @@ public interface PostReviewerService {
     PostReviewer getPostReviewer(int pid, int uid);
 
     /**
+     * 查找稿件-审稿人
+     *
+     * @param pid  稿件id
+     * @param flag 审稿标识
+     * @return 稿件-审稿人列表
+     */
+    List<PostReviewer> getAllByPidAndFlag(int pid, boolean flag);
+
+    /**
      * 更新稿件-审稿人
      *
      * @param postReviewer 要更新的稿件-审稿人记录

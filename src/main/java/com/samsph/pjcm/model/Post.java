@@ -33,6 +33,12 @@ public class Post {
     private String title;
 
     /**
+     * 稿件英文标题
+     */
+    @Column(name = "titleEn")
+    private String titleEn;
+
+    /**
      * 作者信息
      */
     @Column(name = "writers_info")
@@ -161,6 +167,7 @@ public class Post {
     /**
      * 提交初审时间
      */
+    @Temporal(TemporalType.DATE)
     @Column(name = "submit_time")
     private Date submitTime;
 
@@ -187,6 +194,18 @@ public class Post {
      */
     @Column(name = "reject_comment_time")
     private Date rejectCommentTime;
+
+    /**
+     * 发表前审阅意见
+     */
+    @Column(name = "bf_pub_comment")
+    private String bfPubComment;
+
+    /**
+     * 发表前审阅时间
+     */
+    @Column(name = "bf_pub_comment_time")
+    private Date bfPubCommentTime;
 
     /**
      * 格式审阅意见

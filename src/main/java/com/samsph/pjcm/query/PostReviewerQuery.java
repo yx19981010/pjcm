@@ -19,12 +19,12 @@ import javax.validation.constraints.Null;
 @ApiModel(description = "稿件-审稿人请求实体")
 public class PostReviewerQuery {
     @ApiModelProperty("稿件id")
-    @NotNull(message = "pid不能为空")
+    @NotNull(message = "pid不能为空", groups = {Add.class, Update.class})
     private Integer pid;
 
     @ApiModelProperty("审稿人id")
     @NotNull(groups = {Add.class}, message = "uid不能为空")
-    @Null(groups = {Update.class},message="uid必须为空")
+    @Null(groups = {Update.class}, message = "uid必须为空")
     private Integer reviewerUid;
 
     @ApiModelProperty("是否接受该审稿邀约")

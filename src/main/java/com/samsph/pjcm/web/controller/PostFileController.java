@@ -10,6 +10,7 @@ import com.samsph.pjcm.model.PostReviewer;
 import com.samsph.pjcm.service.PostReviewerService;
 import com.samsph.pjcm.service.PostService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -36,7 +37,6 @@ import static com.samsph.pjcm.config.constant.ErrMsg.POST_FILE_NOT_EXISTS;
 import static com.samsph.pjcm.config.constant.ErrMsg.POST_FILE_READ_ERROR;
 
 /**
- *
  * @author hujiahao
  */
 
@@ -54,9 +54,11 @@ public class PostFileController {
 
     @PutMapping("upload")
     @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
+    @ApiImplicitParam(name = "type", required = true, dataType = "int",
+            value = "1稿件；2伦理委员会批文；3推荐信；4基金批文；5缴费证明")
     @ApiOperation(value = "投稿人上传稿件/推荐信/伦理委员会批文/基金批文/缴费证明")
     public AjaxResponse upload(@NotNull @RequestParam Integer id,
-                               @NotNull @RequestParam PostFileType type,
+                               @NotNull @RequestParam Integer type,
                                @NotNull @RequestParam MultipartFile file) {
 
         Post post = postService.getPost(id);
@@ -72,7 +74,13 @@ public class PostFileController {
         PostStatus status = PostStatus.getItem(post.getStatus());
         String oldPath;
 
-        switch (type) {
+        PostFileType fileType = PostFileType.getItem(type);
+
+        if (fileType == null) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_POST_FILE_TYPE);
+        }
+
+        switch (fileType) {
             case POST:
                 if (status != PostStatus.TO_BE_SUBMITTED && status != PostStatus.TO_BE_REVISED && status != PostStatus.FORMAT_TO_BE_MODIFIED) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.POST_FILE_CANNOT_UPLOAD);
@@ -96,7 +104,7 @@ public class PostFileController {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.FUND_FILE_CANNOT_UPLOAD);
                 }
                 if (post.getFundLevel() == null || post.getFundLevel() == FundLevel.NO.getCode()) {
-                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NO_FUND);
+                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_FUND_PROJECT);
                 }
                 oldPath = post.getFundApprovalPath();
                 break;
@@ -107,7 +115,7 @@ public class PostFileController {
                 oldPath = post.getCertificatePath();
                 break;
             default:
-                throw new CustomException(CustomExceptionType.OTHER_ERROR, ErrMsg.UNSUPPORTED_POST_FILE_TYPE);
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_POST_FILE_TYPE);
         }
 
         // 新文件路径
@@ -118,11 +126,11 @@ public class PostFileController {
             path = FileUtil.FileUpload(FileUploadPath.PostFileUploadPath, file);
         } else {
             // 覆盖文件
-            path = FileUtil.FileCover(FileUploadPath.PostFileUploadPath, file);
+            path = FileUtil.FileCover(oldPath, file);
         }
 
         // 更新数据表
-        switch (type) {
+        switch (fileType) {
             case POST:
                 post.setPostPath(path);
                 post.setPostUploadTime(new Date());
@@ -144,18 +152,20 @@ public class PostFileController {
                 post.setCertificateUploadTime(new Date());
                 break;
             default:
-                throw new CustomException(CustomExceptionType.OTHER_ERROR, ErrMsg.UNSUPPORTED_POST_FILE_TYPE);
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_POST_FILE_TYPE);
         }
         postService.updatePost(post);
 
         return AjaxResponse.success();
     }
 
-    @GetMapping("download/type=1")
+    @GetMapping("download/role=ctr")
     @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
+    @ApiImplicitParam(name = "type", required = true, dataType = "int",
+            value = "1稿件；2伦理委员会批文；3推荐信；4基金批文；5缴费证明")
     @ApiOperation(value = "投稿人下载稿件/推荐信/伦理委员会批文/基金批文/缴费证明")
     public void ctrDownload(@NotNull @RequestParam Integer id,
-                            @NotNull @RequestParam PostFileType type,
+                            @NotNull @RequestParam Integer type,
                             HttpServletResponse response,
                             HttpServletRequest request) {
         Post post = postService.getPost(id);
@@ -163,21 +173,35 @@ public class PostFileController {
         //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
+        PostFileType fileType = PostFileType.getItem(type);
+
+        if (fileType == null) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_POST_FILE_TYPE);
+        }
+
         // 检查其为稿件投稿人
         if (uid != post.getContributorUid()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_CONTRIBUTOR);
         }
 
-        download(getPath(post, type), response, request);
+        download(getPath(post, fileType), response, request);
     }
 
-    @GetMapping("download/type=2")
+    @GetMapping("download/role=ed")
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
+    @ApiImplicitParam(name = "type", required = true, dataType = "int",
+            value = "1稿件；2伦理委员会批文；3推荐信；4基金批文；5缴费证明")
     @ApiOperation(value = "编辑下载稿件/推荐信/伦理委员会批文/基金批文/缴费证明")
     public void edDownload(@NotNull @RequestParam Integer id,
-                           @NotNull @RequestParam PostFileType type,
+                           @NotNull @RequestParam Integer type,
                            HttpServletResponse response,
                            HttpServletRequest request) {
+        PostFileType fileType = PostFileType.getItem(type);
+
+        if (fileType == null) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_POST_FILE_TYPE);
+        }
+
         Post post = postService.getPost(id);
 
         //        int uid = currentUser.getCurrentUser().getUserId();
@@ -193,10 +217,10 @@ public class PostFileController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
 
-        download(getPath(post, type), response, request);
+        download(getPath(post, fileType), response, request);
     }
 
-    @GetMapping("download/type=3")
+    @GetMapping("download/role=rev")
     @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "审稿人下载稿件")
     public void revDownload(@NotNull @RequestParam Integer id,
@@ -209,7 +233,7 @@ public class PostFileController {
 
         // 检查当前用户是否接受了审稿
         PostReviewer postReviewer = postReviewerService.getPostReviewer(id, uid);
-        if (postReviewer.getAccepted()!=MyBoolean.TRUE.getCode()) {
+        if (postReviewer.getAccept() != MyBoolean.TRUE.getCode()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CANNOT_REVIEW);
         }
 

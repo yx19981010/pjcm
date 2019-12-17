@@ -13,10 +13,21 @@ import java.util.List;
 
 @Data
 @ApiModel(description = "期刊VO")
-@EqualsAndHashCode(callSuper = true)
-public class JournalVO extends JournalSimpleVO {
-    @ApiModelProperty("期刊包含论文列表")
-    private List<Post4TurSimpleVO> posts;
+public class JournalVO{
+    @ApiModelProperty("标识号")
+    private Integer id;
+
+    @ApiModelProperty("年号")
+    private Integer year;
+
+    @ApiModelProperty("月号")
+    private Integer month;
+
+    @ApiModelProperty("卷号")
+    private Integer volume;
+
+    @ApiModelProperty("期号")
+    private Integer number;
 
     @ApiModelProperty("包含论文数")
     private Integer total;

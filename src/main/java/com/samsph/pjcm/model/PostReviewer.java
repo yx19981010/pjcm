@@ -41,8 +41,8 @@ public class PostReviewer {
     /**
      * 审稿人是否接受审稿邀约
      */
-    @Column(name = "accepted")
-    private Integer accepted;
+    @Column(name = "accept")
+    private Integer accept;
 
     /**
      * 审稿人对该稿件还能否审稿

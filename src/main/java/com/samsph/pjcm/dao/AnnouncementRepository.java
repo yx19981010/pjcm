@@ -10,8 +10,8 @@ public interface AnnouncementRepository extends JpaRepository<Announcement,Integ
 
     /**
      * 得到分页的公告列表
-     * @param pageable
-     * @return
+     * @param pageable 分页参数
+     * @return Page<Announcement>
      */
     @Query(value = "select a from Announcement a ",countQuery = "select count(a.id) from Announcement a")
     Page<Announcement> getAnnouncementList(Pageable pageable);

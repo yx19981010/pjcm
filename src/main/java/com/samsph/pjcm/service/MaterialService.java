@@ -9,32 +9,32 @@ import java.util.Optional;
 public interface MaterialService {
     /**
      *添加材料
-     * @param material
+     * @param material 材料实体
      */
      void addMaterial(Material material);
 
     /**
      *更新材料
-     * @param Material
+     * @param Material 材料实体
      */
      void updateMaterial(Material Material);
 
     /**
      *删除材料
-     * @param id
+     * @param id 材料id
      */
      void deleteMaterial(int id);
 
     /**
      *得到材料列表
-     * @param pageRequest
+     * @param pageRequest 分页请求
      * @return
      */
      Page<Material> findMaterials(PageRequest pageRequest);
 
     /**
      *得到单个材料
-     * @param id
+     * @param id 材料id
      * @return
      */
      Optional<Material> findMaterial(int id);

@@ -273,7 +273,7 @@ public class ReviewRecordController {
         // 检查操作者为该稿件投稿人
         // 检查当前用户是否接受了审稿
         PostReviewer postReviewer = postReviewerService.getPostReviewer(pid, uid);
-        if (postReviewer.getAccepted() != MyBoolean.TRUE.getCode()) {
+        if (postReviewer.getAccept() != MyBoolean.TRUE.getCode()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CANNOT_REVIEW);
         }
 

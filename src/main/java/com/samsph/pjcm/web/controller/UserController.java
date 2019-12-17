@@ -415,7 +415,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR','ROLE_REVIEWER','ROLE_CONTRIBUTOR')")
     public AjaxResponse findUserByUidAndRid(@NotNull(message = "uid不能为空")@Min(value = 1,message = "uid必须是正整数") @PathVariable Integer uid,
                                             @NotNull(message = "rid不能为空")@Min(value = RoleType.ADMIN_ROLE)@Max(value = RoleType.CONTRIBUTOR_ROLE) @PathVariable Integer rid){
-//        if(currentUser.getCurrentUser().getUserRole() != RoleType.ADMIN_ROLE && currentUser.getCurrentUser().getUserRole() != RoleType.EDITOR_ROLE) {
+//        if(currentUser.getCurrentUser().getUserRole() != RoleType.ADMIN_ROLE) {
 //            if (currentUser.getCurrentUser().getUserId() != uid || currentUser.getCurrentUser().getUserRole() != rid) {
 //                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "无权查看其他人的信息");
 //            }
@@ -486,7 +486,8 @@ public class UserController {
             switch (rid){
                 case RoleType.ADMIN_ROLE:
                     List<UserAdminVoGet> userAdminVoGets = DozerUtil.mapList(userList, UserAdminVoGet.class);
-                    return AjaxResponse.success(userAdminVoGets);
+                    pageData = new PageData(userPage.getTotalPages(), (int) userPage.getTotalElements(),page,userAdminVoGets.size(),userAdminVoGets);
+                    return AjaxResponse.success(pageData);
                 case RoleType.EDITOR_ROLE:
                     List<UserEditorVoGet> userEditorVoGets = new ArrayList<>();
                     for(User user : userList){

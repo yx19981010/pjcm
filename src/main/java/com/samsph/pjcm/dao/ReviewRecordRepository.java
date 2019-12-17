@@ -1,9 +1,6 @@
 package com.samsph.pjcm.dao;
 
 import com.samsph.pjcm.model.ReviewRecord;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -44,10 +41,12 @@ public interface ReviewRecordRepository extends JpaRepository<ReviewRecord, Inte
     List<ReviewRecord> findByPidAndCount(int pid, int count);
 
     /**
-     * 根据publish的值获得审稿记录列表
+     * 根据publish、pid和count的值获得审稿记录列表
      *
-     * @param publish
-     * @return
+     * @param publish 刊用类型
+     * @param pid 稿件id
+     * @param count 审稿轮数
+     * @return 审稿记录列表
      */
     List<ReviewRecord> findByPublishAndPidAndCount(int publish,int pid,int count);
 

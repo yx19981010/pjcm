@@ -33,10 +33,11 @@ public interface ReviewRecordService {
     boolean canReReviewClose(int pid);
 
     /**
-     * 根据publish的值获得审稿记录列表
-     *
-     * @param publish
-     * @return
+     * 根据publish、pid和count的值获得审稿记录列表
+     * @param publish 出版类型
+     * @param pid 稿件id
+     * @param count 审稿轮数
+     * @return 审稿记录列表
      */
     List<ReviewRecord> findByPublishAndPidAndCount(int publish,int pid,int count);
 

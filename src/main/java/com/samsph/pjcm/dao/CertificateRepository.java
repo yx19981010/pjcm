@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 public interface CertificateRepository extends JpaRepository<Certificate, Integer> {
     /**
      * 得到分页的证书列表
-     * @param pageable
-     * @return
+     * @param pageable 分页参数
+     * @return Page<Certificate>
      */
     @Query(value = "select a from Certificate a ",countQuery = "select count(a.id) from Certificate a")
     Page<Certificate> getCertificateList(Pageable pageable);

@@ -768,6 +768,7 @@ public class PostController {
         post.setTaxpayerId(postReceiptQuery.getTaxpayerId());
         post.setReceiptReceiver(postReceiptQuery.getReceiptReceiver());
         post.setReceiptAddress(postReceiptQuery.getReceiptAddress());
+        post.setReceiverPhone(postReceiptQuery.getReceiverPhone());
         postService.updatePost(post);
 
         return AjaxResponse.success();

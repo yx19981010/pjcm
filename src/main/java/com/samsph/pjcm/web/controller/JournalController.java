@@ -10,6 +10,7 @@ import com.samsph.pjcm.service.JournalService;
 import com.samsph.pjcm.query.Add;
 import com.samsph.pjcm.query.JournalQuery;
 import com.samsph.pjcm.query.Update;
+import com.samsph.pjcm.vo.JournalSimpleVO;
 import com.samsph.pjcm.vo.JournalVO;
 import io.swagger.annotations.*;
 import org.dozer.Mapper;
@@ -47,18 +48,18 @@ public class JournalController {
     @PostMapping()
     @ApiOperation(value = "创建期刊")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @ApiImplicitParam(name = "journalQuery", value = "必填：year、month、day\n不填：id", dataType = "JournalQuery")
+    @ApiImplicitParam(name = "journalQuery", value = "必填：year、month、day、content\n不填：id", dataType = "JournalQuery")
     public AjaxResponse saveJournal(@Validated({Add.class}) @RequestBody JournalQuery journalQuery) {
 //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = ADMIN_ID;
         Journal journal = journalService.saveJournal(journalQuery, uid);
-        return AjaxResponse.success(dozerMapper.map(journal, JournalVO.class));
+        return AjaxResponse.success(dozerMapper.map(journal, JournalSimpleVO.class));
     }
 
     @PutMapping()
     @ApiOperation(value = "更新期刊")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @ApiImplicitParam(name = "journalQuery", value = "必填：id\n选填：year、month、day", dataType = "JournalQuery")
+    @ApiImplicitParam(name = "journalQuery", value = "必填：id\n选填：year、month、day、content", dataType = "JournalQuery")
     public AjaxResponse updateJournal(@Validated({Update.class}) @RequestBody JournalQuery journalQuery) {
         // 更新期刊信息
         Journal journal = journalService.getJournal(journalQuery.getId());
@@ -84,7 +85,7 @@ public class JournalController {
 
         Page<Journal> journalPage = journalService.getAll(number, size, ascend);
 
-        return AjaxResponse.success(DozerUtil.mapPage(journalPage, JournalVO.class));
+        return AjaxResponse.success(DozerUtil.mapPage(journalPage, JournalSimpleVO.class));
     }
 
     @GetMapping("/{id}")

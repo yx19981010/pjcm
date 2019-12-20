@@ -802,54 +802,6 @@ public class PostController {
         return AjaxResponse.success();
     }
 
-    @PutMapping("type=journal")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @ApiOperation(value = "稿件状态为稿件成功，管理员将稿件加入到某一期期刊")
-    public AjaxResponse updatePost13(@RequestBody PostJournalQuery postJournalQuery) {
-
-        Post post = postService.getPost(postJournalQuery.getId());
-
-        // 检查状态
-        if (post.getStatus() != PostStatus.SUCCESS.getCode()) {
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
-        }
-
-        Integer jid = postJournalQuery.getJid();
-
-        if (jid == null) {
-            if (post.getJid() != null) {
-                // 取消稿件的原期刊信息
-                post.setJid(null);
-                Journal journal = journalService.getJournal(post.getJid());
-                journal.setTotal(journal.getTotal() - 1);
-                journalService.updateJournal(journal);
-            }
-        } else {
-            // 查找要设置的期刊是否存在
-            Journal journal = journalService.getJournal(jid);
-
-            if (post.getJid() == null) {
-                // 新增稿件的期刊信息
-                post.setJid(jid);
-                journal.setTotal(journal.getTotal() + 1);
-                journalService.updateJournal(journal);
-                post.setJid(jid);
-                postService.updatePost(post);
-            } else if (!jid.equals(post.getJid())) {
-                // 覆盖稿件的期刊信息
-                journal.setTotal(journal.getTotal() + 1);
-                journalService.updateJournal(journal);
-
-                Journal oldJournal = journalService.getJournal(post.getJid());
-                oldJournal.setTotal(oldJournal.getTotal() - 1);
-                journalService.updateJournal(oldJournal);
-
-                post.setJid(jid);
-                postService.updatePost(post);
-            }
-        }
-        return AjaxResponse.success();
-    }
 
     @GetMapping("role=tur")
     @ApiOperation(value = "游客根据期刊获取所包含稿件列表")

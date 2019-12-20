@@ -5,10 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
+import javax.validation.constraints.*;
 
 /**
  * @author hujiahao
@@ -43,4 +40,8 @@ public class JournalQuery {
     @NotNull(message = "期号不能为空", groups = {Add.class})
     @Min(value = 1, message = "期号至少为1", groups = {Add.class, Update.class})
     private Integer number;
+
+    @ApiModelProperty("目录")
+    @NotBlank(message = "期刊目录不能为空")
+    private String content;
 }

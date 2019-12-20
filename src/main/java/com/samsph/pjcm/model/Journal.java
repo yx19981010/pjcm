@@ -25,16 +25,7 @@ public class Journal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
-    /**
-     * 期刊文章数
-     */
-    @Column(name = "total")
-    private Integer total;
-    /**
-     * 创建时间
-     */
-    @Column(name = "create_time")
-    private Date createTime;
+
     /**
      * 年份
      */
@@ -57,8 +48,20 @@ public class Journal {
     private Integer number;
 
     /**
+     * 创建时间
+     */
+    @Column(name = "create_time")
+    private Date createTime;
+
+    /**
+     * 目录
+     */
+    @Column(name = "content")
+    private String content;
+
+    /**
      * 创建者id
      */
     @Column(name="create_by_uid")
-    private Integer create_by_uid;
+    private Integer createByUid;
 }

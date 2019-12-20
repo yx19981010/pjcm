@@ -35,7 +35,7 @@ public class Post {
     /**
      * 稿件英文标题
      */
-    @Column(name = "titleEn")
+    @Column(name = "title_en")
     private String titleEn;
 
     /**

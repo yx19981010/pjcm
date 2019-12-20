@@ -1,8 +1,10 @@
 package com.samsph.pjcm.web.interceptor;
 
 import com.samsph.pjcm.config.AccessLog;
+import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.utils.AddressIpUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +19,8 @@ import java.util.Date;
 
 @Slf4j
 public class AccessLogInterceptor implements HandlerInterceptor {
+    @Autowired
+    private CurrentUser currentUser;
     /**
      * 请求开始时间标识
      */
@@ -64,6 +68,20 @@ public class AccessLogInterceptor implements HandlerInterceptor {
 
         // TODO: 设置访问者，不同应用有的将访问者信息放在session里，有的通过request传递，获取的方法不同
         //  这里暂时写死
+//        switch (currentUser.getCurrentUser().getUserRole()){
+//            case 1:
+//                accessLog.setUsername("admin");
+//                break;
+//            case 2:
+//                accessLog.setUsername("editor");
+//                break;
+//            case 3:
+//                accessLog.setUsername("reviewer");
+//                break;
+//            case 4:
+//                accessLog.setUsername("contributor");
+//                break;
+//        }
         accessLog.setUsername("admin");
 
         //当前时间

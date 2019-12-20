@@ -14,9 +14,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BeanConfigurer {
     @Bean
-    public DozerBeanMapper mapper(){
+    public DozerBeanMapper mapper() {
         return new DozerBeanMapper();
     }
+
     @Bean
-    public CurrentUser getCurrentUser(){ return new CurrentUser();}
+    public CurrentUser getCurrentUser() {
+        return new CurrentUser();
+    }
 }

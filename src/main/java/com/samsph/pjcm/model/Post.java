@@ -268,6 +268,12 @@ public class Post {
     private String receiptReceiver;
 
     /**
+     * 收件人手机号
+     */
+    @Column(name = "receiver_phone")
+    private String receiverPhone;
+
+    /**
      * 缴费证明的审阅意见
      */
     @Column(name = "certificate_comment")

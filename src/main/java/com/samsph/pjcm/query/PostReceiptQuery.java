@@ -36,4 +36,7 @@ public class PostReceiptQuery {
 
     @ApiModelProperty("发票收件人")
     private String receiptReceiver;
+
+    @ApiModelProperty("收件人手机号")
+    private String receiverPhone;
 }

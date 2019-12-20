@@ -21,6 +21,6 @@ public class Post4CtrSimpleVO {
     @ApiModelProperty("稿件状态")
     private Integer status;
 
-    @ApiModelProperty("创建时间")
-    private Date createTime;
+    @ApiModelProperty("提交时间")
+    private Date submitTime;
 }

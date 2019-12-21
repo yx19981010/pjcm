@@ -83,21 +83,21 @@ public class UserVoPost {
      */
     @ApiModelProperty("专业")
     //由前端给出限制
-    private  Integer major;
+    private  String major;
 
     /**
      * 学历
      */
     @ApiModelProperty("学历")
     //由前端给出限制
-    private  Integer education;
+    private  String education;
 
     /**
      * 职称
      */
     @ApiModelProperty("职称")
     //由前端给出限制
-    private Integer title;
+    private String title;
 
     /**
      * （审稿人）银行账号

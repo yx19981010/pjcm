@@ -69,19 +69,19 @@ public class User {
      * 专业
      */
     @Column(name="major")
-    private  Integer major;
+    private  String major;
 
     /**
      * 学历
      */
     @Column(name="education")
-    private  Integer education;
+    private  String education;
 
     /**
      * 职称
      */
     @Column(name="title")
-    private Integer title;
+    private String title;
 
     /**
      * （审稿人）银行账号

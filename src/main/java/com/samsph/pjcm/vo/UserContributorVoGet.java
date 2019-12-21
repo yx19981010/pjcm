@@ -57,19 +57,19 @@ public class UserContributorVoGet {
      * 专业
      */
     @ApiModelProperty("专业")
-    private  Integer major;
+    private  String major;
 
     /**
      * 学历
      */
-    @ApiModelProperty("v")
-    private Integer education;
+    @ApiModelProperty("学历")
+    private String education;
 
     /**
      * 职称
      */
     @ApiModelProperty("职称")
-    private Integer title;
+    private String title;
 
     /**
      * 电话

@@ -51,8 +51,7 @@ public class JournalServiceImpl implements JournalService {
 
         // 设置创建时间、投稿计数、创建者id
         journal.setCreateTime(new Date());
-        journal.setCreate_by_uid(creatorId);
-        journal.setTotal(0);
+        journal.setCreateByUid(creatorId);
         journal = journalRepository.save(journal);
 
         return journal;

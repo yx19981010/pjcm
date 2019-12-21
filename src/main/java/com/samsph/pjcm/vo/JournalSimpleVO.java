@@ -3,17 +3,13 @@ package com.samsph.pjcm.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-import java.util.List;
 
 /**
  * @author hujiahao
  */
-
 @Data
-@ApiModel(description = "期刊VO")
-public class JournalVO{
+@ApiModel(description = "期刊VO-间")
+public class JournalSimpleVO {
     @ApiModelProperty("标识号")
     private Integer id;
 
@@ -28,7 +24,4 @@ public class JournalVO{
 
     @ApiModelProperty("期号")
     private Integer number;
-
-    @ApiModelProperty("目录")
-    private String content;
 }

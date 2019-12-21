@@ -312,7 +312,7 @@ class PostServiceTest {
 
     @Test
     void getAllByJid() {
-        Journal journal = journalService.saveJournal(new JournalQuery(2019, 11, 11, 1, 1), ADMIN_ID);
+        Journal journal = journalService.saveJournal(new JournalQuery(2019, 11, 11, 1, 1,""), ADMIN_ID);
         Page<Post> posts = postService.getAllByJid(journal.getId(), 1, 5, true);
         Assert.assertThat(posts.getNumberOfElements(), is(0));
 

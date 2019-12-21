@@ -28,7 +28,7 @@ class JournalServiceTest {
     @Resource
     private JournalRepository journalRepository;
 
-    private JournalQuery saveQuery = new JournalQuery(null, 2019, 12, 1, 1);
+    private JournalQuery saveQuery = new JournalQuery(null, 2019, 12, 1, 1,"");
 
     @AfterEach
     void tearDown() {
@@ -43,8 +43,7 @@ class JournalServiceTest {
         Assert.assertThat(journal.getYear(), is(2019));
         Assert.assertThat(journal.getVolume(), is(1));
         Assert.assertThat(journal.getNumber(), is(1));
-        Assert.assertThat(journal.getTotal(), is(0));
-        Assert.assertThat(journal.getCreate_by_uid(), is(ADMIN_ID));
+        Assert.assertThat(journal.getCreateByUid(), is(ADMIN_ID));
 
         try {
             journalService.saveJournal(saveQuery, ADMIN_ID);
@@ -63,8 +62,7 @@ class JournalServiceTest {
         Assert.assertThat(journal1.getYear(), is(2019));
         Assert.assertThat(journal1.getVolume(), is(1));
         Assert.assertThat(journal1.getNumber(), is(1));
-        Assert.assertThat(journal1.getTotal(), is(0));
-        Assert.assertThat(journal1.getCreate_by_uid(), is(ADMIN_ID));
+        Assert.assertThat(journal1.getCreateByUid(), is(ADMIN_ID));
 
         try {
             journalService.getJournal(0);
@@ -84,8 +82,7 @@ class JournalServiceTest {
         Assert.assertThat(journal1.getYear(), is(2019));
         Assert.assertThat(journal1.getVolume(), is(1));
         Assert.assertThat(journal1.getNumber(), is(1));
-        Assert.assertThat(journal1.getTotal(), is(0));
-        Assert.assertThat(journal1.getCreate_by_uid(), is(ADMIN_ID));
+        Assert.assertThat(journal1.getCreateByUid(), is(ADMIN_ID));
 
         try {
             journalService.getJournal(9999, 12, 1, 1);
@@ -97,7 +94,7 @@ class JournalServiceTest {
 
     @Test
     void getAll() {
-        JournalQuery saveQuery2 = new JournalQuery(null, 2018, 11, 2, 2);
+        JournalQuery saveQuery2 = new JournalQuery(null, 2018, 11, 2, 2,"");
         journalService.saveJournal(saveQuery, ADMIN_ID);
         journalService.saveJournal(saveQuery2, ADMIN_ID);
 
@@ -114,8 +111,7 @@ class JournalServiceTest {
         Assert.assertThat(journal.getYear(), is(2018));
         Assert.assertThat(journal.getVolume(), is(2));
         Assert.assertThat(journal.getNumber(), is(2));
-        Assert.assertThat(journal.getTotal(), is(0));
-        Assert.assertThat(journal.getCreate_by_uid(), is(ADMIN_ID));
+        Assert.assertThat(journal.getCreateByUid(), is(ADMIN_ID));
 
         journalPage =  journalService.getAll(2, 4, true);
 
@@ -156,7 +152,6 @@ class JournalServiceTest {
         Assert.assertThat(journal.getYear(), is(2019));
         Assert.assertThat(journal.getVolume(), is(2));
         Assert.assertThat(journal.getNumber(), is(2));
-        Assert.assertThat(journal.getTotal(), is(0));
-        Assert.assertThat(journal.getCreate_by_uid(), is(ADMIN_ID));
+        Assert.assertThat(journal.getCreateByUid(), is(ADMIN_ID));
     }
 }

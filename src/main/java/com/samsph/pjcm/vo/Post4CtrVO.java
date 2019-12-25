@@ -123,8 +123,4 @@ public class Post4CtrVO extends Post4CtrSimpleVO {
 
     @ApiModelProperty("缴费证明的审阅时间")
     private Date certificateCommentTime;
-
-
-    @ApiModelProperty("所属期刊id")
-    private Integer jid;
 }

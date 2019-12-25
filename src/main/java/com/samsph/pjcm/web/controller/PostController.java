@@ -10,7 +10,6 @@ import com.samsph.pjcm.config.exception.CustomException;
 import com.samsph.pjcm.config.exception.CustomExceptionType;
 import com.samsph.pjcm.config.utils.DozerUtil;
 import com.samsph.pjcm.config.utils.FileUtil;
-import com.samsph.pjcm.model.Journal;
 import com.samsph.pjcm.model.Post;
 import com.samsph.pjcm.model.PostReviewer;
 import com.samsph.pjcm.model.User;
@@ -61,9 +60,6 @@ public class PostController {
 
     @Resource
     MailService mailService;
-
-    @Resource
-    JournalService journalService;
 
     @Resource
     PostReviewerService postReviewerService;
@@ -233,7 +229,7 @@ public class PostController {
 
         post.setEditorUid(editorId);
         post.setStatus(PostStatus.PENDING_FIRST_EXAM.getCode());
-        post.setSubmitTime(new Date());
+        post.setSubmitTime(new java.sql.Date(new java.util.Date().getTime()));
         postService.updatePost(post);
 
         return AjaxResponse.success();
@@ -317,7 +313,7 @@ public class PostController {
     @PutMapping("type=examFirst")
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "稿件状态为待初审，编辑进行初审")
-    public AjaxResponse updatePost3(@RequestBody EditorAuditQuery editorAuditQuery) {
+    public AjaxResponse updatePost3(@Validated @RequestBody EditorAuditQuery editorAuditQuery) {
         //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
@@ -346,7 +342,7 @@ public class PostController {
             post.setStatus(PostStatus.FIRST_EXAM_REJECTED.getCode());
         }
         post.setFirstExamComment(comment);
-        post.setFirstExamCommentTime(new Date());
+        post.setFirstExamCommentTime(new java.sql.Date(new java.util.Date().getTime()));
         postService.updatePost(post);
 
         return AjaxResponse.success();
@@ -471,7 +467,7 @@ public class PostController {
     @PutMapping("type=examRevise")
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "稿件状态为待退回，编辑选择退改或退稿")
-    public AjaxResponse updatePost4(@RequestBody EditorAuditQuery editorAuditQuery) {
+    public AjaxResponse updatePost4(@Validated @RequestBody EditorAuditQuery editorAuditQuery) {
         // int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
@@ -502,7 +498,7 @@ public class PostController {
             post.setStatus(PostStatus.EDITOR_REJECT.getCode());
         }
         post.setRejectComment(comment);
-        post.setRejectCommentTime(new Date());
+        post.setRejectCommentTime(new java.sql.Date(new java.util.Date().getTime()));
         postService.updatePost(post);
 
         return AjaxResponse.success();
@@ -576,7 +572,7 @@ public class PostController {
     @PutMapping("type=examBfPub")
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "稿件状态为出版前待审，编辑进行审核")
-    public AjaxResponse updatePost13(@RequestBody EditorAuditQuery editorAuditQuery) {
+    public AjaxResponse updatePost13(@Validated @RequestBody EditorAuditQuery editorAuditQuery) {
         //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
@@ -606,7 +602,7 @@ public class PostController {
         }
 
         post.setBfPubComment(comment);
-        post.setBfPubCommentTime(new Date());
+        post.setBfPubCommentTime(new java.sql.Date(new java.util.Date().getTime()));
         postService.updatePost(post);
         return AjaxResponse.success();
     }
@@ -614,7 +610,7 @@ public class PostController {
     @PutMapping("type=examFormat")
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "稿件状态为格式待审核，编辑进行格式审核")
-    public AjaxResponse updatePost7(@RequestBody EditorAuditQuery editorAuditQuery) {
+    public AjaxResponse updatePost7(@Validated @RequestBody EditorAuditQuery editorAuditQuery) {
         //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
@@ -644,7 +640,7 @@ public class PostController {
             // TODO: 通知投稿人
         }
         post.setFormatComment(comment);
-        post.setFormatCommentTime(new Date());
+        post.setFormatCommentTime(new java.sql.Date(new java.util.Date().getTime()));
         postService.updatePost(post);
         return AjaxResponse.success();
     }
@@ -678,7 +674,7 @@ public class PostController {
     @PutMapping("type=examPayment")
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "稿件状态为缴费证明待审核，编辑进行审核")
-    public AjaxResponse updatePost12(@RequestBody EditorAuditQuery editorAuditQuery) {
+    public AjaxResponse updatePost12(@Validated @RequestBody EditorAuditQuery editorAuditQuery) {
 
         //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
@@ -708,7 +704,7 @@ public class PostController {
             post.setStatus(PostStatus.CERTIFICATE_TO_BE_UPLOADED.getCode());
         }
         post.setCertificateComment(comment);
-        post.setCertificateCommentTime(new Date());
+        post.setCertificateCommentTime(new java.sql.Date(new java.util.Date().getTime()));
         postService.updatePost(post);
         return AjaxResponse.success();
     }
@@ -716,7 +712,7 @@ public class PostController {
     @PutMapping("type=fee")
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "稿件状态为待确定版面费，编辑确定版面费")
-    public AjaxResponse updatePost9(@RequestBody PostLayOutFeeQuery postLayOutFeeQuery) {
+    public AjaxResponse updatePost9(@Validated @RequestBody PostLayOutFeeQuery postLayOutFeeQuery) {
         Post post = postService.getPost(postLayOutFeeQuery.getId());
 
         //        int uid = currentUser.getCurrentUser().getUserId();
@@ -746,7 +742,7 @@ public class PostController {
     @PutMapping("type=receipt")
     @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "稿件状态为缴费证明待上传，投稿人填写收据信息")
-    public AjaxResponse updatePost10(@RequestBody PostReceiptQuery postReceiptQuery) {
+    public AjaxResponse updatePost10(@Validated @RequestBody PostReceiptQuery postReceiptQuery) {
         Post post = postService.getPost(postReceiptQuery.getId());
 
         //        int uid = currentUser.getCurrentUser().getUserId();
@@ -958,6 +954,7 @@ public class PostController {
         if (post.getPostPath() == null || post.getLetterPath() == null || post.getEthicsApprovalPath() == null) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.INCOMPLETE_POST_FILES);
         }
+        System.out.println("aaaa"+fundLevel+FundLevel.NO.getCode());
         if (fundLevel != FundLevel.NO.getCode() && fundApprovalPath == null) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.INCOMPLETE_POST_FILES);
         }

@@ -1,7 +1,10 @@
 package com.samsph.pjcm.service.impl;
 
 import com.samsph.pjcm.config.auth.SecurityConstants;
+import com.samsph.pjcm.config.exception.CustomException;
+import com.samsph.pjcm.config.exception.CustomExceptionType;
 import com.samsph.pjcm.service.MailService;
+import com.sun.mail.smtp.SMTPAddressFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -9,6 +12,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import javax.mail.SendFailedException;
 import javax.mail.internet.MimeMessage;
 
 @Service
@@ -27,9 +31,9 @@ public class MailServiceImpl implements MailService {
             helper.setSubject(subject);
             helper.setTo(to);
             helper.setText(content, true);
-            mailSender.send(message);
-        } catch (MessagingException e) {
+        } catch ( MessagingException  e)  {
             e.printStackTrace();
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"邮箱不可用");
         }
     }
 

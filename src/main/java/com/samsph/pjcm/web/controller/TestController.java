@@ -19,8 +19,8 @@ public class TestController {
 
     @GetMapping("/sendEmail")
     public AjaxResponse sendEmail(){
-            mailService.sendHtmlMailForContributor("554976107@qq.com","论文1","杨玺");
-            mailService.sendHtmlMailForReviewer("554976107@qq.com","论文1","杨玺");
+            mailService.sendHtmlMailForContributor("12345@test.com","论文1","杨玺");
+//            mailService.sendHtmlMailForReviewer("554976107@qq.com","论文1","杨玺");
             return AjaxResponse.success();
     }
 }

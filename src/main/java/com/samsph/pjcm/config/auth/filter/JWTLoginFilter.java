@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,7 +98,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
         res.setHeader(SecurityConstants.TOKEN_HEADER,token);
         res.setContentType("application/json");
         res.setStatus(HttpServletResponse.SC_OK);
-        res.getOutputStream().println(JSONResult.fillResultString(true,200,"ok",new UserLogined(userService.findUserByEmail(email).get().getId(),role,email)));
+        res.getOutputStream().println(JSONResult.fillResultString(true,200,"ok",new UserLogined(userService.findUserByEmail(email).get().getId(),role,email),new Date()));
     }
 
 

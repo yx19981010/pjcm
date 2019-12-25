@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * 统一响应前端的数据结构
  *
@@ -24,6 +26,9 @@ public class AjaxResponse {
     @ApiModelProperty("请求成功时，需要响应给前端的数据")
     private Object data;
 
+    @ApiModelProperty("响应时间")
+    private Date timeStamp;
+
     private AjaxResponse() {
     }
 
@@ -37,6 +42,7 @@ public class AjaxResponse {
         AjaxResponse resultBean = new AjaxResponse();
         resultBean.setIsok(false);
         resultBean.setCode(e.getCode());
+        resultBean.setTimeStamp(new Date());
         if(e.getCode() == CustomExceptionType.USER_INPUT_ERROR.getCode()){
             resultBean.setMessage(e.getMessage());
         }else if(e.getCode() == CustomExceptionType.SYSTEM_ERROR.getCode()){
@@ -57,6 +63,7 @@ public class AjaxResponse {
         resultBean.setIsok(true);
         resultBean.setCode(200);
         resultBean.setMessage("OK");
+        resultBean.setTimeStamp(new Date());
         return resultBean;
     }
 
@@ -72,6 +79,7 @@ public class AjaxResponse {
         resultBean.setCode(200);
         resultBean.setMessage("OK");
         resultBean.setData(data);
+        resultBean.setTimeStamp(new Date());
         return resultBean;
     }
 }

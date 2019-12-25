@@ -69,9 +69,9 @@ public class FileDownloadController {
                 if(certificateService.findCertificate(id).isPresent()) {
                     filePath = certificateService.findCertificate(id).get().getPath();
                     if(filePath == null || filePath.equals("")){
-                        throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "证书路径不存在");
+                        throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "证书不存在");
                     }
-                    download(filePath, response, request);
+                    download(filePath, response, request,certificateService.findCertificate(id).get().getName());
                 }else{
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "证书id无效或未输入证书id!!!!");
                 }
@@ -80,9 +80,9 @@ public class FileDownloadController {
                 if(materialService.findMaterial(id).isPresent()) {
                     filePath = materialService.findMaterial(id).get().getPath();
                     if(filePath == null || filePath.equals("")){
-                        throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "材料路径不存在");
+                        throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "材料不存在");
                     }
-                    download(filePath, response, request);
+                    download(filePath, response, request,materialService.findMaterial(id).get().getName());
                 }else{
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "材料id无效或未材料证书id!!!!");
                 }
@@ -96,7 +96,7 @@ public class FileDownloadController {
      * @param response
      * @param request
      */
-    private void download(String pathname, HttpServletResponse response, HttpServletRequest request) {
+    private void download(String pathname, HttpServletResponse response, HttpServletRequest request,String filename) {
         response.setCharacterEncoding(request.getCharacterEncoding());
         response.setContentType("application/octet-stream");
         FileInputStream fis = null;
@@ -107,7 +107,7 @@ public class FileDownloadController {
             } else {
                 fis = new FileInputStream(file);
                 response.setHeader("Content-Disposition",
-                        "attachment; filename=" + URLEncoder.encode(file.getName(), StandardCharsets.UTF_8));
+                        "attachment; filename=" + URLEncoder.encode(filename+file.getName().substring(file.getName().lastIndexOf(".")), StandardCharsets.UTF_8));
                 IOUtils.copy(fis, response.getOutputStream());
                 response.flushBuffer();
             }

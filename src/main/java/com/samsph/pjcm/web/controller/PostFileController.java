@@ -22,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import java.io.File;
@@ -121,6 +123,8 @@ public class PostFileController {
         // 新文件路径
         String path;
 
+        Date time;
+
         if (oldPath == null) {
             // 保存文件
             path = FileUtil.FileUpload(FileUploadPath.PostFileUploadPath, file);
@@ -130,42 +134,43 @@ public class PostFileController {
         }
 
         // 更新数据表
+        time=new Date();
         switch (fileType) {
             case POST:
                 post.setPostPath(path);
-                post.setPostUploadTime(new Date());
+                post.setPostUploadTime(time);
                 break;
             case LETTER:
                 post.setLetterPath(path);
-                post.setLetterUploadTime(new Date());
+                post.setLetterUploadTime(time);
                 break;
             case ETHICS:
                 post.setEthicsApprovalPath(path);
-                post.setEthicsApprovalUploadTime(new Date());
+                post.setEthicsApprovalUploadTime(time);
                 break;
             case FUND:
                 post.setFundApprovalPath(path);
-                post.setFundApprovalUploadTime(new Date());
+                post.setFundApprovalUploadTime(time);
                 break;
             case PAYMENT:
                 post.setCertificatePath(path);
-                post.setCertificateUploadTime(new Date());
+                post.setCertificateUploadTime(time);
                 break;
             default:
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_POST_FILE_TYPE);
         }
         postService.updatePost(post);
 
-        return AjaxResponse.success();
+        return AjaxResponse.success(time);
     }
 
-    @GetMapping("download/role=ctr")
+    @GetMapping("download/role=ctr/id={id}&type={type}")
     @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiImplicitParam(name = "type", required = true, dataType = "int",
             value = "1稿件；2伦理委员会批文；3推荐信；4基金批文；5缴费证明")
     @ApiOperation(value = "投稿人下载稿件/推荐信/伦理委员会批文/基金批文/缴费证明")
-    public void ctrDownload(@NotNull @RequestParam Integer id,
-                            @NotNull @RequestParam Integer type,
+    public void ctrDownload(@NotNull(message = "稿件id不能为空")@Min(value = 1,message = "稿件id必须是正整数")@PathVariable(value = "id") Integer id,
+                            @NotNull(message = "稿件type不能为空")@Min (value = 1,message = "类型最小值为1")@Max(value = 5,message = "类型最大值为5")@PathVariable(value = "type") Integer type,
                             HttpServletResponse response,
                             HttpServletRequest request) {
         Post post = postService.getPost(id);
@@ -183,17 +188,34 @@ public class PostFileController {
         if (uid != post.getContributorUid()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_CONTRIBUTOR);
         }
-
-        download(getPath(post, fileType), response, request);
+        String filename = null;
+        switch (type){
+            case 1:
+                filename = post.getTitle()+"_稿件_"+post.getId();
+                break;
+            case 2:
+                filename = post.getTitle()+"_伦理委员会批文_"+post.getId();
+                break;
+            case 3:
+                filename = post.getTitle()+"_推荐信_"+post.getId();
+                break;
+            case 4:
+                filename = post.getTitle()+"_基金批文_"+post.getId();
+                break;
+            case 5:
+                filename = post.getTitle()+"_缴费证明_"+post.getId();
+                break;
+        }
+        download(getPath(post, fileType), response, request,filename);
     }
 
-    @GetMapping("download/role=ed")
+    @GetMapping("download/role=ed/id={id}&type={type}")
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiImplicitParam(name = "type", required = true, dataType = "int",
             value = "1稿件；2伦理委员会批文；3推荐信；4基金批文；5缴费证明")
     @ApiOperation(value = "编辑下载稿件/推荐信/伦理委员会批文/基金批文/缴费证明")
-    public void edDownload(@NotNull @RequestParam Integer id,
-                           @NotNull @RequestParam Integer type,
+    public void edDownload(@NotNull(message = "稿件id不能为空")@Min(value = 1,message = "稿件id必须是正整数")@PathVariable(value = "id") Integer id,
+                           @NotNull(message = "稿件type不能为空")@Min (value = 1,message = "类型最小值为1")@Max(value = 5,message = "类型最大值为5")@PathVariable(value = "type") Integer type,
                            HttpServletResponse response,
                            HttpServletRequest request) {
         PostFileType fileType = PostFileType.getItem(type);
@@ -216,14 +238,31 @@ public class PostFileController {
         if (post.getStatus() == PostStatus.TO_BE_SUBMITTED.getCode()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
-
-        download(getPath(post, fileType), response, request);
+        String filename = null;
+        switch (type){
+            case 1:
+                filename = post.getTitle()+"_稿件_"+post.getId();
+                break;
+            case 2:
+                filename = post.getTitle()+"_伦理委员会批文_"+post.getId();
+                break;
+            case 3:
+                filename = post.getTitle()+"_推荐信_"+post.getId();
+                break;
+            case 4:
+                filename = post.getTitle()+"_基金批文_"+post.getId();
+                break;
+            case 5:
+                filename = post.getTitle()+"_缴费证明_"+post.getId();
+                break;
+        }
+        download(getPath(post, fileType), response, request,filename);
     }
 
-    @GetMapping("download/role=rev")
+    @GetMapping("download/role=rev/id={id}")
     @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "审稿人下载稿件")
-    public void revDownload(@NotNull @RequestParam Integer id,
+    public void revDownload(@NotNull(message = "稿件id不能为空")@Min(value = 1,message = "稿件id必须是正整数")@PathVariable(value = "id") Integer id,
                             HttpServletResponse response,
                             HttpServletRequest request) {
         Post post = postService.getPost(id);
@@ -242,7 +281,7 @@ public class PostFileController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
 
-        download(getPath(post, PostFileType.POST), response, request);
+        download(getPath(post, PostFileType.POST), response, request,post.getTitle()+"_稿件_"+post.getId());
     }
 
 
@@ -275,7 +314,7 @@ public class PostFileController {
     }
 
 
-    private void download(String pathname, HttpServletResponse response, HttpServletRequest request) {
+    private void download(String pathname, HttpServletResponse response, HttpServletRequest request,String filename) {
         response.setCharacterEncoding(request.getCharacterEncoding());
         response.setContentType("application/octet-stream");
         FileInputStream fis = null;
@@ -286,7 +325,7 @@ public class PostFileController {
             } else {
                 fis = new FileInputStream(file);
                 response.setHeader("Content-Disposition",
-                        "attachment; filename=" + URLEncoder.encode(file.getName(), StandardCharsets.UTF_8));
+                        "attachment; filename=" + URLEncoder.encode(filename+file.getName().substring(file.getName().lastIndexOf(".")), StandardCharsets.UTF_8));
                 IOUtils.copy(fis, response.getOutputStream());
                 response.flushBuffer();
             }

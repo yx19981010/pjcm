@@ -140,10 +140,11 @@ public class UserServiceImpl implements UserService {
             }
         } else {
             User user = new User();
-            String code = UUIDUtil.getUUID() + UUIDUtil.getUUID();
+//            String code = UUIDUtil.getUUID() + UUIDUtil.getUUID();
             user.setEmail(userVoPost.getEmail());
             user.setPasswordHash(Sha256Util.getSHA256StrJava(userVoPost.getPassword()));
-            user.setActive(0);
+//            user.setActive(0);
+            user.setActive(1);
             user.setCreateTime(new Date(new java.util.Date().getTime()));
             user.setAddress(userVoPost.getAddress());
             user.setBankAccount(userVoPost.getBankAccount());
@@ -156,13 +157,13 @@ public class UserServiceImpl implements UserService {
             user.setTitle(userVoPost.getTitle());
             user.setUserName(userVoPost.getUserName());
             user.setZipCode(userVoPost.getZipCode());
-            user.setCode(code);
+//            user.setCode(code);
             userRepository.save(user);
             UserRole userRole = new UserRole();
             userRole.setRole(RoleType.CONTRIBUTOR_ROLE);
             userRole.setUid(userRepository.findByEmail(user.getEmail()).get().getId());
             userRoleService.addUserRole(userRole);
-            mailService.sendHtmlMailForContributorActive(user.getEmail(), code);
+//            mailService.sendHtmlMailForContributorActive(user.getEmail(), code);
         }
     }
 }

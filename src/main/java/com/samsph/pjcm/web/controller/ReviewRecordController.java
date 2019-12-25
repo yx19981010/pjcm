@@ -19,6 +19,7 @@ import com.samsph.pjcm.service.PostReviewerService;
 import com.samsph.pjcm.service.PostService;
 import com.samsph.pjcm.service.ReviewRecordService;
 import com.samsph.pjcm.vo.ReviewRecordVO;
+import com.samsph.pjcm.vo.ReviewRecordVoGetContributor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -91,7 +92,7 @@ public class ReviewRecordController {
             if (rejectComment == null || rejectComment.isBlank()) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
-            if (toForward || toRevise ||  !forwardComment.isBlank() || !reviseComment.isBlank()) {
+            if (toForward || toRevise ||  (forwardComment != null && !forwardComment.isBlank()) || (reviseComment != null && !reviseComment.isBlank())) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CANNOT_REVISE_OR_FORWARD);
             }
         } else {
@@ -155,8 +156,8 @@ public class ReviewRecordController {
             }
         }
         postService.updatePost(post);
-//        return AjaxResponse.success();
-        return AjaxResponse.success(dozerMapper.map(reviewRecord, ReviewRecordVO.class));
+        return AjaxResponse.success();
+//        return AjaxResponse.success(dozerMapper.map(reviewRecord, ReviewRecordVO.class));
     }
 
 
@@ -227,8 +228,8 @@ public class ReviewRecordController {
             }
             postService.updatePost(post);
         }
-        //        return AjaxResponse.success();
-        return AjaxResponse.success(dozerMapper.map(reviewRecord, ReviewRecordVO.class));
+                return AjaxResponse.success();
+//        return AjaxResponse.success(dozerMapper.map(reviewRecord, ReviewRecordVO.class));
     }
 
     @GetMapping("/{pid}/type=1")
@@ -260,7 +261,7 @@ public class ReviewRecordController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_CONTRIBUTOR);
         }
 
-        return AjaxResponse.success(reviewRecordService.getAllByPid(pid));
+        return AjaxResponse.success(DozerUtil.mapList(reviewRecordService.getAllByPid(pid), ReviewRecordVoGetContributor.class));
     }
 
     @GetMapping("/{pid}/type=3")

@@ -76,7 +76,7 @@ public class PostController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(Date.class,
-                new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true, 10));
+                new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), true, 19));
     }
 
     @PostMapping()
@@ -89,6 +89,8 @@ public class PostController {
                     "TODO：服务器端对中英文关键词和作者信息做格式校验",
             dataType = "PostQuery")
     public AjaxResponse savePost(@Validated({Add.class}) @RequestBody PostQuery postQuery) {
+
+        // TODO: 检查关键字和作者信息格式
 
 //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
@@ -163,7 +165,6 @@ public class PostController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_CONTRIBUTOR);
         }
 
-        // TODO：定义返回格式
         return AjaxResponse.success(dozerMapper.map(post, Post4CtrVO.class));
     }
 
@@ -187,6 +188,8 @@ public class PostController {
         if (post.getStatus() != PostStatus.TO_BE_SUBMITTED.getCode()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
+
+        // TODO: 检查关键字和作者信息格式
 
         // 更新稿件基本信息
         BeanUtil.copyProperties(postQuery, post,
@@ -306,8 +309,9 @@ public class PostController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_EDITOR);
         }
 
-        // TODO: 定义返回格式
-        return AjaxResponse.success(dozerMapper.map(post, Post4EdVO.class));
+        Post4EdVO retData = dozerMapper.map(post, Post4EdVO.class);
+        retData.setContributor(getName(post.getContributorUid()));
+        return AjaxResponse.success(retData);
     }
 
     @PutMapping("type=examFirst")
@@ -400,7 +404,6 @@ public class PostController {
 
         Post post = postService.getPost(id);
 
-        // TODO：定义返回格式
         return AjaxResponse.success(dozerMapper.map(post, Post4RevVO.class));
     }
 
@@ -460,7 +463,6 @@ public class PostController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REVIEWER_HAS_REPLIED);
         }
 
-        // TODO：定义返回格式
         return AjaxResponse.success(dozerMapper.map(post, Post4RevVO.class));
     }
 
@@ -510,6 +512,8 @@ public class PostController {
     @ApiImplicitParam(name = "postQuery", value = "必填：id\n不填：field、fundLevel、writersInfo",
             dataType = "PostQuery")
     public AjaxResponse updatePost5(@Validated({Update2.class}) @RequestBody PostQuery postQuery) {
+
+        // TODO: 检查关键字和作者信息格式
 
         Post post = postService.getPost(postQuery.getId());
 

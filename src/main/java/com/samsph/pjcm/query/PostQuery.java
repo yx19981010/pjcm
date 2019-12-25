@@ -39,8 +39,6 @@ PostQuery {
     @Null(message = "fundLevel必须为空", groups = {Update2.class})
     private FundLevel fundLevel;
 
-    // TODO：writersInfo须符合某一格式
-
     @ApiModelProperty("作者信息")
     @NotBlank(message = "writersInfo不能为空", groups = {Add.class})
     @Null(message = "writersInfo必须为空", groups = {Update2.class})
@@ -58,8 +56,6 @@ PostQuery {
     @ApiModelProperty("英文文章标题")
     @Length(max = 100, message = "英文标题不能超过100字")
     private String titleEn;
-
-    // TODO：中英文关键字须符合某一格式
 
     @ApiModelProperty("中文关键字")
     private String keywordsZh;

@@ -1,17 +1,10 @@
 package com.samsph.pjcm.web.controller;
 
-import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.constant.FileType;
-import com.samsph.pjcm.config.constant.PostType;
-import com.samsph.pjcm.config.constant.RoleType;
 import com.samsph.pjcm.config.exception.CustomException;
 import com.samsph.pjcm.config.exception.CustomExceptionType;
-import com.samsph.pjcm.dao.PostRepository;
-import com.samsph.pjcm.model.Post;
 import com.samsph.pjcm.service.CertificateService;
 import com.samsph.pjcm.service.MaterialService;
-import com.samsph.pjcm.service.PostService;
-import com.samsph.pjcm.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -19,7 +12,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;

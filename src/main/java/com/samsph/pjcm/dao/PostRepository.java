@@ -145,21 +145,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     /**
      * 以分页的方式查询审稿人已接受且处于审稿中的所有投稿
      *
-     * @param uid  审稿人id
-     * @param flag 是否需要审稿标识
-     * @param page 分页请求
-     * @return Page<Post>
-     */
-    @Query(value = "SELECT * FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid" +
-            " WHERE pr.reviewer_uid = ?1 AND pr.accept = 1 AND pr.flag=?2",
-            countQuery = "SELECT count(*) FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid" +
-                    " WHERE pr.reviewer_uid = ?1 AND pr.accept = 1 AND pr.flag=?2",
-            nativeQuery = true)
-    Page<Post> findByReviewerUidAndFlag(int uid, int flag, Pageable page);
-
-    /**
-     * 以分页的方式查询审稿人已接受且处于审稿中的所有投稿
-     *
      * @param uid   审稿人id
      * @param flag  是否需要审稿标识
      * @param start 开始日期
@@ -173,4 +158,32 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                     " WHERE pr.reviewer_uid = ?1 AND pr.accept = 1 AND pr.flag=?2 AND p.submit_time > ?3 AND p.submit_time < ?4",
             nativeQuery = true)
     Page<Post> findByReviewerUidAndFlagAndSubmitTimeAfterAndSubmitTimeBefore(int uid, int flag, Date start, Date end, Pageable page);
+
+    /**
+     * 以分页的方式查询审稿人已接受且处于审稿中的所有投稿
+     *
+     * @param uid  审稿人id
+     * @param page 分页请求
+     * @return Page<Post>
+     */
+    @Query(value = "SELECT * FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid" +
+            " WHERE pr.reviewer_uid = ?1 AND pr.accept = 1 AND pr.flag=1 AND (p.status=4 OR p.status=9)",
+            countQuery = "SELECT count(*) FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid" +
+                    " WHERE pr.reviewer_uid = ?1 AND pr.accept = 1 AND pr.flag=1 AND (p.status=4 OR p.status=9)",
+            nativeQuery = true)
+    Page<Post> findByReviewerUidAndFlagTrue(int uid, Pageable page);
+
+    /**
+     * 以分页的方式查询审稿人已接受且处于审稿中的所有投稿
+     *
+     * @param uid  审稿人id
+     * @param page 分页请求
+     * @return Page<Post>
+     */
+    @Query(value = "SELECT * FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid" +
+            " WHERE pr.reviewer_uid = ?1 AND pr.accept = 1 AND pr.flag=0",
+            countQuery = "SELECT count(*) FROM post p INNER JOIN post_reviewer pr ON p.id = pr.pid" +
+                    " WHERE pr.reviewer_uid = ?1 AND pr.accept = 1 AND pr.flag=0",
+            nativeQuery = true)
+    Page<Post> findByReviewerUidAndFlagFalse(int uid, Pageable page);
 }

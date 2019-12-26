@@ -54,20 +54,22 @@ PostQuery {
     private Genre genre;
 
     @ApiModelProperty("英文文章标题")
-    @Length(max = 100, message = "英文标题不能超过100字")
+    @Length(max = 100,groups = {Add.class,Update.class,Update2.class}, message = "英文标题不能超过100字")
     private String titleEn;
 
     @ApiModelProperty("中文关键字")
+    @Length(max = 240,groups = {Add.class,Update.class,Update2.class},message = "abstractZh不能超过240字")
     private String keywordsZh;
 
     @ApiModelProperty("英文关键字")
+    @Length(max = 240,groups = {Add.class,Update.class,Update2.class}, message = "abstractZh不能超过240字")
     private String keywordsEn;
 
     @ApiModelProperty("中文摘要")
-    @Length(max = 300, message = "abstractZh不能超过300字")
+    @Length(max = 300,groups = {Add.class,Update.class,Update2.class}, message = "abstractZh不能超过300字")
     private String abstractZh;
 
     @ApiModelProperty("英文摘要")
-    @Length(max = 2400, message = "abstractEn不能超过2400字")
+    @Length(max = 2400,groups = {Add.class,Update.class,Update2.class}, message = "abstractEn不能超过2400字")
     private String abstractEn;
 }

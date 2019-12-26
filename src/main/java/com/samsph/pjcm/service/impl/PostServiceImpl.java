@@ -167,7 +167,11 @@ public class PostServiceImpl implements PostService {
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        return postRepository.findByReviewerUidAndFlag(uid, flag ? MyBoolean.TRUE.getCode() : MyBoolean.FALSE.getCode(), pageRequest);
+        if(flag){
+            return postRepository.findByReviewerUidAndFlagTrue(uid, pageRequest);
+        }else{
+            return postRepository.findByReviewerUidAndFlagFalse(uid, pageRequest);
+        }
     }
 
     @Override

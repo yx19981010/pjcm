@@ -76,7 +76,7 @@ public class PostController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(Date.class,
-                new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), true, 19));
+                new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true, 10));
     }
 
     @PostMapping()
@@ -232,7 +232,7 @@ public class PostController {
 
         post.setEditorUid(editorId);
         post.setStatus(PostStatus.PENDING_FIRST_EXAM.getCode());
-        post.setSubmitTime(new java.sql.Date(new java.util.Date().getTime()));
+        post.setSubmitTime((new Date()));
         postService.updatePost(post);
 
         return AjaxResponse.success();
@@ -346,7 +346,7 @@ public class PostController {
             post.setStatus(PostStatus.FIRST_EXAM_REJECTED.getCode());
         }
         post.setFirstExamComment(comment);
-        post.setFirstExamCommentTime(new java.sql.Date(new java.util.Date().getTime()));
+        post.setFirstExamCommentTime(new Date());
         postService.updatePost(post);
 
         return AjaxResponse.success();
@@ -500,7 +500,7 @@ public class PostController {
             post.setStatus(PostStatus.EDITOR_REJECT.getCode());
         }
         post.setRejectComment(comment);
-        post.setRejectCommentTime(new java.sql.Date(new java.util.Date().getTime()));
+        post.setRejectCommentTime(new Date());
         postService.updatePost(post);
 
         return AjaxResponse.success();
@@ -606,7 +606,7 @@ public class PostController {
         }
 
         post.setBfPubComment(comment);
-        post.setBfPubCommentTime(new java.sql.Date(new java.util.Date().getTime()));
+        post.setBfPubCommentTime(new Date());
         postService.updatePost(post);
         return AjaxResponse.success();
     }
@@ -644,7 +644,7 @@ public class PostController {
             // TODO: 通知投稿人
         }
         post.setFormatComment(comment);
-        post.setFormatCommentTime(new java.sql.Date(new java.util.Date().getTime()));
+        post.setFormatCommentTime(new Date());
         postService.updatePost(post);
         return AjaxResponse.success();
     }
@@ -708,7 +708,7 @@ public class PostController {
             post.setStatus(PostStatus.CERTIFICATE_TO_BE_UPLOADED.getCode());
         }
         post.setCertificateComment(comment);
-        post.setCertificateCommentTime(new java.sql.Date(new java.util.Date().getTime()));
+        post.setCertificateCommentTime(new Date());
         postService.updatePost(post);
         return AjaxResponse.success();
     }

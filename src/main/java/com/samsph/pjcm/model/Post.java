@@ -167,7 +167,6 @@ public class Post {
     /**
      * 提交初审时间
      */
-    @Temporal(TemporalType.DATE)
     @Column(name = "submit_time")
     private Date submitTime;
 

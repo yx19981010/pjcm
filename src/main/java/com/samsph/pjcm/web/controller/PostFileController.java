@@ -161,7 +161,7 @@ public class PostFileController {
         }
         postService.updatePost(post);
 
-        return AjaxResponse.success(time);
+        return AjaxResponse.success(new Date());
     }
 
     @GetMapping("download/role=ctr/id={id}&type={type}")

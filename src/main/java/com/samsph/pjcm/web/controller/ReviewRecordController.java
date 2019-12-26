@@ -129,6 +129,8 @@ public class ReviewRecordController {
         if (reject) {
             // 审稿人否决，更新稿件状态
             post.setStatus(PostStatus.REVIEWER_REJECT.getCode());
+            postReviewer.setFlag(false);
+            postReviewerService.updatePostReviewer(postReviewer);
         } else {
             // 审稿人没有否决
             if (!toRevise) {

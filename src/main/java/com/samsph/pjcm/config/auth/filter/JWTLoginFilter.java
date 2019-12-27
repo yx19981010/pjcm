@@ -1,6 +1,9 @@
 package com.samsph.pjcm.config.auth.filter;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.samsph.pjcm.config.auth.AccountLogin;
 import com.samsph.pjcm.config.auth.JSONResult;
 import com.samsph.pjcm.config.auth.SecurityConstants;
@@ -48,7 +51,12 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException, IOException,CustomException {
         // JSON反序列化成 AccountCredentials
-        AccountLogin accountLogin = new ObjectMapper().readValue(httpServletRequest.getInputStream(), AccountLogin.class);
+        AccountLogin accountLogin;
+        try {
+             accountLogin = new ObjectMapper().readValue(httpServletRequest.getInputStream(), AccountLogin.class);
+        }catch (JsonParseException | MismatchedInputException e){
+            throw new BadCredentialsException("Json数据转换失败");
+        }
         HttpSession session = httpServletRequest.getSession();
         System.out.println(session.getAttribute("verCode"));
         if(!accountLogin.getCode().toLowerCase().equals("6666")) {

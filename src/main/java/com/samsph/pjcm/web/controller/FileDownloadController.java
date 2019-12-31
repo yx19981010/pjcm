@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -60,7 +61,7 @@ public class FileDownloadController {
             case FileType.CERTIFICATE: //证书
                 if(certificateService.findCertificate(id).isPresent()) {
                     filePath = certificateService.findCertificate(id).get().getPath();
-                    if(filePath == null || filePath.equals("")){
+                    if(filePath == null || StringUtils.isBlank(filePath)){
                         throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "证书不存在");
                     }
                     download(filePath, response, request,certificateService.findCertificate(id).get().getName());
@@ -71,7 +72,7 @@ public class FileDownloadController {
             case FileType.MATERIAL://资料
                 if(materialService.findMaterial(id).isPresent()) {
                     filePath = materialService.findMaterial(id).get().getPath();
-                    if(filePath == null || filePath.equals("")){
+                    if(filePath == null || StringUtils.isBlank(filePath)){
                         throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "材料不存在");
                     }
                     download(filePath, response, request,materialService.findMaterial(id).get().getName());

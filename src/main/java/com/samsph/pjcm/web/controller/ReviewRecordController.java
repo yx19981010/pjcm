@@ -23,6 +23,7 @@ import com.samsph.pjcm.vo.ReviewRecordVoGetContributor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -89,20 +90,20 @@ public class ReviewRecordController {
         }
 
         if (reject) {
-            if (rejectComment == null || rejectComment.equals("")) {
+            if (rejectComment == null || StringUtils.isBlank(rejectComment)) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
-            if (toForward || toRevise ||  (forwardComment != null && !forwardComment.equals("")) || (reviseComment != null && !reviseComment.equals(""))) {
+            if (toForward || toRevise ||  (forwardComment != null && !StringUtils.isBlank(forwardComment)) || (reviseComment != null && !StringUtils.isBlank(reviseComment))) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CANNOT_REVISE_OR_FORWARD);
             }
         } else {
             if (toForward) {
-                if (forwardComment == null || forwardComment.equals("")) {
+                if (forwardComment == null || StringUtils.isBlank(forwardComment)) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.FORWARD_COMMENT_NEEDED);
                 }
             }
             if (toRevise) {
-                if (reviseComment == null || reviseComment.equals("")) {
+                if (reviseComment == null || StringUtils.isBlank(reviseComment)) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REVISE_COMMENT_NEEDED);
                 }
             }
@@ -184,7 +185,7 @@ public class ReviewRecordController {
             }
         }
         if (toRevise) {
-            if (reviseComment == null || reviseComment.equals("")) {
+            if (reviseComment == null || StringUtils.isBlank(reviseComment)) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REVISE_COMMENT_NEEDED);
             }
         }

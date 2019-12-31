@@ -36,8 +36,6 @@ import java.util.List;
 public class CertificatesController {
     @Autowired
     private CertificateService certificateService;
-    @Autowired
-    private CurrentUser currentUser;
 
     @ApiOperation(value = "添加证书")
     @PostMapping("/certificates")

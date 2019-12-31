@@ -161,7 +161,7 @@ public class PostFileController {
         }
         postService.updatePost(post);
 
-        return AjaxResponse.success(new Date());
+        return AjaxResponse.success();
     }
 
     @GetMapping("download/role=ctr/id={id}&type={type}")
@@ -277,7 +277,7 @@ public class PostFileController {
         }
 
         // 检查稿件状态
-        if (post.getStatus() != PostStatus.FIRST_REVIEW.getCode() || post.getStatus() != PostStatus.RE_REVIEW.getCode()) {
+        if (post.getStatus() != PostStatus.FIRST_REVIEW.getCode() && post.getStatus() != PostStatus.RE_REVIEW.getCode()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
 
@@ -325,7 +325,7 @@ public class PostFileController {
             } else {
                 fis = new FileInputStream(file);
                 response.setHeader("Content-Disposition",
-                        "attachment; filename=" + URLEncoder.encode(filename+file.getName().substring(file.getName().lastIndexOf(".")), StandardCharsets.UTF_8));
+                        "attachment; filename=" + URLEncoder.encode(filename+file.getName().substring(file.getName().lastIndexOf(".")), String.valueOf(StandardCharsets.UTF_8)));
                 IOUtils.copy(fis, response.getOutputStream());
                 response.flushBuffer();
             }

@@ -45,8 +45,6 @@ public class ReviewerFieldController {
     private UserRoleService userRoleService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private CurrentUser currentUser;
 
     @ApiOperation(value = "添加审稿人-领域")
     @PostMapping("/reviewerFields")

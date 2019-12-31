@@ -19,8 +19,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     // 设置 HTTP 验证规则
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+                http.cors().and()
                 // 关闭csrf验证
-                http.csrf().disable()
+                .csrf().disable()
                 // 对请求进行认证
                 .authorizeRequests()
                 // 所有 /auth/login 的POST请求 都放行
@@ -33,8 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 添加一个过滤器验证其他请求的Token是否合法
                 .addFilterBefore(new JWTAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 // 不需要session（不创建会话）
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 // 授权异常处理
                 .exceptionHandling().authenticationEntryPoint(new JWTAuthenticationEntryPoint())
                 .accessDeniedHandler(new JWTAccessDeniedHandler());

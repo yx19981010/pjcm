@@ -36,8 +36,6 @@ import java.util.List;
 public class MaterialController {
     @Autowired
     private MaterialService materialService;
-    @Autowired
-    private CurrentUser currentUser;
 
     @ApiOperation(value = "添加材料")
     @ApiImplicitParams({

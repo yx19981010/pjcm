@@ -1,5 +1,6 @@
 package com.samsph.pjcm.config.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -27,7 +29,7 @@ import java.util.Map;
  *
  * @author hujiahao
  */
-
+@Slf4j
 @ControllerAdvice
 public class WebExceptionController {
 
@@ -75,12 +77,13 @@ public class WebExceptionController {
 
     @ExceptionHandler(CustomException.class)
     @ResponseBody
-    public AjaxResponse customerException(CustomException e) {
-        if (e.getCode() == CustomExceptionType.SYSTEM_ERROR.getCode()) {
+    public AjaxResponse customerException(CustomException ex) {
+        if (ex.getCode() == CustomExceptionType.SYSTEM_ERROR.getCode()) {
             // 400异常不需要持久化，将异常信息以友好的方式告知用户即可
-            // TODO 将500异常信息持久化处理，方便运维人员处理
+
+            // TODO: 将500异常信息持久化处理，方便运维人员处理
         }
-        return AjaxResponse.error(e);
+        return AjaxResponse.error(ex);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -92,8 +95,7 @@ public class WebExceptionController {
 //    @ExceptionHandler(Exception.class)
 //    @ResponseBody
 //    public AjaxResponse exception(Exception e) {
-//        // TODO 将异常信息持久化处理，方便运维人员处理
-//        // 没有被程序员发现并转换为CustomException的异常，都是未知异常
+//        // TODO: 将999异常信息持久化处理，方便运维人员处理
 //        return AjaxResponse.error(new CustomException(CustomExceptionType.OTHER_ERROR, "未知异常"));
 //    }
 }

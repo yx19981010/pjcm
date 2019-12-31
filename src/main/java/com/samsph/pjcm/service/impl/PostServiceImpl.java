@@ -209,7 +209,7 @@ public class PostServiceImpl implements PostService {
         Optional<Post> postOptional = postRepository.findById(id);
 
         // 若不存在则抛出异常
-        if (postOptional.isEmpty()) {
+        if (!postOptional.isPresent()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.POST_NOT_FOUND);
         }
 

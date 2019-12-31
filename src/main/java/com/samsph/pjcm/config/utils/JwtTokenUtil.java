@@ -28,14 +28,14 @@ public class JwtTokenUtil {
     private static byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(SecurityConstants.JWT_SECRET_KEY);
     private static SecretKey secretKey = Keys.hmacShaKeyFor(apiKeySecretBytes);
 
-    public static String createToken(String email, List<String> roles) {
+    public static String createToken(String email,String password,List<String> roles) {
         long expiration = SecurityConstants.EXPIRATION;
 
         String token = Jwts.builder()
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .claim(SecurityConstants.ROLE_CLAIMS, String.join(",", roles))
                 .setIssuedAt(new Date())
-                .setSubject(email)
+                .setSubject(email+";"+password)
                 .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
                 .compact();
         return SecurityConstants.TOKEN_PREFIX + token;
@@ -52,9 +52,14 @@ public class JwtTokenUtil {
     }
 
     public static String getEmailByToken(String token) {
-        return getTokenBody(token).getSubject();
+        int i = getTokenBody(token).getSubject().indexOf(";");
+        return getTokenBody(token).getSubject().substring(0,i);
     }
 
+    public static String getPasswordByToken(String token) {
+        int i = getTokenBody(token).getSubject().indexOf(";");
+        return getTokenBody(token).getSubject().substring(i+1);
+    }
     /**
      * 获取用户所有角色
      */

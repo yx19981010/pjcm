@@ -42,6 +42,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     private UserService userService = applicationContext.getBean(UserService.class);
     private UserRoleService userRoleService = applicationContext.getBean(UserRoleService.class);
     private static int role;
+    private static String password;
 
     public JWTLoginFilter(String url, AuthenticationManager authManager) {
         super(new AntPathRequestMatcher(url));
@@ -57,15 +58,16 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
         }catch (JsonParseException | MismatchedInputException e){
             throw new BadCredentialsException("Json数据转换失败");
         }
-        HttpSession session = httpServletRequest.getSession();
-        System.out.println(session.getAttribute("verCode"));
-        if(!accountLogin.getCode().toLowerCase().equals("6666")) {
-            if (session.getAttribute("verCode") == null || !accountLogin.getCode().toLowerCase().equals(session.getAttribute("verCode")) ) {
-                throw new BadCredentialsException("验证码错误");
-            }
-        }
+//        HttpSession session = httpServletRequest.getSession();
+//        System.out.println("vercode:"+session.getAttribute("verCode"));
+//        if(!accountLogin.getCode().toLowerCase().equals("6666")) {
+//            if (session.getAttribute("verCode") == null || !accountLogin.getCode().toLowerCase().equals(session.getAttribute("verCode")) ) {
+//                throw new BadCredentialsException("验证码错误");
+//            }
+//        }
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         role = accountLogin.getRole();
+        password = accountLogin.getPassword();
         if(userService.findUserByEmail(accountLogin.getUsername()).isPresent()){
             if(!userRoleService.findUserHasRole(userService.findUserByEmail(accountLogin.getUsername()).get().getId(),role)){
                 throw new BadCredentialsException("用户无此角色");
@@ -104,11 +106,13 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) throws IOException, ServletException {
         String email = auth.getName();
         List<String> roles = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-        String token = JwtTokenUtil.createToken(email,roles);
+        String token = JwtTokenUtil.createToken(email,password,roles);
         res.setHeader(SecurityConstants.TOKEN_HEADER,token);
         res.setContentType("application/json");
         res.setStatus(HttpServletResponse.SC_OK);
-        res.getOutputStream().println(JSONResult.fillResultString(true,200,"ok",new UserLogined(userService.findUserByEmail(email).get().getId(),role,email),new Date()));
+//        res.setHeader("Access-Control-Allow-Credentials", "true");
+//        res.setHeader("Access-Control-Allow-Origin",req.getHeader("Origin"));
+        res.getOutputStream().println(JSONResult.fillResultString(true,200,"ok",new UserLogined(userService.findUserByEmail(email).get().getId(),role,email)));
     }
 
 

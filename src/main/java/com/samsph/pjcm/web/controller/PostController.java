@@ -67,8 +67,6 @@ public class PostController {
     @Resource
     UserService userService;
 
-    @Resource
-    private CurrentUser currentUser;
 
     @Resource
     private EditorFieldService editorFieldService;
@@ -340,7 +338,7 @@ public class PostController {
             post.setStatus(PostStatus.REVIEWER_TO_BE_SELECTED.getCode());
         } else {
             // 初审不通过
-            if (comment == null || comment.isBlank()) {
+            if (comment == null || comment.equals("")) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.FIRST_EXAM_REJECTED.getCode());
@@ -453,7 +451,7 @@ public class PostController {
 
         // 检查稿件状态
         Post post = postService.getPost(id);
-        if (post.getStatus() != PostStatus.FIRST_REVIEW.getCode() || post.getStatus() != PostStatus.RE_REVIEW.getCode()) {
+        if (post.getStatus() != PostStatus.FIRST_REVIEW.getCode() && post.getStatus() != PostStatus.RE_REVIEW.getCode()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
 
@@ -494,7 +492,7 @@ public class PostController {
 
         } else {
             // 编辑退稿
-            if (comment == null || comment.isBlank()) {
+            if (comment == null || comment.equals("")) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.EDITOR_REJECT.getCode());
@@ -598,7 +596,7 @@ public class PostController {
             post.setStatus(PostStatus.FORMAT_TO_BE_REVIEWED.getCode());
         } else {
             // 不通过则回到待修改状态
-            if (comment == null || comment.isBlank()) {
+            if (comment == null || comment.equals("")) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.TO_BE_REVISED.getCode());
@@ -637,7 +635,7 @@ public class PostController {
             post.setStatus(PostStatus.LAYOUT_FEE_TO_BE_DETERMINED.getCode());
         } else {
             // 格式审核不通过
-            if (comment == null || comment.isBlank()) {
+            if (comment == null || comment.equals("")) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.FORMAT_TO_BE_MODIFIED.getCode());
@@ -702,7 +700,7 @@ public class PostController {
             post.setStatus(PostStatus.SUCCESS.getCode());
         } else {
             // 缴费证明审核不通过
-            if (comment == null || comment.isBlank()) {
+            if (comment == null || comment.equals("")) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.CERTIFICATE_TO_BE_UPLOADED.getCode());
@@ -733,7 +731,7 @@ public class PostController {
         }
 
         // 设置版面费和状态
-        post.setFee(postLayOutFeeQuery.getFee());
+        post.setFee(Double.valueOf(postLayOutFeeQuery.getFee()));
         post.setStatus(PostStatus.CERTIFICATE_TO_BE_UPLOADED.getCode());
 
         // TODO: 提醒缴费
@@ -860,7 +858,7 @@ public class PostController {
 
         // 给投稿人发送邮件
         Optional<User> userOptional = userService.findUserByUid(post.getContributorUid());
-        if (userOptional.isEmpty()) {
+        if (!userOptional.isPresent()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CONTRIBUTOR_NOT_FOUND);
         }
         User ctr = userOptional.get();
@@ -872,7 +870,7 @@ public class PostController {
         List<PostReviewer> postReviewers = postReviewerService.getAllByPidAndFlag(post.getId(), true);
         for (PostReviewer item : postReviewers) {
             Optional<User> userOptional = userService.findUserByUid(item.getReviewerUid());
-            if (userOptional.isEmpty()) {
+            if (!userOptional.isPresent()) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CONTRIBUTOR_NOT_FOUND);
             }
             User rev = userOptional.get();
@@ -902,11 +900,11 @@ public class PostController {
         String keywordsZh = post.getKeywordsZh();
         String keywordsEn = post.getKeywordsEn();
         String titleEn = post.getTitleEn();
-        boolean hasZhKw = keywordsZh != null && !keywordsZh.isBlank();
-        boolean hasEnKw = keywordsEn != null && !keywordsEn.isBlank();
-        boolean hasZhAbstract = abstractZh != null && !abstractZh.isBlank();
-        boolean hasEnAbstract = abstractEn != null && !abstractEn.isBlank();
-        boolean hasTitleEn = titleEn != null && !titleEn.isBlank();
+        boolean hasZhKw = keywordsZh != null && !keywordsZh.equals("");
+        boolean hasEnKw = keywordsEn != null && !keywordsEn.equals("");
+        boolean hasZhAbstract = abstractZh != null && !abstractZh.equals("");
+        boolean hasEnAbstract = abstractEn != null && !abstractEn.equals("");
+        boolean hasTitleEn = titleEn != null && !titleEn.equals("");
 
         if (genre == WORKS.getCode()) {
             // TODO: 假设专著也需要英文标题
@@ -929,7 +927,7 @@ public class PostController {
     private void checkPostCanSubmit(Post post) {
         // 检查标题信息
         String title = post.getTitle();
-        if (title == null || title.isBlank()) {
+        if (title == null || title.equals("")) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.TITLE_NEEDED);
         }
 
@@ -940,7 +938,7 @@ public class PostController {
 
         // 检查作者信息
         String writersInfo = post.getWritersInfo();
-        if (writersInfo == null || writersInfo.isBlank()) {
+        if (writersInfo == null || writersInfo.equals("")) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRITERS_INFO_NEEDED);
         }
 
@@ -982,10 +980,10 @@ public class PostController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.INVOICE_REQUIRED_OR_NOT_NEEDED);
         } else if (invoiceNeeded == MyBoolean.TRUE.getCode()) {
             // 如果需要发票，检查相关信息是否填写完整
-            if (taxpayerId == null || taxpayerId.isBlank() ||
-                    address == null || address.isBlank() ||
-                    receiver == null || receiver.isBlank() ||
-                    invoiceTitle == null || invoiceTitle.isBlank()) {
+            if (taxpayerId == null || taxpayerId.equals("") ||
+                    address == null || address.equals("") ||
+                    receiver == null || receiver.equals("") ||
+                    invoiceTitle == null || invoiceTitle.equals("")) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.INCOMPLETE_INVOICE_INFO);
             }
         }

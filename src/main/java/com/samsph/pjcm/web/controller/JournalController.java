@@ -42,8 +42,6 @@ public class JournalController {
     @Resource
     JournalService journalService;
 
-    @Resource
-    private CurrentUser currentUser;
 
     @PostMapping()
     @ApiOperation(value = "创建期刊")

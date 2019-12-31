@@ -5,7 +5,7 @@
             <PatternLayout charset="UTF-8" pattern="[%-5p] %d %c - %m%n" />
         </Console>
 
-        <RollingFile name="runtimeFile" fileName="./logs/boot-launch.log" filePattern="./logs/boot-launch-%d{yyyy-MM-dd}.log"
+        <RollingFile name="runtimeFile" fileName="./logs/pjcm.log" filePattern="./logs/pjcm-%d{yyyy-MM-dd}.log"
                      append="true">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS Z}\t%level\t%class\t%line\t%thread\t%msg%n"/>
             <Policies>
@@ -21,6 +21,14 @@
                 </Delete>
             </DefaultRolloverStrategy>
         </RollingFile>
+
+        <RollingFile name="errorFile" fileName="./logs/errors.log" filePattern="./logs/errors-%d{yyyy-MM-dd}.log"
+                     append="true">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS Z}\t%level\t%class\t%line\t%thread\t%msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
     </Appenders>
 
     <Loggers>
@@ -28,5 +36,9 @@
             <AppenderRef ref="CONSOLE" />
             <AppenderRef ref="runtimeFile" />
         </root>
+        <logger name="com.samsph.pjcm.config.exception.WebExceptionController">
+            <AppenderRef ref="CONSOLE" />
+            <AppenderRef ref="errorFile" />
+        </logger>
     </Loggers>
 </configuration>

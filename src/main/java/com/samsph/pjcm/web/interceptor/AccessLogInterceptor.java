@@ -19,8 +19,6 @@ import java.util.Date;
 
 @Slf4j
 public class AccessLogInterceptor implements HandlerInterceptor {
-    @Autowired
-    private CurrentUser currentUser;
     /**
      * 请求开始时间标识
      */
@@ -66,23 +64,27 @@ public class AccessLogInterceptor implements HandlerInterceptor {
         int status = response.getStatus();
         accessLog.setHttpStatus(status);
 
-        // TODO: 设置访问者，不同应用有的将访问者信息放在session里，有的通过request传递，获取的方法不同
-        //  这里暂时写死
+
 //        switch (currentUser.getCurrentUser().getUserRole()){
 //            case 1:
-//                accessLog.setUsername("admin");
+//                accessLog.setUserRole("admin");
 //                break;
 //            case 2:
-//                accessLog.setUsername("editor");
+//                accessLog.setUserRole("editor");
 //                break;
 //            case 3:
-//                accessLog.setUsername("reviewer");
+//                accessLog.setUserRole("reviewer");
 //                break;
 //            case 4:
-//                accessLog.setUsername("contributor");
+//                accessLog.setUserRole("contributor");
 //                break;
 //        }
-        accessLog.setUsername("admin");
+//        accessLog.setUserId(currentUser.getCurrentUser().getUserId());
+//        accessLog.setUsername(currentUser.getCurrentUser().getUserEmail());
+
+        accessLog.setUserRole("admin");
+        accessLog.setUsername("test@qq.com");
+        accessLog.setUserId(666);
 
         //当前时间
         long currentTime = System.currentTimeMillis();
@@ -94,7 +96,10 @@ public class AccessLogInterceptor implements HandlerInterceptor {
         accessLog.setDuration(Integer.valueOf((currentTime - sendTime)+""));
 
         accessLog.setCreateTime(new Date());
+
         //将sysLog对象持久化保存
         log.info(accessLog.toString());
+
+
     }
 }

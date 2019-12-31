@@ -18,8 +18,8 @@ public class BeanConfigurer {
         return new DozerBeanMapper();
     }
 
-    @Bean
-    public CurrentUser getCurrentUser() {
-        return new CurrentUser();
-    }
+//    @Bean
+//    public CurrentUser getCurrentUser() {
+//        return new CurrentUser();
+//    }
 }

@@ -1,6 +1,8 @@
 package com.samsph.pjcm.config.auth;
 
 import com.samsph.pjcm.config.constant.RoleType;
+import com.samsph.pjcm.config.exception.CustomException;
+import com.samsph.pjcm.config.exception.CustomExceptionType;
 import com.samsph.pjcm.service.UserRoleService;
 import com.samsph.pjcm.service.UserService;
 import com.samsph.pjcm.config.utils.SpringUtil;
@@ -17,10 +19,13 @@ public class CurrentUser {
     private ApplicationContext applicationContext = SpringUtil.getApplicationContext();
     private UserService userService = applicationContext.getBean(UserService.class);
 
-    public UserLogined getCurrentUser() {
+    public  UserLogined getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() != null) {
             String email = (String) authentication.getPrincipal();
+            if(!userService.findUserByEmail(email).isPresent()){
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"邮箱错误");
+            }
             int userId = userService.findUserByEmail(email).get().getId();
             int role = 0;
             List<String> roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());

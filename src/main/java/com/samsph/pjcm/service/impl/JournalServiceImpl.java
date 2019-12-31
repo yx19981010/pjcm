@@ -94,7 +94,7 @@ public class JournalServiceImpl implements JournalService {
         Optional<Journal> journalOptional = journalRepository.findById(id);
 
         // 若不存在则抛出异常
-        if (journalOptional.isEmpty()) {
+        if (!journalOptional.isPresent()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.JOURNAL_NOT_FOUND);
         }
 
@@ -106,7 +106,7 @@ public class JournalServiceImpl implements JournalService {
         Optional<Journal> journalOptional = journalRepository.findByYearAndMonthAndVolumeAndNumber(year, month, vol, no);
 
         // 若不存在则抛出异常
-        if (journalOptional.isEmpty()) {
+        if (!journalOptional.isPresent()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.JOURNAL_NOT_FOUND);
         }
 

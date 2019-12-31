@@ -8,6 +8,7 @@ import com.samsph.pjcm.config.constant.RoleType;
 import com.samsph.pjcm.config.exception.CustomException;
 import com.samsph.pjcm.config.exception.CustomExceptionType;
 import com.samsph.pjcm.config.utils.JwtTokenUtil;
+import com.samsph.pjcm.config.utils.Sha256Util;
 import com.samsph.pjcm.config.utils.SpringUtil;
 import com.samsph.pjcm.service.UserRoleService;
 import com.samsph.pjcm.service.UserService;
@@ -59,7 +60,7 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
             // 如果请求头中有token，则进行解析，并且设置授权信息
             SecurityContextHolder.getContext().setAuthentication(getAuthentication(authorization));
             super.doFilterInternal(request, response, chain);
-        }catch (SignatureException | ExpiredJwtException | MalformedJwtException | IllegalArgumentException e){
+        }catch (SignatureException | ExpiredJwtException | MalformedJwtException | IllegalArgumentException | CustomException e){
             response.setStatus(401);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
         }
@@ -71,9 +72,13 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(String authorization) {
         String token = authorization.replace(SecurityConstants.TOKEN_PREFIX, "");
         String email = JwtTokenUtil.getEmailByToken(token);
+        String password = JwtTokenUtil.getPasswordByToken(token);
         if(!userService.findUserByEmail(email).isPresent()){
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"用户邮箱已修改无效");
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"用户邮箱已修改,token无效");
         }else{
+            if(!userService.findUserByEmail(email).get().getPasswordHash().equals(Sha256Util.getSHA256StrJava(password))){
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"用户密码已修改,token无效");
+            }
             int role = 0;
             List<String> roles = JwtTokenUtil.getUserRolesByToken(token).stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
             if(roles.size() == 1) {
@@ -97,7 +102,7 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
                 }
             }
             if(!userRoleService.findUserHasRole(userService.findUserByEmail(email).get().getId(),role)){
-                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"用户角色已修改无效");
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"用户角色已修改,token无效");
             }
         }
         // 通过 token 获取用户具有的角色

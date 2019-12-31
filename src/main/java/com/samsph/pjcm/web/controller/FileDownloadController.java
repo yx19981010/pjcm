@@ -99,7 +99,7 @@ public class FileDownloadController {
             } else {
                 fis = new FileInputStream(file);
                 response.setHeader("Content-Disposition",
-                        "attachment; filename=" + URLEncoder.encode(filename+file.getName().substring(file.getName().lastIndexOf(".")), StandardCharsets.UTF_8));
+                        "attachment; filename=" + URLEncoder.encode(filename+file.getName().substring(file.getName().lastIndexOf(".")), String.valueOf(StandardCharsets.UTF_8)));
                 IOUtils.copy(fis, response.getOutputStream());
                 response.flushBuffer();
             }

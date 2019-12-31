@@ -33,8 +33,9 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
                 //如果不设置这个属性前端无法通过response header获取到Authorization也就是token
                 .exposedHeaders("Authorization")
                 .allowCredentials(true)
-                .allowedMethods("GET", "POST", "DELETE", "PUT")
-                .maxAge(3600);
+                .allowedMethods("*")
+                .allowedHeaders("*")
+                .maxAge(3600L);
     }
 
     @Override

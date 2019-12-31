@@ -89,20 +89,20 @@ public class ReviewRecordController {
         }
 
         if (reject) {
-            if (rejectComment == null || rejectComment.isBlank()) {
+            if (rejectComment == null || rejectComment.equals("")) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
-            if (toForward || toRevise ||  (forwardComment != null && !forwardComment.isBlank()) || (reviseComment != null && !reviseComment.isBlank())) {
+            if (toForward || toRevise ||  (forwardComment != null && !forwardComment.equals("")) || (reviseComment != null && !reviseComment.equals(""))) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CANNOT_REVISE_OR_FORWARD);
             }
         } else {
             if (toForward) {
-                if (forwardComment == null || forwardComment.isBlank()) {
+                if (forwardComment == null || forwardComment.equals("")) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.FORWARD_COMMENT_NEEDED);
                 }
             }
             if (toRevise) {
-                if (reviseComment == null || reviseComment.isBlank()) {
+                if (reviseComment == null || reviseComment.equals("")) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REVISE_COMMENT_NEEDED);
                 }
             }
@@ -178,13 +178,13 @@ public class ReviewRecordController {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CANNOT_REVISE_OR_REJECT);
             }
         }
-        if( !toRevise ){
+        if( !toRevise  ){
             if(publish == null){
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.PUBLISH_NEEDED);
             }
         }
         if (toRevise) {
-            if (reviseComment == null || reviseComment.isBlank()) {
+            if (reviseComment == null || reviseComment.equals("")) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REVISE_COMMENT_NEEDED);
             }
         }

@@ -48,13 +48,26 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
         reviewRecord.setCount(cnt);
         reviewRecord.setCreateTime(new Date());
 
-        reviewRecord.setReject(reviewRecordQuery.getReject() ? 1 : 0);
+        if(reviewRecordQuery.getReject()==null || !reviewRecordQuery.getReject()){
+            reviewRecord.setReject(0);
+        }else{
+            reviewRecord.setReject(1);
+        }
         reviewRecord.setRejectComment(reviewRecordQuery.getRejectComment());
 
-        reviewRecord.setToForward(reviewRecordQuery.getToForward() ? 1 : 0);
+        if(reviewRecordQuery.getToForward() == null || !reviewRecordQuery.getToForward()){
+            reviewRecord.setToForward(0);
+        }else {
+            reviewRecord.setToForward(1);
+        }
         reviewRecord.setForwardComment(reviewRecordQuery.getForwardComment());
 
-        reviewRecord.setToRevise(reviewRecordQuery.getToRevise() ? 1 : 0);
+        if(reviewRecordQuery.getToRevise() == null ||!reviewRecordQuery.getToRevise()){
+            reviewRecord.setToRevise(0);
+        }else {
+            reviewRecord.setToRevise(1);
+        }
+
         reviewRecord.setReviseComment(reviewRecordQuery.getReviseComment());
 
         reviewRecord.setText(reviewRecordQuery.getText());
@@ -72,7 +85,7 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
     @Override
     public boolean canReReviewClose(int pid) {
         Optional<Post> postOptional = postRepository.findById(pid);
-        if (postOptional.isEmpty()) {
+        if (!postOptional.isPresent()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "稿件不存在");
         }
 

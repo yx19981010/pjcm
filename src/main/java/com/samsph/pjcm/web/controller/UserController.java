@@ -23,10 +23,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.util.*;
@@ -46,8 +51,6 @@ public class UserController {
     private EditorFieldService editorFieldService;
     @Autowired
     private ReviewerFieldService reviewerFieldService;
-    @Autowired
-    private CurrentUser currentUser;
 
     @ApiOperation(value = "添加用户")
     @PostMapping("/users")
@@ -194,9 +197,11 @@ public class UserController {
     })
     @PostMapping("/users/changePassword")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR','ROLE_REVIEWER','ROLE_CONTRIBUTOR')")
-    public AjaxResponse changePassword( @Size(min = 8,max = 20)@RequestParam("oldPassword") String oldPassword,
-                                        @Size(min = 8,max = 20)@RequestParam("newPassword") String newPassword,
-                                        @NotNull(message = "未传入用户id")@Min(value = 1,message = "用户id必须是正整数") @RequestParam("id") Integer id){
+    public AjaxResponse changePassword(@Size(min = 8,max = 20)@RequestParam("oldPassword") String oldPassword,
+                                       @Size(min = 8,max = 20)@RequestParam("newPassword") String newPassword,
+                                       @NotNull(message = "未传入用户id")@Min(value = 1,message = "用户id必须是正整数") @RequestParam("id") Integer id,
+                                       HttpServletRequest request,
+                                       HttpServletResponse response){
         //用户登录检测
 //        if(currentUser.getCurrentUser().getUserId() != id){
 //            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"无权修改其他人的密码");
@@ -211,6 +216,10 @@ public class UserController {
                 if (user.getPasswordHash().equals(Sha256Util.getSHA256StrJava(oldPassword))) {
                     user.setPasswordHash(Sha256Util.getSHA256StrJava(newPassword));
                     userService.updateUser(user);
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    if(auth != null){
+                        new SecurityContextLogoutHandler().logout(request,response,auth);
+                    }
                     return AjaxResponse.success();
                 } else {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "原密码错误");

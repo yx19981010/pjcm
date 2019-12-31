@@ -35,8 +35,7 @@ import java.util.List;
 public class AnnouncementController {
     @Autowired
     private AnnouncementService announcementService;
-    @Autowired
-    private CurrentUser currentUser;
+
 
     @ApiOperation(value = "添加公告")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")

@@ -45,8 +45,6 @@ public class EditorFieldController {
     private UserRoleService userRoleService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private CurrentUser currentUser;
 
     @ApiOperation(value = "添加编辑-领域")
     @PostMapping("/editorFields")

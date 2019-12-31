@@ -16,6 +16,14 @@ public class AccessLog {
      */
     private String username;
     /**
+     * 访问者id
+     */
+    private Integer userId;
+    /**
+     * 访问者角色
+     */
+    private String userRole;
+    /**
      * 请求路径
      */
     private String url;

@@ -76,7 +76,7 @@ public class PostReviewerServiceImpl implements PostReviewerService {
         Optional<PostReviewer> postReviewerOptional = postReviewerRepository.findById(id);
 
         // 若不存在则抛出异常
-        if (postReviewerOptional.isEmpty()) {
+        if (!postReviewerOptional.isPresent()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.POST_REVIEWER_NOT_FOUND);
         }
 
@@ -87,7 +87,7 @@ public class PostReviewerServiceImpl implements PostReviewerService {
         Optional<PostReviewer> postReviewerOptional = postReviewerRepository.findByPidAndReviewerUid(pid, uid);
 
         // 若不存在则抛出异常
-        if (postReviewerOptional.isEmpty()) {
+        if (!postReviewerOptional.isPresent()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.POST_REVIEWER_NOT_FOUND);
         }
 

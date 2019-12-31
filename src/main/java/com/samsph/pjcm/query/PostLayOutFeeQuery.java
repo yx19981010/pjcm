@@ -21,5 +21,5 @@ public class PostLayOutFeeQuery {
     @ApiModelProperty("版面费。小数不超过两位。")
     @NotNull(message = "fee不能为空")
     @Pattern(regexp = "^(([1-9]\\d*)|([0]))(\\.(\\d){0,2})?$",message ="fee小数不能超过两位" )
-    private Double fee;
+    private String fee;
 }

@@ -1,6 +1,8 @@
 package com.samsph.pjcm.web.controller;
 
 import com.samsph.pjcm.config.exception.AjaxResponse;
+import com.samsph.pjcm.config.exception.CustomException;
+import com.samsph.pjcm.config.exception.CustomExceptionType;
 import com.samsph.pjcm.config.utils.DozerUtil;
 import com.samsph.pjcm.model.Announcement;
 import com.samsph.pjcm.service.MailService;
@@ -19,8 +21,19 @@ public class TestController {
 
     @GetMapping("/sendEmail")
     public AjaxResponse sendEmail(){
-            mailService.sendHtmlMailForContributor("12345@test.com","论文1","杨玺");
-//            mailService.sendHtmlMailForReviewer("554976107@qq.com","论文1","杨玺");
+//            mailService.sendHtmlMailForContributor("12345@test.com","论文1","杨玺");
+            mailService.sendHtmlMailForReviewer("554976107@qq.com","论文1","杨玺");
             return AjaxResponse.success();
+    }
+
+    @GetMapping("/error")
+    public AjaxResponse error(){
+        Integer a = null;
+        if(a.equals(1)){
+            return AjaxResponse.success();
+        }
+        else{
+            throw new CustomException(CustomExceptionType.SYSTEM_ERROR,"出错啦");
+        }
     }
 }

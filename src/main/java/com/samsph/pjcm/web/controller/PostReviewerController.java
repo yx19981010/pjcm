@@ -89,7 +89,7 @@ public class PostReviewerController {
 
         // 检查审稿人存在
         Optional<User> userOptional = userService.findUserByUid(reviewerUid);
-        if (userOptional.isEmpty()) {
+        if (!userOptional.isPresent()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REVIEWER_NOT_FOUND);
         }
         User reviewer = userOptional.get();

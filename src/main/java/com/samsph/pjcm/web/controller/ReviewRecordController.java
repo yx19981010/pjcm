@@ -49,9 +49,6 @@ import static com.samsph.pjcm.config.DevUserId.*;
 public class ReviewRecordController {
 
     @Resource
-    private Mapper dozerMapper;
-
-    @Resource
     PostService postService;
 
     @Resource
@@ -160,7 +157,6 @@ public class ReviewRecordController {
         }
         postService.updatePost(post);
         return AjaxResponse.success();
-//        return AjaxResponse.success(dozerMapper.map(reviewRecord, ReviewRecordVO.class));
     }
 
 
@@ -231,8 +227,7 @@ public class ReviewRecordController {
             }
             postService.updatePost(post);
         }
-                return AjaxResponse.success();
-//        return AjaxResponse.success(dozerMapper.map(reviewRecord, ReviewRecordVO.class));
+        return AjaxResponse.success();
     }
 
     @GetMapping("/{pid}/type=1")

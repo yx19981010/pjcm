@@ -19,7 +19,7 @@ public class SecurityConstants {
     /**
      * 过期时间是3个小时
      */
-    public static final long EXPIRATION = 2L * 60L * 60L;
+    public static final long EXPIRATION = 24L * 60L * 60L;
 
     /**
      * JWT签名密钥硬编码到应用程序代码中，应该存放在环境变量或.properties文件中。

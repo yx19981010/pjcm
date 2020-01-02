@@ -58,13 +58,6 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
         }catch (JsonParseException | MismatchedInputException e){
             throw new BadCredentialsException("Json数据转换失败");
         }
-//        HttpSession session = httpServletRequest.getSession();
-//        System.out.println("vercode:"+session.getAttribute("verCode"));
-//        if(!accountLogin.getCode().toLowerCase().equals("6666")) {
-//            if (session.getAttribute("verCode") == null || !accountLogin.getCode().toLowerCase().equals(session.getAttribute("verCode")) ) {
-//                throw new BadCredentialsException("验证码错误");
-//            }
-//        }
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         role = accountLogin.getRole();
         password = accountLogin.getPassword();
@@ -110,8 +103,6 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
         res.setHeader(SecurityConstants.TOKEN_HEADER,token);
         res.setContentType("application/json");
         res.setStatus(HttpServletResponse.SC_OK);
-//        res.setHeader("Access-Control-Allow-Credentials", "true");
-//        res.setHeader("Access-Control-Allow-Origin",req.getHeader("Origin"));
         res.getOutputStream().println(JSONResult.fillResultString(true,200,"ok",new UserLogined(userService.findUserByEmail(email).get().getId(),role,email)));
     }
 

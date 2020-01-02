@@ -116,36 +116,5 @@ public class FileDownloadController {
             }
         }
     }
-//    private void download(String pathname,HttpServletResponse response, HttpServletRequest request){
-//        response.setCharacterEncoding(request.getCharacterEncoding());
-//        response.setContentType("application/octet-stream");
-//        FileInputStream fis = null;
-//        try{
-//            File file = new File(pathname);
-//            if(!file.exists()){
-//                response.setStatus(404);
-//            }
-//            else{
-//                fis = new FileInputStream(file);
-//                response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(file.getName(), "UTF-8"));
-//                IOUtils.copy(fis, response.getOutputStream());
-//                response.flushBuffer();
-//            }
-//        }
-//        catch(IOException e1){
-//            e1.printStackTrace();
-//            throw new CustomException(CustomExceptionType.SYSTEM_ERROR,"文件读取异常!!!");
-//        }
-//        finally{
-//            if(fis != null){
-//                try{
-//                    fis.close();
-//                }
-//                catch(IOException e){
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    }
 }
 

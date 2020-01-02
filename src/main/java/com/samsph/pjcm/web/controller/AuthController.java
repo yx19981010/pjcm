@@ -39,32 +39,8 @@ public class AuthController {
     @ApiOperation(value = "生成验证码")
     @GetMapping("/yzm")
     public AjaxResponse yzm(){
-//        response.setHeader("Pragma", "No-cache");
-//        response.setHeader("Cache-Control", "no-cache");
-//        response.setDateHeader("Expires", 0);
-//        response.setContentType("image/jpeg");
-//        // 生成随机字串
-//        String verifyCode = VerifyCodeUtils.generateVerifyCode(4);
-//        // 存入会话session
-//        HttpSession session = request.getSession(true);
-//        System.out.println(session.getAttribute("codeTime"));
-//        System.out.println(session.getAttribute("verCode"));
-//        // 删除以前的
-//        session.removeAttribute("verCode");
-//        session.removeAttribute("codeTime");
-//        session.setAttribute("verCode", verifyCode.toLowerCase());		//生成session
-//        session.setAttribute("codeTime", LocalDateTime.now());
-//        // 生成图片
-//        int w = 100, h = 30;
-//        OutputStream out = response.getOutputStream();
-//        VerifyCodeUtils.outputImage(w, h, out, verifyCode);
-        Map result = new HashMap();
-//        response.setContentType("image/png");
-//        response.setHeader("Cache-Control", "no-cache");
-//        response.setHeader("Expire", "0");
-//        response.setHeader("Pragma", "no-cache");
-        VerifyCodeUtils validateCode = new VerifyCodeUtils();
-        String[] temp = validateCode.getRandomCodeBase64();
+        Map<String,String> result = new HashMap<>();
+        String[] temp = VerifyCodeUtils.getRandomCodeBase64();
         String code = temp[1];
         String base64String = temp[0];
         result.put("url", "data:image/png;base64," + base64String);

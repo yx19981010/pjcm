@@ -37,7 +37,6 @@
             <AppenderRef ref="runtimeFile" />
         </root>
         <logger name="com.samsph.pjcm.config.exception.WebExceptionController">
-            <AppenderRef ref="CONSOLE" />
             <AppenderRef ref="errorFile" />
         </logger>
     </Loggers>

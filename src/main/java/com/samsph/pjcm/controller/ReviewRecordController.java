@@ -1,6 +1,5 @@
-package com.samsph.pjcm.web.controller;
+package com.samsph.pjcm.controller;
 
-import com.samsph.pjcm.config.PageData;
 import com.samsph.pjcm.config.constant.ErrMsg;
 import com.samsph.pjcm.config.constant.MyBoolean;
 import com.samsph.pjcm.config.constant.PostStatus;
@@ -18,22 +17,18 @@ import com.samsph.pjcm.query.ReviewRecordQuery;
 import com.samsph.pjcm.service.PostReviewerService;
 import com.samsph.pjcm.service.PostService;
 import com.samsph.pjcm.service.ReviewRecordService;
-import com.samsph.pjcm.vo.ReviewRecordVO;
 import com.samsph.pjcm.vo.ReviewRecordVoGetContributor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
-
-import java.util.List;
 
 import static com.samsph.pjcm.config.DevUserId.*;
 

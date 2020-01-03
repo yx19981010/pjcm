@@ -1,6 +1,5 @@
-package com.samsph.pjcm.web.controller;
+package com.samsph.pjcm.controller;
 
-import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.PageData;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.exception.CustomException;

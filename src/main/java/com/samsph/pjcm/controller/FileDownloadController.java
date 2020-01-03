@@ -1,4 +1,4 @@
-package com.samsph.pjcm.web.controller;
+package com.samsph.pjcm.controller;
 
 import com.samsph.pjcm.config.constant.FileType;
 import com.samsph.pjcm.config.exception.CustomException;

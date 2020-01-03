@@ -53,22 +53,22 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      *
      * @param uid    投稿人id
      * @param page   分页请求
-     * @param status 投稿状态
+     * @param statuses 投稿状态列表
      * @return Page<Post>
      */
-    Page<Post> findByContributorUidAndStatus(int uid, int status, Pageable page);
+    Page<Post> findByContributorUidAndStatusIn(int uid, List<Integer> statuses, Pageable page);
 
     /**
      * 以分页的方式查询某一状态的投稿人的某一段时间内的所有投稿
      *
      * @param uid    投稿人id
      * @param page   分页请求
-     * @param status 投稿状态
+     * @param statuses 投稿状态列表
      * @param start  开始日期
      * @param end    结束日期
      * @return Page<Post>
      */
-    Page<Post> findByContributorUidAndStatusAndSubmitTimeAfterAndSubmitTimeBefore(int uid, int status, Date start, Date end, Pageable page);
+    Page<Post> findByContributorUidAndStatusInAndSubmitTimeAfterAndSubmitTimeBefore(int uid, List<Integer> statuses, Date start, Date end, Pageable page);
 
     /**
      * 以分页的方式查询编辑负责的所有投稿
@@ -93,24 +93,24 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     /**
      * 以分页的方式查询某一状态的编辑负责的所有投稿
      *
-     * @param uid    编辑id
-     * @param page   分页请求
-     * @param status 投稿状态
+     * @param uid      编辑id
+     * @param page     分页请求
+     * @param statuses 投稿状态列表
      * @return Page<Post>
      */
-    Page<Post> findByEditorUidAndStatus(int uid, int status, Pageable page);
+    Page<Post> findByEditorUidAndStatusIn(int uid, List<Integer> statuses, Pageable page);
 
     /**
      * 以分页的方式查询某一状态的编辑负责的所有投稿
      *
-     * @param uid    编辑id
-     * @param start  开始日期
-     * @param end    结束日期
-     * @param status 投稿状态
-     * @param page   分页请求
+     * @param uid      编辑id
+     * @param start    开始日期
+     * @param end      结束日期
+     * @param statuses 投稿状态列表
+     * @param page     分页请求
      * @return Page<Post>
      */
-    Page<Post> findByEditorUidAndStatusAndSubmitTimeAfterAndSubmitTimeBefore(int uid, int status, Date start, Date end, Pageable page);
+    Page<Post> findByEditorUidAndStatusInAndSubmitTimeAfterAndSubmitTimeBefore(int uid, List<Integer> statuses, Date start, Date end, Pageable page);
 
     /**
      * 以分页的方式查询审稿人未答复的所有投稿

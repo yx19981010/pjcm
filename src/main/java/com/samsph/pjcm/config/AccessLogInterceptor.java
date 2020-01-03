@@ -1,4 +1,4 @@
-package com.samsph.pjcm.web.interceptor;
+package com.samsph.pjcm.config;
 
 import com.samsph.pjcm.config.AccessLog;
 import com.samsph.pjcm.config.auth.CurrentUser;

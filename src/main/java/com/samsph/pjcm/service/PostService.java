@@ -31,7 +31,7 @@ public interface PostService {
      * @return 稿件实体对象
      */
     Post getPost(int id);
-    
+
     /**
      * 根据投稿人id获取其稿件分页
      *
@@ -60,20 +60,20 @@ public interface PostService {
      * 根据投稿人id和稿件状态获取稿件分页
      *
      * @param uid    投稿人id
-     * @param status 稿件状态
+     * @param statuses 稿件状态列表
      * @param number 页号
      * @param size   页面大小
      * @param ascend 是否升序
      * @return 稿件分页
      */
-    Page<Post> getAllByCtrUidAndStatus(int uid, PostStatus status, int number, int size, boolean ascend);
+    Page<Post> getAllByCtrUidAndStatus(int uid, List<Integer> statuses, int number, int size, boolean ascend);
 
 
     /**
      * 根据投稿人id和稿件状态获取某段时间内提交的稿件分页
      *
      * @param uid    投稿人id
-     * @param status 状态
+     * @param statuses 稿件状态列表
      * @param start  开始时间
      * @param end    结束时间
      * @param number 页号
@@ -81,7 +81,7 @@ public interface PostService {
      * @param ascend 是否升序
      * @return 稿件分页
      */
-    Page<Post> getAllByCtrUidAndStatusAndSubmitTime(int uid, PostStatus status, Date start, Date end, int number, int size, boolean ascend);
+    Page<Post> getAllByCtrUidAndStatusAndSubmitTime(int uid, List<Integer> statuses, Date start, Date end, int number, int size, boolean ascend);
 
     /**
      * 根据编辑id获取其负责编辑的稿件分页
@@ -112,28 +112,28 @@ public interface PostService {
     /**
      * 根据编辑id和稿件状态获取其负责编辑的稿件分页
      *
-     * @param uid    编辑id
-     * @param status 稿件状态
-     * @param number 页号
-     * @param size   页面大小
-     * @param ascend 是否升序
+     * @param uid      编辑id
+     * @param statuses 稿件状态列表
+     * @param number   页号
+     * @param size     页面大小
+     * @param ascend   是否升序
      * @return 稿件分页
      */
-    Page<Post> getAllByEdUidAndStatus(int uid, PostStatus status, int number, int size, boolean ascend);
+    Page<Post> getAllByEdUidAndStatus(int uid, List<Integer> statuses, int number, int size, boolean ascend);
 
     /**
      * 根据编辑id和稿件状态获取其负责编辑的某段时间内提交的稿件分页
      *
-     * @param uid    编辑id
-     * @param status 稿件状态
-     * @param start  开始时间
-     * @param end    结束时间
-     * @param number 页号
-     * @param size   页面大小
-     * @param ascend 是否升序
+     * @param uid      编辑id
+     * @param statuses 稿件状态列表
+     * @param start    开始时间
+     * @param end      结束时间
+     * @param number   页号
+     * @param size     页面大小
+     * @param ascend   是否升序
      * @return 稿件分页
      */
-    Page<Post> getAllByEdUidAndStatusAndSubmitTime(int uid, PostStatus status, Date start, Date end, int number, int size, boolean ascend);
+    Page<Post> getAllByEdUidAndStatusAndSubmitTime(int uid, List<Integer> statuses, Date start, Date end, int number, int size, boolean ascend);
 
     /**
      * 根据审稿人id和接受审稿标识获取审稿人相关的的稿件分页

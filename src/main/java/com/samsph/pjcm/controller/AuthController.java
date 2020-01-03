@@ -1,24 +1,15 @@
-package com.samsph.pjcm.web.controller;
+package com.samsph.pjcm.controller;
 
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.utils.VerifyCodeUtils;
 import com.samsph.pjcm.service.UserService;
 import com.samsph.pjcm.vo.UserVoPost;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.time.LocalDateTime;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 

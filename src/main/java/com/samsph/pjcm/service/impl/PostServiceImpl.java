@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static com.samsph.pjcm.config.constant.PostStatus.TO_BE_SUBMITTED;
@@ -79,23 +80,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> getAllByCtrUidAndStatus(int uid, PostStatus status, int number, int size, boolean ascend) {
+    public Page<Post> getAllByCtrUidAndStatus(int uid, List<Integer> statuses, int number, int size, boolean ascend) {
         // 新建分页选项
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        return postRepository.findByContributorUidAndStatus(uid, status.getCode(), pageRequest);
+        return postRepository.findByContributorUidAndStatusIn(uid, statuses, pageRequest);
     }
 
     @Override
-    public Page<Post> getAllByCtrUidAndStatusAndSubmitTime(int uid, PostStatus status, Date start, Date end, int number, int size, boolean ascend) {
+    public Page<Post> getAllByCtrUidAndStatusAndSubmitTime(int uid, List<Integer> statuses, Date start, Date end, int number, int size, boolean ascend) {
         // 新建分页选项
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        return postRepository.findByContributorUidAndStatusAndSubmitTimeAfterAndSubmitTimeBefore(uid, status.getCode(), start, end, pageRequest);
+        return postRepository.findByContributorUidAndStatusInAndSubmitTimeAfterAndSubmitTimeBefore(uid, statuses, start, end, pageRequest);
     }
 
 
@@ -121,23 +122,23 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public Page<Post> getAllByEdUidAndStatus(int uid, PostStatus status, int number, int size, boolean ascend) {
+    public Page<Post> getAllByEdUidAndStatus(int uid, List<Integer> statuses, int number, int size, boolean ascend) {
         // 新建分页选项
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        return postRepository.findByEditorUidAndStatus(uid, status.getCode(), pageRequest);
+        return postRepository.findByEditorUidAndStatusIn(uid, statuses, pageRequest);
     }
 
     @Override
-    public Page<Post> getAllByEdUidAndStatusAndSubmitTime(int uid, PostStatus status, Date start, Date end, int number, int size, boolean ascend) {
+    public Page<Post> getAllByEdUidAndStatusAndSubmitTime(int uid, List<Integer> statuses, Date start, Date end, int number, int size, boolean ascend) {
         // 新建分页选项
         Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        return postRepository.findByEditorUidAndStatusAndSubmitTimeAfterAndSubmitTimeBefore(uid, status.getCode(), start, end, pageRequest);
+        return postRepository.findByEditorUidAndStatusInAndSubmitTimeAfterAndSubmitTimeBefore(uid, statuses, start, end, pageRequest);
     }
 
     @Override

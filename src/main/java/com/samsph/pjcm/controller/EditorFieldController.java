@@ -1,18 +1,15 @@
-package com.samsph.pjcm.web.controller;
+package com.samsph.pjcm.controller;
 
 import com.samsph.pjcm.config.PageData;
-import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.constant.Field;
 import com.samsph.pjcm.config.constant.RoleType;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.exception.CustomException;
 import com.samsph.pjcm.config.exception.CustomExceptionType;
 import com.samsph.pjcm.model.EditorField;
-import com.samsph.pjcm.model.ReviewerField;
 import com.samsph.pjcm.model.User;
 import com.samsph.pjcm.service.EditorFieldService;
 import com.samsph.pjcm.service.UserRoleService;
-import com.samsph.pjcm.config.utils.DozerUtil;
 import com.samsph.pjcm.service.UserService;
 import com.samsph.pjcm.vo.*;
 import io.swagger.annotations.Api;
@@ -27,11 +24,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @Api(tags = "编辑-领域管理")

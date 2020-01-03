@@ -1,9 +1,8 @@
-package com.samsph.pjcm.web.controller;
+package com.samsph.pjcm.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.samsph.pjcm.config.PageDataT;
-import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.constant.*;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.exception.CustomException;
@@ -101,55 +100,6 @@ public class PostController {
         return AjaxResponse.success(post4CtrSimpleVO);
     }
 
-    @GetMapping("role=ctr")
-    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
-    @ApiOperation(value = "投稿人获取自己的稿件列表")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "number", value = "分页页号", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "size", value = "分页大小", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "ascend", value = "是否升序，默认为true", dataType = "boolean"),
-            @ApiImplicitParam(name = "status", value = "状态，默认为所有状态", dataType = "int"),
-            @ApiImplicitParam(name = "start", value = "开始提交日期，start与end成对使用，默认为所有时间", dataType = "date-time"),
-            @ApiImplicitParam(name = "end", value = "结束提交日期，start与end成对使用，默认为所有时间", dataType = "date-time")
-    })
-    public AjaxResponse getAll1(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
-                                @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
-                                @RequestParam(value = "ascend", required = false) Boolean ascend,
-                                @RequestParam(value = "status", required = false) Integer status,
-                                @RequestParam(value = "start", required = false) Date start,
-                                @RequestParam(value = "end", required = false) Date end) {
-
-        checkStartAndEndTime(start, end);
-
-        //        int uid = currentUser.getCurrentUser().getUserId();
-        int uid = CONTRIBUTOR_ID;
-
-        if (ascend == null) {
-            ascend = true;
-        }
-        Page<Post> page;
-
-        if (status == null) {
-            if (start == null) {
-                page = postService.getAllByCtrUid(uid, number, size, ascend);
-            } else {
-                page = postService.getAllByCtrUidAndSubmitTime(uid, start, end, number, size, ascend);
-            }
-        } else {
-            PostStatus postStatus = PostStatus.getItem(status);
-            if (postStatus == null) {
-                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_STATUS);
-            }
-            if (start == null) {
-                page = postService.getAllByCtrUidAndStatus(uid, postStatus, number, size, ascend);
-            } else {
-                page = postService.getAllByCtrUidAndStatusAndSubmitTime(uid, postStatus, start, end, number, size, ascend);
-            }
-        }
-
-        return AjaxResponse.success(DozerUtil.mapPageT(page, Post4CtrSimpleVO.class));
-    }
-
     @GetMapping("{id}/role=ctr")
     @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "投稿人根据id获取自己的稿件")
@@ -235,63 +185,6 @@ public class PostController {
         postService.updatePost(post);
 
         return AjaxResponse.success();
-    }
-
-    @GetMapping("role=ed")
-    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
-    @ApiOperation(value = "编辑获取负责编辑的稿件列表")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "number", value = "分页页号", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "size", value = "分页大小", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "ascend", value = "是否升序，默认为true", dataType = "boolean"),
-            @ApiImplicitParam(name = "status", value = "状态，默认为所有状态", dataType = "int"),
-            @ApiImplicitParam(name = "start", value = "开始提交日期，start与end成对使用，默认为所有时间", dataType = "date-time"),
-            @ApiImplicitParam(name = "end", value = "结束提交日期，start与end成对使用，默认为所有时间", dataType = "date-time")
-    })
-    public AjaxResponse getAll2(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
-                                @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
-                                @RequestParam(value = "ascend", required = false) Boolean ascend,
-                                @RequestParam(value = "status", required = false) Integer status,
-                                @RequestParam(value = "start", required = false) Date start,
-                                @RequestParam(value = "end", required = false) Date end) {
-
-        checkStartAndEndTime(start, end);
-
-        // int uid = currentUser.getCurrentUser().getUserId();
-        int uid = EDITOR_ID;
-
-        if (ascend == null) {
-            ascend = true;
-        }
-        Page<Post> page;
-
-        if (status == null) {
-            if (start == null) {
-                page = postService.getAllByEdUid(uid, number, size, ascend);
-            } else {
-                page = postService.getAllByEdUidAndSubmitTime(uid, start, end, number, size, ascend);
-            }
-        } else {
-            PostStatus postStatus = PostStatus.getItem(status);
-            if (postStatus == null) {
-                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_STATUS);
-            }
-            if (start == null) {
-                page = postService.getAllByEdUidAndStatus(uid, postStatus, number, size, ascend);
-            } else {
-                page = postService.getAllByEdUidAndStatusAndSubmitTime(uid, postStatus, start, end, number, size, ascend);
-            }
-        }
-
-        List<Post> pageContent = page.getContent();
-        PageDataT<Post4EdSimpleVO> retData = DozerUtil.mapPageT(page, Post4EdSimpleVO.class);
-
-        for (int i = 0; i < page.getNumberOfElements(); i++) {
-            Post4EdSimpleVO item = retData.getList().get(i);
-            item.setContributor(getName(pageContent.get(i).getContributorUid()));
-        }
-
-        return AjaxResponse.success(retData);
     }
 
     @GetMapping("/{id}/role=ed")
@@ -601,7 +494,7 @@ public class PostController {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.TO_BE_REVISED.getCode());
-            // TODO: 提醒投稿人
+            // TODO: 通知投稿人
         }
 
         post.setBfPubComment(comment);
@@ -735,7 +628,7 @@ public class PostController {
         post.setFee(Double.valueOf(postLayOutFeeQuery.getFee()));
         post.setStatus(PostStatus.CERTIFICATE_TO_BE_UPLOADED.getCode());
 
-        // TODO: 提醒缴费
+        // TODO: 通知缴费
 
         postService.updatePost(post);
 
@@ -801,22 +694,6 @@ public class PostController {
         return AjaxResponse.success();
     }
 
-
-    @GetMapping("role=tur")
-    @ApiOperation(value = "游客根据期刊获取所包含稿件列表")
-    public AjaxResponse getAll(@NotNull(message = "jid不能为空") @RequestParam("jid") Integer jid,
-                               @NotNull(message = "number不能为空") @RequestParam("number") Integer number,
-                               @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
-                               @RequestParam(value = "ascend", required = false) Boolean ascend) {
-        if (ascend == null) {
-            ascend = true;
-        }
-
-        Page<Post> page = postService.getAllByJid(jid, number, size, ascend);
-
-        return AjaxResponse.success(DozerUtil.mapPage(page, Post4TurSimpleVO.class));
-    }
-
     @ApiOperation(value = "管理员根据id删除期刊记录")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -841,22 +718,122 @@ public class PostController {
         return AjaxResponse.success();
     }
 
-    private String getName(int uid) {
-        final int WRITTEN_OFF = -1;
-        String ret;
-        Optional<User> userOptional = userService.findUserByUid(uid);
-        if (userOptional.isPresent()) {
-            User u = userOptional.get();
-            ret = u.getActive() == WRITTEN_OFF ? Names.WRITTEN_OFF_USER : u.getUserName();
-        } else {
-            ret = Names.DELETED_USER;
+    @GetMapping("role=ctr")
+    @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
+    @ApiOperation(value = "投稿人获取自己的稿件列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "number", value = "分页页号", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "分页大小", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "ascend", value = "是否升序，默认为true", dataType = "boolean"),
+            @ApiImplicitParam(name = "statuses", value = "要筛选的状态，默认为所有状态", allowMultiple = true,dataType = "int"),
+            @ApiImplicitParam(name = "start", value = "开始提交日期，start与end成对使用，默认为所有时间", dataType = "date-time"),
+            @ApiImplicitParam(name = "end", value = "结束提交日期，start与end成对使用，默认为所有时间", dataType = "date-time")
+    })
+    public AjaxResponse getAll1(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
+                                @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
+                                @RequestParam(value = "ascend", required = false) Boolean ascend,
+                                @RequestParam(value = "statuses", required = false) List<Integer> statuses,
+                                @RequestParam(value = "start", required = false) Date start,
+                                @RequestParam(value = "end", required = false) Date end) {
+
+        checkStartAndEndTime(start, end);
+
+        //        int uid = currentUser.getCurrentUser().getUserId();
+        int uid = CONTRIBUTOR_ID;
+
+        if (ascend == null) {
+            ascend = true;
         }
-        return ret;
+        Page<Post> page;
+
+        if (statuses == null || statuses.isEmpty()) {
+            if (start == null) {
+                page = postService.getAllByCtrUid(uid, number, size, ascend);
+            } else {
+                page = postService.getAllByCtrUidAndSubmitTime(uid, start, end, number, size, ascend);
+            }
+        } else {
+            // 检查statuses列表
+            for(Integer code: statuses){
+                PostStatus postStatus = PostStatus.getItem(code);
+                if (postStatus == null) {
+                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_STATUS);
+                }
+            }
+
+            if (start == null) {
+                page = postService.getAllByCtrUidAndStatus(uid, statuses, number, size, ascend);
+            } else {
+                page = postService.getAllByCtrUidAndStatusAndSubmitTime(uid, statuses, start, end, number, size, ascend);
+            }
+        }
+
+        return AjaxResponse.success(DozerUtil.mapPageT(page, Post4CtrSimpleVO.class));
     }
 
-    private void notifyContributor(Post post) {
-        // TODO: 支持更多类型的通知
+    @GetMapping("role=ed")
+    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
+    @ApiOperation(value = "编辑获取负责编辑的稿件列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "number", value = "分页页号", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "分页大小", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "ascend", value = "是否升序，默认为true", dataType = "boolean"),
+            @ApiImplicitParam(name = "statuses", value = "要筛选的状态，默认为所有状态", allowMultiple = true,dataType = "int"),
+            @ApiImplicitParam(name = "start", value = "开始提交日期，start与end成对使用，默认为所有时间", dataType = "date-time"),
+            @ApiImplicitParam(name = "end", value = "结束提交日期，start与end成对使用，默认为所有时间", dataType = "date-time")
+    })
+    public AjaxResponse getAll2(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
+                                @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
+                                @RequestParam(value = "ascend", required = false) Boolean ascend,
+                                @RequestParam(value = "statuses", required = false) List<Integer> statuses,
+                                @RequestParam(value = "start", required = false) Date start,
+                                @RequestParam(value = "end", required = false) Date end) {
 
+        checkStartAndEndTime(start, end);
+
+        // int uid = currentUser.getCurrentUser().getUserId();
+        int uid = EDITOR_ID;
+
+        if (ascend == null) {
+            ascend = true;
+        }
+        Page<Post> page;
+
+        if (statuses == null || statuses.isEmpty()) {
+            if (start == null) {
+                page = postService.getAllByEdUid(uid, number, size, ascend);
+            } else {
+                page = postService.getAllByEdUidAndSubmitTime(uid, start, end, number, size, ascend);
+            }
+        } else {
+            // 检查statuses列表
+            for(Integer code: statuses){
+                PostStatus postStatus = PostStatus.getItem(code);
+                if (postStatus == null) {
+                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_STATUS);
+                }
+            }
+            if (start == null) {
+                page = postService.getAllByEdUidAndStatus(uid, statuses, number, size, ascend);
+            } else {
+                page = postService.getAllByEdUidAndStatusAndSubmitTime(uid, statuses, start, end, number, size, ascend);
+            }
+        }
+
+        List<Post> pageContent = page.getContent();
+        PageDataT<Post4EdSimpleVO> retData = DozerUtil.mapPageT(page, Post4EdSimpleVO.class);
+
+        for (int i = 0; i < page.getNumberOfElements(); i++) {
+            Post4EdSimpleVO item = retData.getList().get(i);
+            item.setContributor(getName(pageContent.get(i).getContributorUid()));
+        }
+
+        return AjaxResponse.success(retData);
+    }
+
+    // TODO: 支持更多类型的通知
+
+    private void notifyContributor(Post post) {
         // 给投稿人发送邮件
         Optional<User> userOptional = userService.findUserByUid(post.getContributorUid());
         if (!userOptional.isPresent()) {
@@ -988,5 +965,18 @@ public class PostController {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.INCOMPLETE_INVOICE_INFO);
             }
         }
+    }
+
+    private String getName(int uid) {
+        final int WRITTEN_OFF = -1;
+        String ret;
+        Optional<User> userOptional = userService.findUserByUid(uid);
+        if (userOptional.isPresent()) {
+            User u = userOptional.get();
+            ret = u.getActive() == WRITTEN_OFF ? Names.WRITTEN_OFF_USER : u.getUserName();
+        } else {
+            ret = Names.DELETED_USER;
+        }
+        return ret;
     }
 }

@@ -1,4 +1,4 @@
-package com.samsph.pjcm.web.controller;
+package com.samsph.pjcm.controller;
 
 import com.samsph.pjcm.config.constant.*;
 import com.samsph.pjcm.config.exception.AjaxResponse;
@@ -134,7 +134,7 @@ public class PostFileController {
         }
 
         // 更新数据表
-        time=new Date();
+        time = new Date();
         switch (fileType) {
             case POST:
                 post.setPostPath(path);
@@ -169,8 +169,8 @@ public class PostFileController {
     @ApiImplicitParam(name = "type", required = true, dataType = "int",
             value = "1稿件；2伦理委员会批文；3推荐信；4基金批文；5缴费证明")
     @ApiOperation(value = "投稿人下载稿件/推荐信/伦理委员会批文/基金批文/缴费证明")
-    public void ctrDownload(@NotNull(message = "稿件id不能为空")@Min(value = 1,message = "稿件id必须是正整数")@PathVariable(value = "id") Integer id,
-                            @NotNull(message = "稿件type不能为空")@Min (value = 1,message = "类型最小值为1")@Max(value = 5,message = "类型最大值为5")@PathVariable(value = "type") Integer type,
+    public void ctrDownload(@NotNull(message = "稿件id不能为空") @Min(value = 1, message = "稿件id必须是正整数") @PathVariable(value = "id") Integer id,
+                            @NotNull(message = "稿件type不能为空") @Min(value = 1, message = "类型最小值为1") @Max(value = 5, message = "类型最大值为5") @PathVariable(value = "type") Integer type,
                             HttpServletResponse response,
                             HttpServletRequest request) {
         Post post = postService.getPost(id);
@@ -188,25 +188,8 @@ public class PostFileController {
         if (uid != post.getContributorUid()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_CONTRIBUTOR);
         }
-        String filename = null;
-        switch (type){
-            case 1:
-                filename = post.getTitle()+"_稿件_"+post.getId();
-                break;
-            case 2:
-                filename = post.getTitle()+"_伦理委员会批文_"+post.getId();
-                break;
-            case 3:
-                filename = post.getTitle()+"_推荐信_"+post.getId();
-                break;
-            case 4:
-                filename = post.getTitle()+"_基金批文_"+post.getId();
-                break;
-            case 5:
-                filename = post.getTitle()+"_缴费证明_"+post.getId();
-                break;
-        }
-        download(getPath(post, fileType), response, request,filename);
+
+        download(getPath(post, fileType), response, request, getFileName(post, fileType));
     }
 
     @GetMapping("download/role=ed/id={id}&type={type}")
@@ -214,8 +197,8 @@ public class PostFileController {
     @ApiImplicitParam(name = "type", required = true, dataType = "int",
             value = "1稿件；2伦理委员会批文；3推荐信；4基金批文；5缴费证明")
     @ApiOperation(value = "编辑下载稿件/推荐信/伦理委员会批文/基金批文/缴费证明")
-    public void edDownload(@NotNull(message = "稿件id不能为空")@Min(value = 1,message = "稿件id必须是正整数")@PathVariable(value = "id") Integer id,
-                           @NotNull(message = "稿件type不能为空")@Min (value = 1,message = "类型最小值为1")@Max(value = 5,message = "类型最大值为5")@PathVariable(value = "type") Integer type,
+    public void edDownload(@NotNull(message = "稿件id不能为空") @Min(value = 1, message = "稿件id必须是正整数") @PathVariable(value = "id") Integer id,
+                           @NotNull(message = "稿件type不能为空") @Min(value = 1, message = "类型最小值为1") @Max(value = 5, message = "类型最大值为5") @PathVariable(value = "type") Integer type,
                            HttpServletResponse response,
                            HttpServletRequest request) {
         PostFileType fileType = PostFileType.getItem(type);
@@ -238,31 +221,14 @@ public class PostFileController {
         if (post.getStatus() == PostStatus.TO_BE_SUBMITTED.getCode()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
-        String filename = null;
-        switch (type){
-            case 1:
-                filename = post.getTitle()+"_稿件_"+post.getId();
-                break;
-            case 2:
-                filename = post.getTitle()+"_伦理委员会批文_"+post.getId();
-                break;
-            case 3:
-                filename = post.getTitle()+"_推荐信_"+post.getId();
-                break;
-            case 4:
-                filename = post.getTitle()+"_基金批文_"+post.getId();
-                break;
-            case 5:
-                filename = post.getTitle()+"_缴费证明_"+post.getId();
-                break;
-        }
-        download(getPath(post, fileType), response, request,filename);
+
+        download(getPath(post, fileType), response, request, getFileName(post,fileType));
     }
 
     @GetMapping("download/role=rev/id={id}")
     @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "审稿人下载稿件")
-    public void revDownload(@NotNull(message = "稿件id不能为空")@Min(value = 1,message = "稿件id必须是正整数")@PathVariable(value = "id") Integer id,
+    public void revDownload(@NotNull(message = "稿件id不能为空") @Min(value = 1, message = "稿件id必须是正整数") @PathVariable(value = "id") Integer id,
                             HttpServletResponse response,
                             HttpServletRequest request) {
         Post post = postService.getPost(id);
@@ -281,7 +247,7 @@ public class PostFileController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
 
-        download(getPath(post, PostFileType.POST), response, request,post.getTitle()+"_稿件_"+post.getId());
+        download(getPath(post, PostFileType.POST), response, request, post.getTitle() + "_稿件_" + post.getId());
     }
 
 
@@ -313,8 +279,25 @@ public class PostFileController {
         return path;
     }
 
+    private String getFileName(Post post, PostFileType type) {
 
-    private void download(String pathname, HttpServletResponse response, HttpServletRequest request,String filename) {
+        switch (type) {
+            case POST:
+                return post.getTitle() + "_稿件_" + post.getId();
+            case LETTER:
+                return post.getTitle() + "_推荐信_" + post.getId();
+            case ETHICS:
+                return post.getTitle() + "_伦理委员会批文_" + post.getId();
+            case FUND:
+                return post.getTitle() + "_基金批文_" + post.getId();
+            case PAYMENT:
+                return post.getTitle() + "_缴费证明_" + post.getId();
+            default:
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_POST_FILE_TYPE);
+        }
+    }
+
+    private void download(String pathname, HttpServletResponse response, HttpServletRequest request, String filename) {
         response.setCharacterEncoding(request.getCharacterEncoding());
         response.setContentType("application/octet-stream");
         FileInputStream fis = null;
@@ -325,7 +308,7 @@ public class PostFileController {
             } else {
                 fis = new FileInputStream(file);
                 response.setHeader("Content-Disposition",
-                        "attachment; filename=" + URLEncoder.encode(filename+file.getName().substring(file.getName().lastIndexOf(".")), String.valueOf(StandardCharsets.UTF_8)));
+                        "attachment; filename=" + URLEncoder.encode(filename + file.getName().substring(file.getName().lastIndexOf(".")), String.valueOf(StandardCharsets.UTF_8)));
                 IOUtils.copy(fis, response.getOutputStream());
                 response.flushBuffer();
             }

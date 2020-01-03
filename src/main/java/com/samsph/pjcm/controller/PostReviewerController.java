@@ -1,4 +1,4 @@
-package com.samsph.pjcm.web.controller;
+package com.samsph.pjcm.controller;
 
 import com.samsph.pjcm.config.constant.ErrMsg;
 import com.samsph.pjcm.config.constant.MyBoolean;
@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 
-import java.util.List;
 import java.util.Optional;
 
 import static com.samsph.pjcm.config.DevUserId.EDITOR_ID;
@@ -164,7 +163,7 @@ public class PostReviewerController {
         }
         postReviewerService.deletePostReviewer(id);
 
-        // TODO：发送通知邮件
+        // TODO：通知取消审稿
         return AjaxResponse.success();
     }
 }

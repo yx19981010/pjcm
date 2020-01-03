@@ -1,8 +1,7 @@
-package com.samsph.pjcm.web.controller;
+package com.samsph.pjcm.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.utils.DozerUtil;
 import com.samsph.pjcm.model.Journal;

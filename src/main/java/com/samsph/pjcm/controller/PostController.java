@@ -92,7 +92,10 @@ public class PostController {
 
 //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
-
+//        int size = editorFieldService.findByFieldId(postQuery.getField().getCode()).size();
+//        if (size == 0) {
+//            throw new CustomException(CustomExceptionType.SYSTEM_ERROR, "该领域下无编辑");
+//        }
         Post post = postService.savePost(postQuery, uid);
 
         Post4CtrSimpleVO post4CtrSimpleVO = dozerMapper.map(post, Post4CtrSimpleVO.class);
@@ -170,11 +173,11 @@ public class PostController {
         // 检查稿件信息填写完整，能提交初审
         checkPostCanSubmit(post);
 
-        int size = editorFieldService.findByFieldId(post.getField()).size();
-        if (size == 0) {
-            throw new CustomException(CustomExceptionType.SYSTEM_ERROR, "该领域下无编辑");
-        }
-        int num = (int) (1 + Math.random() * (size - 1 + 1));
+//        int size = editorFieldService.findByFieldId(post.getField()).size();
+//        if (size == 0) {
+//            throw new CustomException(CustomExceptionType.SYSTEM_ERROR, "该领域下无编辑");
+//        }
+//        int num = (int) (1 + Math.random() * (size - 1 + 1));
 
 //        int editorId = editorFieldService.findByFieldId(post.getField()).get(num - 1).getEditorUid();
         int editorId = 8;

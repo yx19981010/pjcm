@@ -142,7 +142,8 @@ public class ReviewRecordController {
                         // 汇总结果为通过
                         post.setStatus(PostStatus.FORMAT_TO_BE_REVIEWED.getCode());
                     }else{
-                        post.setStatus(PostStatus.TO_BE_REVISED.getCode());
+                        // 汇总结果为通过但需要和编辑反复
+                        post.setStatus(PostStatus.TO_BE_RETURNED.getCode());
                     }
                 } else {
                     // 汇总结果为建议修改
@@ -214,7 +215,7 @@ public class ReviewRecordController {
                     post.setStatus(PostStatus.FORMAT_TO_BE_REVIEWED.getCode());
                 }else{
                     // 汇总结果为通过但需部分修改，进入稿件待修改状态
-                    post.setStatus(PostStatus.TO_BE_REVISED.getCode());
+                    post.setStatus(PostStatus.TO_BE_RETURNED.getCode());
                 }
             } else {
                 // 汇总结果为建议修改

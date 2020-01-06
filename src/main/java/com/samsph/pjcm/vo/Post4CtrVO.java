@@ -94,9 +94,6 @@ public class Post4CtrVO extends Post4CtrSimpleVO {
     @ApiModelProperty("格式审阅时间")
     private Date formatCommentTime;
 
-    @ApiModelProperty("版面费")
-    private Double fee;
-
     @ApiModelProperty("缴费证明上传时间")
     private Date certificateUploadTime;
 

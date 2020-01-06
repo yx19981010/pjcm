@@ -17,7 +17,7 @@ public class SecurityConstants {
      **/
     public static final String ROLE_CLAIMS = "rol";
     /**
-     * 过期时间是3个小时
+     * 过期时间是24个小时
      */
     public static final long EXPIRATION = 24L * 60L * 60L;
 
@@ -31,6 +31,4 @@ public class SecurityConstants {
     public static final String TOKEN_HEADER = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer";
 
-    private SecurityConstants() {
-    }
 }

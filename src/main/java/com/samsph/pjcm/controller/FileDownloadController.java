@@ -49,7 +49,7 @@ public class FileDownloadController {
     @ApiOperation(value = "下载证书，材料")
     @ApiImplicitParams({
             @ApiImplicitParam(name="id",value="文件id"),
-            @ApiImplicitParam(name="type",value="文件类型")
+            @ApiImplicitParam(name="type",value="文件类型 1，证书 2，材料")
     })
     @GetMapping(value = "/fileDownload/id={id}&type={type}")
     public void FileDownload(@NotNull(message = "id不能为空")@Min (value = 1,message = "文件id必须是正整数")@PathVariable(value = "id") Integer id,

@@ -18,14 +18,14 @@ import java.util.List;
  */
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
-    /**
-     * 获取某一期刊包含的投稿列表
-     *
-     * @param jid  期刊id
-     * @param page 分页请求
-     * @return List<Post>
-     */
-    Page<Post> findByJid(int jid, Pageable page);
+//    /**
+//     * 获取某一期刊包含的投稿列表
+//     *
+//     * @param jid  期刊id
+//     * @param page 分页请求
+//     * @return List<Post>
+//     */
+//    Page<Post> findByJid(int jid, Pageable page);
 
 
     /**

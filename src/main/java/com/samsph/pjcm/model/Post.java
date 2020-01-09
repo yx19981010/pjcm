@@ -27,34 +27,70 @@ public class Post {
     private Integer id;
 
     /**
-     * 稿件标题
+     * 稿件状态
      */
-    @Column(name = "title")
-    private String title;
+    @Column(name = "status")
+    private Integer status;
 
     /**
-     * 稿件英文标题
+     * 稿件审阅轮数
      */
-    @Column(name = "title_en")
-    private String titleEn;
-
-    /**
-     * 作者信息
-     */
-    @Column(name = "writers_info")
-    private String writersInfo;
-
-    /**
-     * 投稿人id
-     */
-    @Column(name = "contributor_uid")
-    private Integer contributorUid;
+    @Column(name = "count")
+    private Integer count;
 
     /**
      * 投稿领域
      */
     @Column(name = "field")
     private Integer field;
+
+    /**
+     * 第一作者姓名
+     */
+    @Column(name="f_au_name")
+    private String fAuName;
+
+    /**
+     * 第一作者单位
+     */
+    @Column(name="f_au_employer")
+    private String fAuEmployer;
+
+    /**
+     * 第一作者邮箱
+     */
+    @Column(name="f_au_email")
+    private String fAuEmail;
+
+    /**
+     * 第一作者手机号
+     */
+    @Column(name="f_au_phone")
+    private String fAuPhone;
+
+    /**
+     * 第一作者职称
+     */
+    @Column(name="f_au_title")
+    private String fAuTitle;
+
+    /**
+     * 第一作者学历
+     */
+    @Column(name="f_au_education")
+    private String fAuEducation;
+
+    /**
+     * 通讯作者姓名
+     */
+    @Column(name="cor_au_name")
+    private String corAuName;
+
+    /**
+     * 作者信息
+     */
+    @Column(name = "writers_info")
+    private String writersInfo;
 
     /**
      * 体裁
@@ -67,6 +103,18 @@ public class Post {
      */
     @Column(name = "fund_level")
     private Integer fundLevel;
+
+    /**
+     * 稿件标题
+     */
+    @Column(name = "title")
+    private String title;
+
+    /**
+     * 稿件英文标题
+     */
+    @Column(name = "title_en")
+    private String titleEn;
 
     /**
      * 中文关键词
@@ -93,28 +141,22 @@ public class Post {
     private String abstractEn;
 
     /**
-     * 稿件状态
+     * 参考文献
      */
-    @Column(name = "status")
-    private Integer status;
+    @Column(name="references_list")
+    private String referencesList;
 
     /**
-     * 稿件审阅轮数
+     * 投稿人id
      */
-    @Column(name = "count")
-    private Integer count;
+    @Column(name = "contributor_uid")
+    private Integer contributorUid;
 
     /**
      * 创建时间
      */
     @Column(name = "create_time")
     private Date createTime;
-
-    /**
-     * 编辑id
-     */
-    @Column(name = "editor_uid")
-    private Integer editorUid;
 
     /**
      * 稿件路径
@@ -171,58 +213,52 @@ public class Post {
     private Date submitTime;
 
     /**
-     * 初审意见
+     * 编辑id
      */
-    @Column(name = "first_exam_comment")
-    private String firstExamComment;
+    @Column(name = "editor_uid")
+    private Integer editorUid;
 
     /**
-     * 初审时间
+     * 编辑意见
      */
-    @Column(name = "first_exam_comment_time")
-    private Date firstExamCommentTime;
+    @Column(name = "editor_comment")
+    private String editorComment;
 
     /**
-     * 退稿意见
+     * 编辑提出意见时间
      */
-    @Column(name = "reject_comment")
-    private String rejectComment;
+    @Column(name = "editor_comment_time")
+    private Date editorCommentTime;
 
     /**
-     * 退稿时间
+     * 稿件编号
      */
-    @Column(name = "reject_comment_time")
-    private Date rejectCommentTime;
+    @Column(name = "no")
+    private String no;
 
     /**
-     * 发表前审阅意见
+     * 税率
      */
-    @Column(name = "bf_pub_comment")
-    private String bfPubComment;
-
-    /**
-     * 发表前审阅时间
-     */
-    @Column(name = "bf_pub_comment_time")
-    private Date bfPubCommentTime;
-
-    /**
-     * 格式审阅意见
-     */
-    @Column(name = "format_comment")
-    private String formatComment;
-
-    /**
-     * 格式审阅时间
-     */
-    @Column(name = "format_comment_time")
-    private Date formatCommentTime;
+    @Column(name="tax_rate")
+    private Double taxRate;
 
     /**
      * 版面费
      */
     @Column(name = "fee")
     private Double fee;
+
+    /**
+     * 发录用通知时间
+     */
+    @Column(name="acceptance_notice_time")
+    private Date acceptanceNoticeTime;
+
+    /**
+     * 录用通知文件路径
+     */
+    @Column(name="acceptance_notice_path")
+    private String acceptanceNoticePath;
 
     /**
      * 缴费证明的文件路径
@@ -235,6 +271,18 @@ public class Post {
      */
     @Column(name = "certificate_upload_time")
     private Date certificateUploadTime;
+
+    /**
+     * 著作权转让书的文件路径
+     */
+    @Column(name = "assignment_path")
+    private String assignmentPath;
+
+    /**
+     * 著作权转让书上传时间
+     */
+    @Column(name = "assignment_upload_time")
+    private Date assignmentUploadTime;
 
     /**
      * 是否需要发票
@@ -283,10 +331,4 @@ public class Post {
      */
     @Column(name = "certificate_comment_time")
     private Date certificateCommentTime;
-
-    /**
-     * 所属期刊id
-     */
-    @Column(name = "jid")
-    private Integer jid;
 }

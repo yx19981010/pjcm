@@ -32,7 +32,9 @@ PostQuery {
     @ApiModelProperty("投稿领域")
     @NotNull(message = "field不能为空", groups = {Add.class})
     @Null(message = "field必须为空", groups = {Update2.class})
-    private Field field;
+    @Min(value = Field.LEAST_FIELD,message = "领域id最小为"+Field.LEAST_FIELD)
+    @Max(value = Field.TOTAL_FIELD,message = "领域id最大为"+Field.TOTAL_FIELD)
+    private Integer field;
 
     @ApiModelProperty("基金级别")
     @NotNull(message = "fundLevel不能为空", groups = {Add.class})

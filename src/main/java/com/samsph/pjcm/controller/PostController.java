@@ -240,8 +240,8 @@ public class PostController {
             }
             post.setStatus(PostStatus.FIRST_EXAM_REJECTED.getCode());
         }
-        post.setFirstExamComment(comment);
-        post.setFirstExamCommentTime(new Date());
+        post.setEditorComment(comment);
+        post.setEditorCommentTime(new Date());
         postService.updatePost(post);
 
         return AjaxResponse.success();
@@ -394,8 +394,8 @@ public class PostController {
             }
             post.setStatus(PostStatus.EDITOR_REJECT.getCode());
         }
-        post.setRejectComment(comment);
-        post.setRejectCommentTime(new Date());
+        post.setEditorComment(comment);
+        post.setEditorCommentTime(new Date());
         postService.updatePost(post);
 
         return AjaxResponse.success();
@@ -458,7 +458,7 @@ public class PostController {
         // 更新稿件状态
         if (postReviewerService.aggregate(id)) {
             // 如果审稿人无需再审
-            post.setStatus(PostStatus.REVIEW_BF_PUB.getCode());
+            post.setStatus(PostStatus.FORMAT_OR_BF_PUB_TO_BE_REVIEWED.getCode());
         } else {
             // 提醒审稿人
             post.setStatus(PostStatus.RE_REVIEW.getCode());
@@ -483,14 +483,14 @@ public class PostController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_EDITOR);
         }
 
-        if (post.getStatus() != PostStatus.REVIEW_BF_PUB.getCode()) {
+        if (post.getStatus() != PostStatus.FORMAT_OR_BF_PUB_TO_BE_REVIEWED.getCode()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
 
         String comment = editorAuditQuery.getComment();
         if (editorAuditQuery.getPass()) {
             // 审核通过进入格式待审核状态
-            post.setStatus(PostStatus.FORMAT_TO_BE_REVIEWED.getCode());
+            post.setStatus(PostStatus.FORMAT_OR_BF_PUB_TO_BE_REVIEWED.getCode());
         } else {
             // 不通过则回到待修改状态
             if (comment == null || StringUtils.isBlank(comment)) {
@@ -500,8 +500,8 @@ public class PostController {
             // TODO: 通知投稿人
         }
 
-        post.setBfPubComment(comment);
-        post.setBfPubCommentTime(new Date());
+        post.setEditorComment(comment);
+        post.setEditorCommentTime(new Date());
         postService.updatePost(post);
         return AjaxResponse.success();
     }
@@ -522,7 +522,7 @@ public class PostController {
         }
 
         // 检查稿件状态
-        if (post.getStatus() != PostStatus.FORMAT_TO_BE_REVIEWED.getCode()) {
+        if (post.getStatus() != PostStatus.FORMAT_OR_BF_PUB_TO_BE_REVIEWED.getCode()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
 
@@ -535,11 +535,11 @@ public class PostController {
             if (comment == null || StringUtils.isBlank(comment)) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
-            post.setStatus(PostStatus.FORMAT_TO_BE_MODIFIED.getCode());
+            post.setStatus(PostStatus.FORMAT_OR_BF_PUB_TO_BE_MODIFIED.getCode());
             // TODO: 通知投稿人
         }
-        post.setFormatComment(comment);
-        post.setFormatCommentTime(new Date());
+        post.setEditorComment(comment);
+        post.setEditorCommentTime(new Date());
         postService.updatePost(post);
         return AjaxResponse.success();
     }
@@ -559,12 +559,12 @@ public class PostController {
         }
 
         // 检查稿件状态
-        if (post.getStatus() != PostStatus.FORMAT_TO_BE_MODIFIED.getCode()) {
+        if (post.getStatus() != PostStatus.FORMAT_OR_BF_PUB_TO_BE_MODIFIED.getCode()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
 
         // 更新稿件状态
-        post.setStatus(PostStatus.FORMAT_TO_BE_REVIEWED.getCode());
+        post.setStatus(PostStatus.FORMAT_OR_BF_PUB_TO_BE_REVIEWED.getCode());
         postService.updatePost(post);
 
         return AjaxResponse.success();
@@ -913,7 +913,7 @@ public class PostController {
         }
 
         // 检查稿件领域信息
-        if (post.getField() == null || Field.getItem(post.getField()) == null) {
+        if (post.getField() == null ||  post.getField() < Field.LEAST_FIELD || post.getField() > Field.TOTAL_FIELD) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.FIELD_NEEDED);
         }
 

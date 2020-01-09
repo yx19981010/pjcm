@@ -88,17 +88,13 @@ public class ReviewerFieldServiceImpl implements ReviewerFieldService {
                 List<ReviewerField> list2 = findByReviewerUid(i.getUid());
                 User user = userRepository.findById(i.getUid()).get();
                 List<ReviewerFieldVoGetField> list3 = DozerUtil.mapList(list2,ReviewerFieldVoGetField.class);
-                //用户未激活或者已注销
-                if(user.getActive() != 1){
-                    continue;
-                }else {
-                    ReviewerFieldVoGet reviewerFieldVoGet = new ReviewerFieldVoGet();
-                    reviewerFieldVoGet.setReviewerUid(user.getId());
-                    reviewerFieldVoGet.setEmail(user.getEmail());
-                    reviewerFieldVoGet.setUserName(user.getUserName());
-                    reviewerFieldVoGet.setField(list3);
-                    list1.add(reviewerFieldVoGet);
-                }
+                ReviewerFieldVoGet reviewerFieldVoGet = new ReviewerFieldVoGet();
+                reviewerFieldVoGet.setReviewerUid(user.getId());
+                reviewerFieldVoGet.setEmail(user.getEmail());
+                reviewerFieldVoGet.setUserName(user.getUserName());
+                reviewerFieldVoGet.setField(list3);
+                reviewerFieldVoGet.setActive(user.getActive());
+                list1.add(reviewerFieldVoGet);
             }
             return list1;
         }else{

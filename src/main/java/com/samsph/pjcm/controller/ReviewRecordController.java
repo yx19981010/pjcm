@@ -22,7 +22,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -140,7 +139,7 @@ public class ReviewRecordController {
                     //所有人都选择全文发表
                     if(reviewRecordService.findByPublishAndPidAndCount(1,pid,1).size() == reviewRecordRepository.findByPidAndCount(pid,1).size()) {
                         // 汇总结果为通过
-                        post.setStatus(PostStatus.FORMAT_TO_BE_REVIEWED.getCode());
+                        post.setStatus(PostStatus.FORMAT_OR_BF_PUB_TO_BE_REVIEWED.getCode());
                     }else{
                         // 汇总结果为通过但需要和编辑反复
                         post.setStatus(PostStatus.TO_BE_RETURNED.getCode());
@@ -212,13 +211,13 @@ public class ReviewRecordController {
             if (postReviewerService.aggregate(pid)) {
                 if(reviewRecordService.findByPublishAndPidAndCount(1,pid,post.getCount()).size() == reviewRecordRepository.findByPidAndCount(pid,post.getCount()).size()) {
                     // 汇总结果为通过
-                    post.setStatus(PostStatus.FORMAT_TO_BE_REVIEWED.getCode());
+                    post.setStatus(PostStatus.FORMAT_OR_BF_PUB_TO_BE_REVIEWED.getCode());
                 }else{
-                    // 汇总结果为通过但需部分修改，进入稿件待修改状态
+                    // 汇总结果为通过但需部分修改，进入稿件待退回状态
                     post.setStatus(PostStatus.TO_BE_RETURNED.getCode());
                 }
             } else {
-                // 汇总结果为建议修改
+                // 汇总结果为建议修改，进入稿件待退回状态
                 post.setStatus(PostStatus.TO_BE_RETURNED.getCode());
             }
             postService.updatePost(post);

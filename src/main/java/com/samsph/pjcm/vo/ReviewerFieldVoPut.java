@@ -35,7 +35,7 @@ public class ReviewerFieldVoPut {
      * 领域
      */
     @ApiModelProperty("领域")
-    @Min(value = 1,message = "领域id不低于1")
-    @Max(value = Field.TOTAL_FIELD,message = "领域id超过上限")
+    @Min(value = Field.LEAST_FIELD,message = "领域id最小为"+Field.LEAST_FIELD)
+    @Max(value = Field.TOTAL_FIELD,message = "领域id最大为"+Field.TOTAL_FIELD)
     private Integer field;
 }

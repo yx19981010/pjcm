@@ -193,6 +193,46 @@ public class PostServiceImpl implements PostService {
         postRepository.deleteById(id);
     }
 
+    @Override
+    public Page<Post> getAllByStatus(List<Integer> statuses, Integer number, Integer size, Boolean ascend) {
+        return null;
+    }
+
+    @Override
+    public Page<Post> getAllByStatusAndFAuEmployee(List<Integer> statuses, String fAuEmployee, Integer number, Integer size, Boolean ascend) {
+        return null;
+    }
+
+    @Override
+    public Page<Post> getAllByStatusAndFAuName(List<Integer> statuses, String fAuName, Integer number, Integer size, Boolean ascend) {
+        return null;
+    }
+
+    @Override
+    public Page<Post> getAllByStatusAndFAuNameAndFAuEmployee(List<Integer> statuses, String fAuName, String fAuEmployee, Integer number, Integer size, Boolean ascend) {
+        return null;
+    }
+
+    @Override
+    public Page<Post> getAllByStatusAndSubmitTime(List<Integer> statuses, Date start, Date end, Integer number, Integer size, Boolean ascend) {
+        return null;
+    }
+
+    @Override
+    public Page<Post> getAllByStatusAndFAuEmployeeAndSubmitTime(List<Integer> statuses, String fAuEmployee, Date start, Date end, Integer number, Integer size, Boolean ascend) {
+        return null;
+    }
+
+    @Override
+    public Page<Post> getAllByStatusAndFAuNameAndSubmitTime(List<Integer> statuses, String fAuName, Date start, Date end, Integer number, Integer size, Boolean ascend) {
+        return null;
+    }
+
+    @Override
+    public Page<Post> getAllByStatusAndFAuNameAndFAuEmployeeAndSubmitTime(List<Integer> statuses, String fAuName, String fAuEmployee, Date start, Date end, Integer number, Integer size, Boolean ascend) {
+        return null;
+    }
+
 
     private Post fetchPost(int id) {
         // 查询是否存在该id的投稿

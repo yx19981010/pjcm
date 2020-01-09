@@ -834,7 +834,6 @@ public class PostController {
         return AjaxResponse.success(DozerUtil.mapPage(page, Post4EdSimpleVO.class));
     }
 
-    // TODO
     @GetMapping("export")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @ApiOperation(value = "管理员导出稿件列表")
@@ -852,8 +851,8 @@ public class PostController {
                                @RequestParam(value = "statuses") List<Integer> statuses,
                                @RequestParam(value = "start", required = false) Date start,
                                @RequestParam(value = "end", required = false) Date end,
-                               @RequestParam(value = "fAuName",required = false) String fAuName,
-                               @RequestParam(value = "fAuEmployee",required = false) String fAuEmployee) {
+                               @RequestParam(value = "fAuName", required = false) String fAuName,
+                               @RequestParam(value = "fAuEmployee", required = false) String fAuEmployee) {
         checkStartAndEndTime(start, end);
 
         // 检查statuses列表
@@ -870,13 +869,37 @@ public class PostController {
 
         Page<Post> page;
         if (start == null) {
-//            page = postService.getAllByStatus(statuses, number, size, ascend);
+            if (fAuName == null) {
+                if (fAuEmployee == null) {
+                    page = postService.getAllByStatus(statuses, number, size, ascend);
+                } else {
+                    page = postService.getAllByStatusAndFAuEmployee(statuses, fAuEmployee, number, size, ascend);
+                }
+            } else {
+                if (fAuEmployee == null) {
+                    page = postService.getAllByStatusAndFAuName(statuses, fAuName, number, size, ascend);
+                } else {
+                    page = postService.getAllByStatusAndFAuNameAndFAuEmployee(statuses, fAuName, fAuEmployee, number, size, ascend);
+                }
+            }
+
         } else {
-//            page = postService.getAllByStatusAndSubmitTime(statuses, start, end, number, size, ascend);
+            if (fAuName == null) {
+                if (fAuEmployee == null) {
+                    page = postService.getAllByStatusAndSubmitTime(statuses, start, end, number, size, ascend);
+                } else {
+                    page = postService.getAllByStatusAndFAuEmployeeAndSubmitTime(statuses, fAuEmployee, start, end, number, size, ascend);
+                }
+            } else {
+                if (fAuEmployee == null) {
+                    page = postService.getAllByStatusAndFAuNameAndSubmitTime(statuses, fAuName, start, end, number, size, ascend);
+                } else {
+                    page = postService.getAllByStatusAndFAuNameAndFAuEmployeeAndSubmitTime(statuses, fAuName, fAuEmployee, start, end, number, size, ascend);
+                }
+            }
         }
 
-//        return AjaxResponse.success(DozerUtil.mapPage(page, PostExportVO.class));
-        return AjaxResponse.success();
+        return AjaxResponse.success(DozerUtil.mapPage(page, PostExportVO.class));
     }
 
     // TODO
@@ -980,7 +1003,7 @@ public class PostController {
         }
 
         // 检查稿件领域信息
-        if (post.getField() == null ||  post.getField() < Field.LEAST_FIELD || post.getField() > Field.TOTAL_FIELD) {
+        if (post.getField() == null || post.getField() < Field.LEAST_FIELD || post.getField() > Field.TOTAL_FIELD) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.FIELD_NEEDED);
         }
 

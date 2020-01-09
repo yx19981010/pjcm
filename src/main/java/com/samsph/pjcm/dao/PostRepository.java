@@ -177,5 +177,5 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             nativeQuery = true)
     Page<Post> findByReviewerUidAndFlagFalse(int uid, Pageable page);
 
-//    Page<PostExportVO> exportPosts();
+    Page<PostExportVO> exportPosts();
 }

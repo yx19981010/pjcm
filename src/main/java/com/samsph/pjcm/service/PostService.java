@@ -201,4 +201,20 @@ public interface PostService {
      * @param id 稿件id
      */
     void deletePost(int id);
+
+    Page<Post> getAllByStatus(List<Integer> statuses, Integer number, Integer size, Boolean ascend);
+
+    Page<Post> getAllByStatusAndFAuEmployee(List<Integer> statuses, String fAuEmployee, Integer number, Integer size, Boolean ascend);
+
+    Page<Post> getAllByStatusAndFAuName(List<Integer> statuses, String fAuName, Integer number, Integer size, Boolean ascend);
+
+    Page<Post> getAllByStatusAndFAuNameAndFAuEmployee(List<Integer> statuses, String fAuName, String fAuEmployee, Integer number, Integer size, Boolean ascend);
+
+    Page<Post> getAllByStatusAndSubmitTime(List<Integer> statuses, Date start, Date end, Integer number, Integer size, Boolean ascend);
+
+    Page<Post> getAllByStatusAndFAuEmployeeAndSubmitTime(List<Integer> statuses, String fAuEmployee, Date start, Date end, Integer number, Integer size, Boolean ascend);
+
+    Page<Post> getAllByStatusAndFAuNameAndSubmitTime(List<Integer> statuses, String fAuName, Date start, Date end, Integer number, Integer size, Boolean ascend);
+
+    Page<Post> getAllByStatusAndFAuNameAndFAuEmployeeAndSubmitTime(List<Integer> statuses, String fAuName, String fAuEmployee, Date start, Date end, Integer number, Integer size, Boolean ascend);
 }

@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -48,7 +49,7 @@ public class FileDownloadController {
     @ApiOperation(value = "下载证书，材料")
     @ApiImplicitParams({
             @ApiImplicitParam(name="id",value="文件id"),
-            @ApiImplicitParam(name="type",value="文件类型")
+            @ApiImplicitParam(name="type",value="文件类型 1，证书 2，材料")
     })
     @GetMapping(value = "/fileDownload/id={id}&type={type}")
     public void FileDownload(@NotNull(message = "id不能为空")@Min (value = 1,message = "文件id必须是正整数")@PathVariable(value = "id") Integer id,
@@ -60,7 +61,7 @@ public class FileDownloadController {
             case FileType.CERTIFICATE: //证书
                 if(certificateService.findCertificate(id).isPresent()) {
                     filePath = certificateService.findCertificate(id).get().getPath();
-                    if(filePath == null || filePath.equals("")){
+                    if(filePath == null || StringUtils.isBlank(filePath)){
                         throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "证书不存在");
                     }
                     download(filePath, response, request,certificateService.findCertificate(id).get().getName());
@@ -71,7 +72,7 @@ public class FileDownloadController {
             case FileType.MATERIAL://资料
                 if(materialService.findMaterial(id).isPresent()) {
                     filePath = materialService.findMaterial(id).get().getPath();
-                    if(filePath == null || filePath.equals("")){
+                    if(filePath == null || StringUtils.isBlank(filePath)){
                         throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "材料不存在");
                     }
                     download(filePath, response, request,materialService.findMaterial(id).get().getName());
@@ -115,36 +116,5 @@ public class FileDownloadController {
             }
         }
     }
-//    private void download(String pathname,HttpServletResponse response, HttpServletRequest request){
-//        response.setCharacterEncoding(request.getCharacterEncoding());
-//        response.setContentType("application/octet-stream");
-//        FileInputStream fis = null;
-//        try{
-//            File file = new File(pathname);
-//            if(!file.exists()){
-//                response.setStatus(404);
-//            }
-//            else{
-//                fis = new FileInputStream(file);
-//                response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(file.getName(), "UTF-8"));
-//                IOUtils.copy(fis, response.getOutputStream());
-//                response.flushBuffer();
-//            }
-//        }
-//        catch(IOException e1){
-//            e1.printStackTrace();
-//            throw new CustomException(CustomExceptionType.SYSTEM_ERROR,"文件读取异常!!!");
-//        }
-//        finally{
-//            if(fis != null){
-//                try{
-//                    fis.close();
-//                }
-//                catch(IOException e){
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    }
 }
 

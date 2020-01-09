@@ -84,7 +84,7 @@ public class PostFileController {
 
         switch (fileType) {
             case POST:
-                if (status != PostStatus.TO_BE_SUBMITTED && status != PostStatus.TO_BE_REVISED && status != PostStatus.FORMAT_TO_BE_MODIFIED) {
+                if (status != PostStatus.TO_BE_SUBMITTED && status != PostStatus.TO_BE_REVISED && status != PostStatus.FORMAT_OR_BF_PUB_TO_BE_MODIFIED) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.POST_FILE_CANNOT_UPLOAD);
                 }
                 oldPath = post.getPostPath();

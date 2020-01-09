@@ -85,7 +85,6 @@ public class AccessLogInterceptor implements HandlerInterceptor {
         accessLog.setUserRole("admin");
         accessLog.setUsername("test@qq.com");
         accessLog.setUserId(666);
-
         //当前时间
         long currentTime = System.currentTimeMillis();
 

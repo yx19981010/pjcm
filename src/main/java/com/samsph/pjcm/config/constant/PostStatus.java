@@ -39,11 +39,11 @@ public enum PostStatus {
     // 再次审稿
     RE_REVIEW(9),
 
-    // 格式待审核
-    FORMAT_TO_BE_REVIEWED(10),
+    //格式待审核/发表前待审核
+    FORMAT_OR_BF_PUB_TO_BE_REVIEWED(10),
 
     // 格式待修改
-    FORMAT_TO_BE_MODIFIED(11),
+    FORMAT_OR_BF_PUB_TO_BE_MODIFIED(11),
 
     // 待确定版面费
     LAYOUT_FEE_TO_BE_DETERMINED(12),
@@ -57,9 +57,8 @@ public enum PostStatus {
     // 投稿成功
     SUCCESS(15),
 
-    // 待编辑发表前审核
-    REVIEW_BF_PUB(16);
-
+    //待通过审稿
+    REVIEW_TO_BE_APPROVED(16);
     private final int code;
 
     @JsonValue

@@ -21,7 +21,7 @@ import com.samsph.pjcm.vo.ReviewRecordVoGetContributor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.dozer.Mapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -41,9 +41,6 @@ import static com.samsph.pjcm.config.DevUserId.*;
 @RequestMapping("/api/v1/reviewRecords")
 @Api(tags = "4. 审稿记录管理")
 public class ReviewRecordController {
-
-    @Resource
-    private Mapper dozerMapper;
 
     @Resource
     PostService postService;
@@ -84,20 +81,20 @@ public class ReviewRecordController {
         }
 
         if (reject) {
-            if (rejectComment == null || rejectComment.equals("")) {
+            if (rejectComment == null || StringUtils.isBlank(rejectComment)) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
-            if (toForward || toRevise ||  (forwardComment != null && !forwardComment.equals("")) || (reviseComment != null && !reviseComment.equals(""))) {
+            if (toForward || toRevise ||  (forwardComment != null && !StringUtils.isBlank(forwardComment)) || (reviseComment != null && !StringUtils.isBlank(reviseComment))) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CANNOT_REVISE_OR_FORWARD);
             }
         } else {
             if (toForward) {
-                if (forwardComment == null || forwardComment.equals("")) {
+                if (forwardComment == null || StringUtils.isBlank(forwardComment)) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.FORWARD_COMMENT_NEEDED);
                 }
             }
             if (toRevise) {
-                if (reviseComment == null || reviseComment.equals("")) {
+                if (reviseComment == null || StringUtils.isBlank(reviseComment)) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REVISE_COMMENT_NEEDED);
                 }
             }
@@ -142,9 +139,10 @@ public class ReviewRecordController {
                     //所有人都选择全文发表
                     if(reviewRecordService.findByPublishAndPidAndCount(1,pid,1).size() == reviewRecordRepository.findByPidAndCount(pid,1).size()) {
                         // 汇总结果为通过
-                        post.setStatus(PostStatus.FORMAT_TO_BE_REVIEWED.getCode());
+                        post.setStatus(PostStatus.FORMAT_OR_BF_PUB_TO_BE_REVIEWED.getCode());
                     }else{
-                        post.setStatus(PostStatus.TO_BE_REVISED.getCode());
+                        // 汇总结果为通过但需要和编辑反复
+                        post.setStatus(PostStatus.TO_BE_RETURNED.getCode());
                     }
                 } else {
                     // 汇总结果为建议修改
@@ -154,7 +152,6 @@ public class ReviewRecordController {
         }
         postService.updatePost(post);
         return AjaxResponse.success();
-//        return AjaxResponse.success(dozerMapper.map(reviewRecord, ReviewRecordVO.class));
     }
 
 
@@ -179,7 +176,7 @@ public class ReviewRecordController {
             }
         }
         if (toRevise) {
-            if (reviseComment == null || reviseComment.equals("")) {
+            if (reviseComment == null || StringUtils.isBlank(reviseComment)) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REVISE_COMMENT_NEEDED);
             }
         }
@@ -214,19 +211,18 @@ public class ReviewRecordController {
             if (postReviewerService.aggregate(pid)) {
                 if(reviewRecordService.findByPublishAndPidAndCount(1,pid,post.getCount()).size() == reviewRecordRepository.findByPidAndCount(pid,post.getCount()).size()) {
                     // 汇总结果为通过
-                    post.setStatus(PostStatus.FORMAT_TO_BE_REVIEWED.getCode());
+                    post.setStatus(PostStatus.FORMAT_OR_BF_PUB_TO_BE_REVIEWED.getCode());
                 }else{
-                    // 汇总结果为通过但需部分修改，进入稿件待修改状态
-                    post.setStatus(PostStatus.TO_BE_REVISED.getCode());
+                    // 汇总结果为通过但需部分修改，进入稿件待退回状态
+                    post.setStatus(PostStatus.TO_BE_RETURNED.getCode());
                 }
             } else {
-                // 汇总结果为建议修改
+                // 汇总结果为建议修改，进入稿件待退回状态
                 post.setStatus(PostStatus.TO_BE_RETURNED.getCode());
             }
             postService.updatePost(post);
         }
-                return AjaxResponse.success();
-//        return AjaxResponse.success(dozerMapper.map(reviewRecord, ReviewRecordVO.class));
+        return AjaxResponse.success();
     }
 
     @GetMapping("/{pid}/type=1")

@@ -12,14 +12,15 @@ public class SecurityConstants {
      */
     public static final String SERVICE_URL = "http://192.168.0.102:8080";
 
+//    public static final String SERVICE_URL = "http://116.62.6.114:8080";
     /**
      * 角色的key
      **/
     public static final String ROLE_CLAIMS = "rol";
     /**
-     * 过期时间是3个小时
+     * 过期时间是24个小时
      */
-    public static final long EXPIRATION = 2L * 60L * 60L;
+    public static final long EXPIRATION = 24L * 60L * 60L;
 
     /**
      * JWT签名密钥硬编码到应用程序代码中，应该存放在环境变量或.properties文件中。
@@ -31,6 +32,4 @@ public class SecurityConstants {
     public static final String TOKEN_HEADER = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer";
 
-    private SecurityConstants() {
-    }
 }

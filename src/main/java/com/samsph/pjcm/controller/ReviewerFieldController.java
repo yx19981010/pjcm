@@ -24,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -52,14 +53,14 @@ public class ReviewerFieldController {
             List<ReviewerField> list = reviewerFieldService.findByReviewerUid(reviewerFieldVoPost.getReviewerUid());
             if(list!=null && list.size()>0){
                 for(ReviewerField reviewerField : list){
-                    if(reviewerField.getField() == reviewerFieldVoPost.getField().getCode()){
+                    if(reviewerField.getField().equals(reviewerFieldVoPost.getField())){
                         throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"审稿人已存在该领域");
                     }
                 }
             }
             ReviewerField reviewerField = new ReviewerField();
             reviewerField.setReviewerUid(reviewerFieldVoPost.getReviewerUid());
-            reviewerField.setField(reviewerFieldVoPost.getField().getCode());
+            reviewerField.setField(reviewerFieldVoPost.getField());
             reviewerFieldService.addReviewerField(reviewerField);
             return AjaxResponse.success();
         }
@@ -106,6 +107,7 @@ public class ReviewerFieldController {
     @GetMapping("/reviewerFields/all")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR')")
     public AjaxResponse findAllReviewerFields(){
+
         return AjaxResponse.success(reviewerFieldService.findAll());
     }
 
@@ -117,27 +119,23 @@ public class ReviewerFieldController {
     })
     @GetMapping("/reviewerFields")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR')")
-    public AjaxResponse findReviewerFields(@NotNull(message = "id不能为空")@Min(value = 1,message = "领域id必须是正整数") @RequestParam("fieldId") Integer fieldId,
+    public AjaxResponse findReviewerFields(@NotNull(message = "id不能为空") @Min(value = Field.LEAST_FIELD,message = "领域id最小为"+Field.LEAST_FIELD) @Max(value = Field.TOTAL_FIELD,message = "领域id最大为"+Field.TOTAL_FIELD) @RequestParam("fieldId") Integer fieldId,
                                            @NotNull(message = "未传入页数")@Min(value = 1,message = "页数必须是正整数") @RequestParam("page") Integer page,
                                            @NotNull(message = "未传入每页的大小")@Min(value = 1,message = "每页的大小必须是正整数") @RequestParam("size") Integer size){
         PageRequest pageRequest = PageRequest.of(page-1,size);
-        if(fieldId > Field.TOTAL_FIELD){
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"领域id错误!!!");
-        }else {
-            Page<ReviewerField> reviewerFieldPage = reviewerFieldService.findReviewerFieldsByFieldId(fieldId, pageRequest);
-            List<ReviewerField> reviewerFields = reviewerFieldPage.getContent();
-            List<ReviewerFieldVoGetReviewer> reviewerFieldVoGetReviewers =  new ArrayList<>();
-            for(ReviewerField reviewerField : reviewerFields){
-                User user = userService.findUserByUid(reviewerField.getReviewerUid()).get();
-                ReviewerFieldVoGetReviewer reviewerFieldVoGetReviewer = new ReviewerFieldVoGetReviewer();
-                reviewerFieldVoGetReviewer.setId(reviewerField.getId());
-                reviewerFieldVoGetReviewer.setReviewerUid(reviewerField.getReviewerUid());
-                reviewerFieldVoGetReviewer.setEmail(user.getEmail());
-                reviewerFieldVoGetReviewer.setUserName(user.getUserName());
-                reviewerFieldVoGetReviewers.add(reviewerFieldVoGetReviewer);
-            }
-            PageData pageData = new PageData(reviewerFieldPage.getTotalPages(), (int) reviewerFieldPage.getTotalElements(), page, reviewerFieldVoGetReviewers.size(), reviewerFieldVoGetReviewers);
-            return AjaxResponse.success(pageData);
+        Page<ReviewerField> reviewerFieldPage = reviewerFieldService.findReviewerFieldsByFieldId(fieldId, pageRequest);
+        List<ReviewerField> reviewerFields = reviewerFieldPage.getContent();
+        List<ReviewerFieldVoGetReviewer> reviewerFieldVoGetReviewers =  new ArrayList<>();
+        for(ReviewerField reviewerField : reviewerFields){
+            User user = userService.findUserByUid(reviewerField.getReviewerUid()).get();
+            ReviewerFieldVoGetReviewer reviewerFieldVoGetReviewer = new ReviewerFieldVoGetReviewer();
+            reviewerFieldVoGetReviewer.setId(reviewerField.getId());
+            reviewerFieldVoGetReviewer.setReviewerUid(reviewerField.getReviewerUid());
+            reviewerFieldVoGetReviewer.setEmail(user.getEmail());
+            reviewerFieldVoGetReviewer.setUserName(user.getUserName());
+            reviewerFieldVoGetReviewers.add(reviewerFieldVoGetReviewer);
         }
+        PageData pageData = new PageData(reviewerFieldPage.getTotalPages(), (int) reviewerFieldPage.getTotalElements(), page, reviewerFieldVoGetReviewers.size(), reviewerFieldVoGetReviewers);
+        return AjaxResponse.success(pageData);
     }
 }

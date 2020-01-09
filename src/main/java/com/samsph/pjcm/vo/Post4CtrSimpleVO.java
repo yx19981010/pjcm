@@ -23,4 +23,7 @@ public class Post4CtrSimpleVO {
 
     @ApiModelProperty("提交时间")
     private Date submitTime;
+
+    @ApiModelProperty("版面费")
+    private Double fee;
 }

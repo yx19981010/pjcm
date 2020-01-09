@@ -31,7 +31,8 @@ public class MailServiceImpl implements MailService {
             helper.setSubject(subject);
             helper.setTo(to);
             helper.setText(content, true);
-        } catch ( MessagingException  e)  {
+            mailSender.send(message);
+        } catch ( Exception  e)  {
             e.printStackTrace();
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"邮箱不可用");
         }
@@ -145,7 +146,7 @@ public class MailServiceImpl implements MailService {
                 " 在“待修改稿件”中按要求修改并上传（具体步骤请参照首页公告栏“论文修改步骤”）。<br />" +
                 " 请于3日内按要求修回，逾期未修回将视为退稿处理！</p>" +
                 "<p>您可以点击下面的链接，登录网站进行修改。</p>" +
-                "<a href=\""+ SecurityConstants.SERVICE_URL+"/test/1.jpg\">省医院编辑部</a>" +
+                "<a href=\""+ SecurityConstants.SERVICE_URL+"\">省医院编辑部</a>" +
                 "<p>&nbsp;&nbsp;祝您生活愉快！万事如意！</p>" +
                 "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;《实用医院临床杂志》</p>" +
@@ -165,7 +166,7 @@ public class MailServiceImpl implements MailService {
                 " 请尽量具有针对性和可操作性，以便于作者修改。</p>" +
                 "<p>稿件题目:"+postName+"</p>" +
                 "<p>请您点击下面的链接，登录网站进行审阅。</p>" +
-                "<a href=\""+ SecurityConstants.SERVICE_URL+"/test/1.jpg\">省医院编辑部</a>" +
+                "<a href=\""+ SecurityConstants.SERVICE_URL+"\">省医院编辑部</a>" +
                 "<p>&nbsp;&nbsp;衷心感谢您对实用医院临床杂志工作的大力支持，本刊对审稿人姓名保密，并按规定付给审稿费。</p>" +
                 "<p>&nbsp;&nbsp;此致</p>" +
                 "<p>敬礼</p>" +

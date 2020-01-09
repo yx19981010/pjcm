@@ -37,4 +37,9 @@ public class ReviewerFieldVoGet{
     @ApiModelProperty("领域")
     private List<ReviewerFieldVoGetField> field;
 
+    /**
+     * 是否激活
+     */
+    @ApiModelProperty("激活状态")
+    private Integer active;
 }

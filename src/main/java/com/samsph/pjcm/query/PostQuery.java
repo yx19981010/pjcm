@@ -32,7 +32,9 @@ PostQuery {
     @ApiModelProperty("投稿领域")
     @NotNull(message = "field不能为空", groups = {Add.class})
     @Null(message = "field必须为空", groups = {Update2.class})
-    private Field field;
+    @Min(value = Field.LEAST_FIELD,message = "领域id最小为"+Field.LEAST_FIELD)
+    @Max(value = Field.TOTAL_FIELD,message = "领域id最大为"+Field.TOTAL_FIELD)
+    private Integer field;
 
     @ApiModelProperty("基金级别")
     @NotNull(message = "fundLevel不能为空", groups = {Add.class})
@@ -45,7 +47,7 @@ PostQuery {
     private String writersInfo;
 
     @ApiModelProperty("文章标题")
-    @Length(max = 30, message = "标题不能超过30字")
+    @Size(max = 100, message = "标题不能超过100字")
     @NotBlank(message = "title不能为空", groups = {Add.class})
     private String title;
 
@@ -54,22 +56,22 @@ PostQuery {
     private Genre genre;
 
     @ApiModelProperty("英文文章标题")
-    @Length(max = 100,groups = {Add.class,Update.class,Update2.class}, message = "英文标题不能超过100字")
+    @Size(max = 200,groups = {Add.class,Update.class,Update2.class}, message = "英文标题不能超过200字")
     private String titleEn;
 
     @ApiModelProperty("中文关键字")
-    @Length(max = 240,groups = {Add.class,Update.class,Update2.class},message = "abstractZh不能超过240字")
+    @Size(max = 240,groups = {Add.class,Update.class,Update2.class},message = "abstractZh不能超过240字")
     private String keywordsZh;
 
     @ApiModelProperty("英文关键字")
-    @Length(max = 240,groups = {Add.class,Update.class,Update2.class}, message = "abstractZh不能超过240字")
+    @Size(max = 240,groups = {Add.class,Update.class,Update2.class}, message = "abstractZh不能超过240字")
     private String keywordsEn;
 
     @ApiModelProperty("中文摘要")
-    @Length(max = 300,groups = {Add.class,Update.class,Update2.class}, message = "abstractZh不能超过300字")
+    @Size(max = 400,groups = {Add.class,Update.class,Update2.class}, message = "abstractZh不能超过300字")
     private String abstractZh;
 
     @ApiModelProperty("英文摘要")
-    @Length(max = 2400,groups = {Add.class,Update.class,Update2.class}, message = "abstractEn不能超过2400字")
+    @Size(max = 1000,groups = {Add.class,Update.class,Update2.class}, message = "abstractEn不能超过2400字")
     private String abstractEn;
 }

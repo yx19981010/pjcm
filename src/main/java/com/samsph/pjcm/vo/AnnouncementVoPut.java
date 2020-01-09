@@ -31,6 +31,6 @@ public class AnnouncementVoPut {
      * 公告描述
      */
     @ApiModelProperty("公告描述")
-    @Size(min = 1,max = 100)
+    @Size(min = 1,max = 300)
     private String content;
 }

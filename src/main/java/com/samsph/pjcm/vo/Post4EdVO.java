@@ -66,29 +66,11 @@ public class Post4EdVO extends Post4EdSimpleVO{
     @ApiModelProperty("提交初审时间")
     private Date submitTime;
 
-    @ApiModelProperty("初审意见")
-    private String firstExamComment;
+    @ApiModelProperty("编辑意见")
+    private String editorComment;
 
-    @ApiModelProperty("初审时间")
-    private Date firstExamCommentTime;
-
-    @ApiModelProperty("退稿意见")
-    private String rejectComment;
-
-    @ApiModelProperty("退稿时间")
-    private Date rejectCommentTime;
-
-    @ApiModelProperty("发表前审阅意见")
-    private String bfPubComment;
-
-    @ApiModelProperty("稿发表前审阅时间")
-    private Date bfPubCommentTime;
-
-    @ApiModelProperty("格式审阅意见")
-    private String formatComment;
-
-    @ApiModelProperty("格式审阅时间")
-    private Date formatCommentTime;
+    @ApiModelProperty( "编辑提出意见时间")
+    private Date editorCommentTime;
 
     @ApiModelProperty("版面费")
     private Double fee;

@@ -214,10 +214,6 @@ public class UserController {
                 if (user.getPasswordHash().equals(Sha256Util.getSHA256StrJava(oldPassword))) {
                     user.setPasswordHash(Sha256Util.getSHA256StrJava(newPassword));
                     userService.updateUser(user);
-                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                    if(auth != null){
-                        new SecurityContextLogoutHandler().logout(request,response,auth);
-                    }
                     return AjaxResponse.success();
                 } else {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "原密码错误");

@@ -34,7 +34,7 @@ public class FileUtil {
      */
     public static String FileUpload(String parentPath, MultipartFile file){
         if (file.isEmpty()) {
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "文件为空！请选择一个文上传!");
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "文件为空,请选择一个文件上传!");
         }
         String suffixName = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
         String fileName = FileUtil.getRandomFileName() + suffixName;
@@ -140,7 +140,7 @@ public class FileUtil {
     public static void deleteFile(String filePath){
         File file = new File(filePath);
         if(!delFile(file)){
-            throw new CustomException(CustomExceptionType.SYSTEM_ERROR,"删除文件失败！！！");
+            throw new CustomException(CustomExceptionType.SYSTEM_ERROR,"删除文件失败！");
         }
     }
 }

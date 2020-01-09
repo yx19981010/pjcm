@@ -91,17 +91,13 @@ public class EditorFieldServiceImpl implements EditorFieldService {
                 List<EditorField> list2 = findByEditorUid(i.getUid());
                 User user = userRepository.findById(i.getUid()).get();
                 List<EditorFieldVoGetField> list3 = DozerUtil.mapList(list2,EditorFieldVoGetField.class);
-                //用户未激活或者已注销
-                if(user.getActive() != 1){
-                    continue;
-                }else {
-                    EditorFieldVoGet editorFieldVoGet = new EditorFieldVoGet();
-                    editorFieldVoGet.setEditorUid(user.getId());
-                    editorFieldVoGet.setEmail(user.getEmail());
-                    editorFieldVoGet.setUserName(user.getUserName());
-                    editorFieldVoGet.setField(list3);
-                    list1.add(editorFieldVoGet);
-                }
+                EditorFieldVoGet editorFieldVoGet = new EditorFieldVoGet();
+                editorFieldVoGet.setEditorUid(user.getId());
+                editorFieldVoGet.setEmail(user.getEmail());
+                editorFieldVoGet.setUserName(user.getUserName());
+                editorFieldVoGet.setField(list3);
+                editorFieldVoGet.setActive(user.getActive());
+                list1.add(editorFieldVoGet);
             }
             return list1;
         }else{

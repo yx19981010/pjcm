@@ -29,5 +29,7 @@ public class ReviewerFieldVoPost {
      */
     @ApiModelProperty("领域id")
     @NotNull(message = "领域id为空或领域id不在范围内")
-    private Field field;
+    @Min(value = Field.LEAST_FIELD,message = "领域id最小为"+Field.LEAST_FIELD)
+    @Max(value = Field.TOTAL_FIELD,message = "领域id最大为"+Field.TOTAL_FIELD)
+    private Integer field;
 }

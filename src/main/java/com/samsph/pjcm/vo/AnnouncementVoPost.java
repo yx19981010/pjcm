@@ -24,7 +24,7 @@ public class AnnouncementVoPost {
      * 公告描述
      */
     @ApiModelProperty("公告描述")
-    @Size(min = 1,max = 100)
+    @Size(min = 1,max = 300)
     @NotNull(message = "公告描述不为空")
     private String content;
 }

@@ -46,7 +46,7 @@ class PostReviewerServiceTest {
     @BeforeEach
     void setUp() {
         PostQuery postSaveQuery = new PostQuery();
-        postSaveQuery.setField(Field.BASIC_MEDICINE);
+        postSaveQuery.setField(Field.LEAST_FIELD);
         postSaveQuery.setTitle("论文标题");
         postSaveQuery.setGenre(Genre.PAPER);
         postSaveQuery.setFundLevel(FundLevel.MUNICIPAL);

@@ -6,6 +6,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author hujahao
@@ -22,6 +23,6 @@ public class EditorAuditQuery {
     private Boolean pass;
 
     @ApiModelProperty("意见，pass为假时必填该字段")
-    @Length(max = 50, message = "意见不得超过50字符")
+    @Size(max = 50, message = "意见不得超过50字符")
     private String comment;
 }

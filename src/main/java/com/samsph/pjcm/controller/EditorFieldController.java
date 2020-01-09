@@ -24,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -53,14 +54,14 @@ public class EditorFieldController {
             List<EditorField> list = editorFieldService.findByEditorUid(editorFieldVoPost.getEditorUid());
             if(list!=null && list.size()>0){
                 for(EditorField editorField : list){
-                    if(editorField.getField() == editorFieldVoPost.getField().getCode()){
+                    if(editorField.getField().equals(editorFieldVoPost.getField())){
                         throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"编辑已存在该领域");
                     }
                 }
             }
             EditorField editorField = new EditorField();
             editorField.setEditorUid(editorFieldVoPost.getEditorUid());
-            editorField.setField(editorFieldVoPost.getField().getCode());
+            editorField.setField(editorFieldVoPost.getField());
             editorFieldService.addEditorField(editorField);
             return AjaxResponse.success();
         }
@@ -121,27 +122,23 @@ public class EditorFieldController {
     })
     @GetMapping("/editorFields")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public AjaxResponse findEditorFields(@NotNull(message = "id不能为空")@Min(value = 1,message = "编辑id或领域必须是正整数") @RequestParam("fieldId") Integer fieldId,
+    public AjaxResponse findEditorFields(@NotNull(message = "id不能为空") @Min(value = Field.LEAST_FIELD,message = "领域id最小为"+Field.LEAST_FIELD) @Max(value = Field.TOTAL_FIELD,message = "领域id最大为"+Field.TOTAL_FIELD) @RequestParam("fieldId") Integer fieldId,
                                          @NotNull(message = "未传入页数")@Min(value = 1,message = "页数必须是正整数") @RequestParam("page") Integer page,
                                          @NotNull(message = "未传入每页的大小")@Min(value = 1,message = "每页的大小必须是正整数") @RequestParam("size") Integer size){
         PageRequest pageRequest = PageRequest.of(page-1,size);
-        if(fieldId > Field.TOTAL_FIELD){
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"领域id错误!!!");
-        }else {
-            Page<EditorField> editorFieldPage = editorFieldService.findEditorFieldsByFieldId(fieldId, pageRequest);
-            List<EditorField> editorFields = editorFieldPage.getContent();
-            List<EditorFieldVoGetEditor> editorFieldVoGetEditors =  new ArrayList<>();
-            for(EditorField editorField : editorFields){
-                User user = userService.findUserByUid(editorField.getEditorUid()).get();
-                EditorFieldVoGetEditor editorFieldVoGetEditor = new EditorFieldVoGetEditor();
-                editorFieldVoGetEditor.setId(editorField.getId());
-                editorFieldVoGetEditor.setEditorUid(editorField.getEditorUid());
-                editorFieldVoGetEditor.setEmail(user.getEmail());
-                editorFieldVoGetEditor.setUserName(user.getUserName());
-                editorFieldVoGetEditors.add(editorFieldVoGetEditor);
-            }
-            PageData pageData = new PageData(editorFieldPage.getTotalPages(), (int) editorFieldPage.getTotalElements(), page, editorFieldVoGetEditors.size(), editorFieldVoGetEditors);
-            return AjaxResponse.success(pageData);
+        Page<EditorField> editorFieldPage = editorFieldService.findEditorFieldsByFieldId(fieldId, pageRequest);
+        List<EditorField> editorFields = editorFieldPage.getContent();
+        List<EditorFieldVoGetEditor> editorFieldVoGetEditors =  new ArrayList<>();
+        for(EditorField editorField : editorFields){
+            User user = userService.findUserByUid(editorField.getEditorUid()).get();
+            EditorFieldVoGetEditor editorFieldVoGetEditor = new EditorFieldVoGetEditor();
+            editorFieldVoGetEditor.setId(editorField.getId());
+            editorFieldVoGetEditor.setEditorUid(editorField.getEditorUid());
+            editorFieldVoGetEditor.setEmail(user.getEmail());
+            editorFieldVoGetEditor.setUserName(user.getUserName());
+            editorFieldVoGetEditors.add(editorFieldVoGetEditor);
         }
+        PageData pageData = new PageData(editorFieldPage.getTotalPages(), (int) editorFieldPage.getTotalElements(), page, editorFieldVoGetEditors.size(), editorFieldVoGetEditors);
+        return AjaxResponse.success(pageData);
     }
 }

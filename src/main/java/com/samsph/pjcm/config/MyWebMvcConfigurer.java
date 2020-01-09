@@ -1,10 +1,16 @@
 package com.samsph.pjcm.config;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.CacheControl;
+import org.springframework.web.filter.ShallowEtagHeaderFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -39,9 +45,16 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/static/");
-//        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/static/").setCacheControl(
+                CacheControl.maxAge(0, TimeUnit.SECONDS)
+                        .cachePublic());
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/").setCacheControl(
+                CacheControl.maxAge(0, TimeUnit.SECONDS)
+                        .cachePublic());
         registry.addResourceHandler("/images/**").addResourceLocations("file:./file/certificate/");
-        registry.addResourceHandler("/test/**").addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
+
+
 }

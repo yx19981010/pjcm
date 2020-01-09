@@ -249,6 +249,12 @@ public class Post {
     private Double fee;
 
     /**
+     * 缴费截止时间
+     */
+    @Column(name="deadline")
+    private Date deadline;
+
+    /**
      * 发录用通知时间
      */
     @Column(name="acceptance_notice_time")

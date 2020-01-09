@@ -207,4 +207,9 @@ public class Post4EdVO extends Post4EdSimpleVO{
      * 缴费证明的审阅时间
      */
     private Date certificateCommentTime;
+
+    /**
+     * 缴费截止时间
+     */
+    private Date deadline;
 }

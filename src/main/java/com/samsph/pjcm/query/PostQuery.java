@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
+import javax.persistence.Column;
 import javax.validation.constraints.*;
 
 import static com.samsph.pjcm.config.constant.Field.LEAST_FIELD;
@@ -45,9 +46,39 @@ PostQuery {
     private String writersInfo;
 
     @ApiModelProperty("通讯作者名")
-    @NotBlank(message = "correspondenceAuthor不能为空", groups = {Add.class})
-    @Null(message = "correspondenceAuthor必须为空", groups = {Update2.class})
-    private String correspondenceAuthor;
+    @NotBlank(message = "corAuName不能为空", groups = {Add.class})
+    @Null(message = "corAuName必须为空", groups = {Update2.class})
+    private String corAuName;
+
+    @ApiModelProperty("一作姓名")
+    @NotBlank(message = "corAuName不能为空", groups = {Add.class})
+    @Null(message = "corAuName必须为空", groups = {Update2.class})
+    private String fAuName;
+
+    @ApiModelProperty("一作工作单位")
+    @NotBlank(message = "fAuEmployer不能为空", groups = {Add.class})
+    @Null(message = "fAuEmployer必须为空", groups = {Update2.class})
+    private String fAuEmployer;
+
+    @ApiModelProperty("一作邮箱")
+    @NotBlank(message = "fAuEmail不能为空", groups = {Add.class})
+    @Null(message = "fAuEmail必须为空", groups = {Update2.class})
+    private String fAuEmail;
+
+    @ApiModelProperty("一作手机号")
+    @NotBlank(message = "fAuPhone不能为空", groups = {Add.class})
+    @Null(message = "fAuPhone必须为空", groups = {Update2.class})
+    private String fAuPhone;
+
+    @ApiModelProperty("一作职称")
+    @NotBlank(message = "fAuTitle不能为空", groups = {Add.class})
+    @Null(message = "fAuTitle必须为空", groups = {Update2.class})
+    private String fAuTitle;
+
+    @ApiModelProperty("一作学历")
+    @NotBlank(message = "fAuEducation不能为空", groups = {Add.class})
+    @Null(message = "fAuEducation必须为空", groups = {Update2.class})
+    private String fAuEducation;
 
     @ApiModelProperty("文章标题")
     @Length(max = 30, message = "标题不能超过30字")
@@ -79,5 +110,5 @@ PostQuery {
     private String abstractEn;
 
     @ApiModelProperty("参考文献")
-    private String references;
+    private String referencesList;
 }

@@ -32,10 +32,7 @@ import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.samsph.pjcm.config.DevUserId.*;
 import static com.samsph.pjcm.config.constant.Genre.*;
@@ -403,7 +400,7 @@ public class PostController {
             dataType = "PostQuery")
     public AjaxResponse updatePost5(@Validated({Update2.class}) @RequestBody PostQuery postQuery) {
 
-        // TODO: 检查关键字和参考文献格式
+        checkPostQuery(postQuery);
 
         Post post = postService.getPost(postQuery.getId());
 
@@ -593,6 +590,7 @@ public class PostController {
         // 设置版面费、税率和状态
         post.setFee(Double.valueOf(postLayOutFeeQuery.getFee()));
         post.setTaxRate(postLayOutFeeQuery.getTaxRate());
+        post.setDeadline(postLayOutFeeQuery.getDeadline());
         post.setStatus(PostStatus.CERTIFICATE_TO_BE_UPLOADED.getCode());
 
         post.setAcceptanceNoticeTime(new Date());
@@ -843,7 +841,9 @@ public class PostController {
             @ApiImplicitParam(name = "ascend", value = "是否升序，默认为true", dataType = "boolean"),
             @ApiImplicitParam(name = "statuses", value = "要筛选的状态", allowMultiple = true, required = true, dataType = "int"),
             @ApiImplicitParam(name = "start", value = "开始提交日期，start与end成对使用，默认为所有时间", dataType = "date-time"),
-            @ApiImplicitParam(name = "end", value = "结束提交日期，start与end成对使用，默认为所有时间", dataType = "date-time")
+            @ApiImplicitParam(name = "end", value = "结束提交日期，start与end成对使用，默认为所有时间", dataType = "date-time"),
+            @ApiImplicitParam(name = "fAuName", value = "一作姓名，默认为所有作者，支持模糊匹配"),
+            @ApiImplicitParam(name = "fAuEmployer", value = "一作单位，默认为所有单位，支持模糊匹配")
     })
     public AjaxResponse export(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
                                @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
@@ -852,7 +852,7 @@ public class PostController {
                                @RequestParam(value = "start", required = false) Date start,
                                @RequestParam(value = "end", required = false) Date end,
                                @RequestParam(value = "fAuName", required = false) String fAuName,
-                               @RequestParam(value = "fAuEmployee", required = false) String fAuEmployee) {
+                               @RequestParam(value = "fAuEmployer", required = false) String fAuEmployer) {
         checkStartAndEndTime(start, end);
 
         // 检查statuses列表
@@ -870,31 +870,31 @@ public class PostController {
         Page<Post> page;
         if (start == null) {
             if (fAuName == null) {
-                if (fAuEmployee == null) {
+                if (fAuEmployer == null) {
                     page = postService.getAllByStatus(statuses, number, size, ascend);
                 } else {
-                    page = postService.getAllByStatusAndFAuEmployee(statuses, fAuEmployee, number, size, ascend);
+                    page = postService.getAllByStatusAndFAuEmployer(statuses, fAuEmployer, number, size, ascend);
                 }
             } else {
-                if (fAuEmployee == null) {
+                if (fAuEmployer == null) {
                     page = postService.getAllByStatusAndFAuName(statuses, fAuName, number, size, ascend);
                 } else {
-                    page = postService.getAllByStatusAndFAuNameAndFAuEmployee(statuses, fAuName, fAuEmployee, number, size, ascend);
+                    page = postService.getAllByStatusAndFAuNameAndFAuEmployer(statuses, fAuName, fAuEmployer, number, size, ascend);
                 }
             }
 
         } else {
             if (fAuName == null) {
-                if (fAuEmployee == null) {
+                if (fAuEmployer == null) {
                     page = postService.getAllByStatusAndSubmitTime(statuses, start, end, number, size, ascend);
                 } else {
-                    page = postService.getAllByStatusAndFAuEmployeeAndSubmitTime(statuses, fAuEmployee, start, end, number, size, ascend);
+                    page = postService.getAllByStatusAndFAuEmployerAndSubmitTime(statuses, fAuEmployer, start, end, number, size, ascend);
                 }
             } else {
-                if (fAuEmployee == null) {
+                if (fAuEmployer == null) {
                     page = postService.getAllByStatusAndFAuNameAndSubmitTime(statuses, fAuName, start, end, number, size, ascend);
                 } else {
-                    page = postService.getAllByStatusAndFAuNameAndFAuEmployeeAndSubmitTime(statuses, fAuName, fAuEmployee, start, end, number, size, ascend);
+                    page = postService.getAllByStatusAndFAuNameAndFAuEmployerAndSubmitTime(statuses, fAuName, fAuEmployer, start, end, number, size, ascend);
                 }
             }
         }
@@ -902,29 +902,68 @@ public class PostController {
         return AjaxResponse.success(DozerUtil.mapPage(page, PostExportVO.class));
     }
 
-    // TODO
     @GetMapping("exportInvoice")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @ApiOperation(value = "管理员导出发票信息列表")
+    @ApiOperation(value = "管理员导出投稿成功的发票信息列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "number", value = "分页页号", required = true, dataType = "int"),
             @ApiImplicitParam(name = "size", value = "分页大小", required = true, dataType = "int"),
             @ApiImplicitParam(name = "ascend", value = "是否升序，默认为true", dataType = "boolean"),
             @ApiImplicitParam(name = "statuses", value = "要筛选的状态，默认为所有状态", allowMultiple = true, dataType = "int"),
-            @ApiImplicitParam(name = "start", value = "开始提交日期，start与end成对使用，默认为所有时间", dataType = "date-time"),
-            @ApiImplicitParam(name = "end", value = "结束提交日期，start与end成对使用，默认为所有时间", dataType = "date-time")
-    })
+            @ApiImplicitParam(name = "start", value = "开始支付凭证上传日期，start与end成对使用，默认为所有时间", dataType = "date-time"),
+            @ApiImplicitParam(name = "end", value = "结束支付凭证上传日期，start与end成对使用，默认为所有时间", dataType = "date-time"),
+            @ApiImplicitParam(name = "fAuName", value = "一作姓名，默认为所有作者，支持模糊匹配"),
+            @ApiImplicitParam(name = "fAuEmployer", value = "一作单位，默认为所有单位，支持模糊匹配")})
     public AjaxResponse exportInvoice(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
                                       @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
                                       @RequestParam(value = "ascend", required = false) Boolean ascend,
-                                      @RequestParam(value = "statuses", required = false) List<Integer> statuses,
                                       @RequestParam(value = "start", required = false) Date start,
-                                      @RequestParam(value = "end", required = false) Date end) {
-        return AjaxResponse.success();
+                                      @RequestParam(value = "end", required = false) Date end,
+                                      @RequestParam(value = "fAuName", required = false) String fAuName,
+                                      @RequestParam(value = "fAuEmployer", required = false) String fAuEmployer) {
+
+        checkStartAndEndTime(start, end);
+
+        List<Integer> successStatus = new ArrayList<>();
+        successStatus.add(PostStatus.SUCCESS.getCode());
+
+        Page<Post> page;
+        if (start == null) {
+            if (fAuName == null) {
+                if (fAuEmployer == null) {
+                    page = postService.getAllByStatus(successStatus, number, size, ascend);
+                } else {
+                    page = postService.getAllByStatusAndFAuEmployer(successStatus, fAuEmployer, number, size, ascend);
+                }
+            } else {
+                if (fAuEmployer == null) {
+                    page = postService.getAllByStatusAndFAuName(successStatus, fAuName, number, size, ascend);
+                } else {
+                    page = postService.getAllByStatusAndFAuNameAndFAuEmployer(successStatus, fAuName, fAuEmployer, number, size, ascend);
+                }
+            }
+
+        } else {
+            if (fAuName == null) {
+                if (fAuEmployer == null) {
+                    page = postService.getAllByStatusAndCertificateUploadTime(successStatus, start, end, number, size, ascend);
+                } else {
+                    page = postService.getAllByStatusAndFAuEmployerAndCertificateUploadTime(successStatus, fAuEmployer, start, end, number, size, ascend);
+                }
+            } else {
+                if (fAuEmployer == null) {
+                    page = postService.getAllByStatusAndFAuNameAndCertificateUploadTime(successStatus, fAuName, start, end, number, size, ascend);
+                } else {
+                    page = postService.getAllByStatusAndFAuNameAndFAuEmployerAndCertificateUploadTime(successStatus, fAuName, fAuEmployer, start, end, number, size, ascend);
+                }
+            }
+        }
+
+        return AjaxResponse.success(DozerUtil.mapPage(page, PostExport4InvoiceVO.class));
     }
 
-    // TODO: 支持更多类型（改稿/录用缴费/退稿）的通知
-    // TODO: 支持对审稿人再审搞的通知
+// TODO: 支持更多类型（改稿/录用缴费/退稿）的通知
+// TODO: 支持对审稿人再审搞的通知
 
     private void notifyContributor(Post post) {
         // 给投稿人发送邮件

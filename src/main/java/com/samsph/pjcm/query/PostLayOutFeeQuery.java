@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.*;
+import java.util.Date;
 
 /**
  * @author hujiahao
@@ -18,7 +19,7 @@ public class PostLayOutFeeQuery {
 
     @ApiModelProperty("版面费。小数不超过两位。")
     @NotNull(message = "fee不能为空")
-    @Pattern(regexp = "^(([1-9]\\d*)|([0]))(\\.(\\d){0,2})?$",message ="fee小数不能超过两位" )
+    @Pattern(regexp = "^(([1-9]\\d*)|([0]))(\\.(\\d){0,2})?$", message = "fee小数不能超过两位")
     private String fee;
 
     @ApiModelProperty("税率")
@@ -26,4 +27,9 @@ public class PostLayOutFeeQuery {
     @Max(value = 100)
     @Min(value = 0)
     private Double taxRate;
+
+    @ApiModelProperty("截止日期")
+    @NotNull(message = "deadline不能为空")
+    private Date deadline;
+
 }

@@ -168,9 +168,9 @@ public class PostServiceImpl implements PostService {
         PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
         // 查询分页结果
-        if(flag){
+        if (flag) {
             return postRepository.findByReviewerUidAndFlagTrue(uid, pageRequest);
-        }else{
+        } else {
             return postRepository.findByReviewerUidAndFlagFalse(uid, pageRequest);
         }
     }
@@ -195,44 +195,123 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<Post> getAllByStatus(List<Integer> statuses, Integer number, Integer size, Boolean ascend) {
-        return null;
-    }
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
 
-    @Override
-    public Page<Post> getAllByStatusAndFAuEmployee(List<Integer> statuses, String fAuEmployee, Integer number, Integer size, Boolean ascend) {
-        return null;
-    }
-
-    @Override
-    public Page<Post> getAllByStatusAndFAuName(List<Integer> statuses, String fAuName, Integer number, Integer size, Boolean ascend) {
-        return null;
-    }
-
-    @Override
-    public Page<Post> getAllByStatusAndFAuNameAndFAuEmployee(List<Integer> statuses, String fAuName, String fAuEmployee, Integer number, Integer size, Boolean ascend) {
-        return null;
+        // 查询分页结果
+        return postRepository.findByStatusIn(statuses, pageRequest);
     }
 
     @Override
     public Page<Post> getAllByStatusAndSubmitTime(List<Integer> statuses, Date start, Date end, Integer number, Integer size, Boolean ascend) {
-        return null;
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByStatusInAndSubmitTimeAfterAndSubmitTimeBefore(statuses, start, end, pageRequest);
     }
 
     @Override
-    public Page<Post> getAllByStatusAndFAuEmployeeAndSubmitTime(List<Integer> statuses, String fAuEmployee, Date start, Date end, Integer number, Integer size, Boolean ascend) {
-        return null;
+    public Page<Post> getAllByStatusAndFAuEmployer(List<Integer> statuses, String fAuEmployer, Integer number, Integer size, Boolean ascend) {
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByStatusInAndFAuEmployerLike(statuses, fAuEmployer, pageRequest);
+    }
+
+    @Override
+    public Page<Post> getAllByStatusAndFAuEmployerAndSubmitTime(List<Integer> statuses, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend) {
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByStatusInAndFAuEmployerLikeAndSubmitTimeAfterAndSubmitTimeBefore(statuses, fAuEmployer, start, end, pageRequest);
+    }
+
+    @Override
+    public Page<Post> getAllByStatusAndFAuName(List<Integer> statuses, String fAuName, Integer number, Integer size, Boolean ascend) {
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByStatusInAndFAuNameLike(statuses, fAuName, pageRequest);
     }
 
     @Override
     public Page<Post> getAllByStatusAndFAuNameAndSubmitTime(List<Integer> statuses, String fAuName, Date start, Date end, Integer number, Integer size, Boolean ascend) {
-        return null;
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByStatusInAndFAuNameLikeAndSubmitTimeAfterAndSubmitTimeBefore(statuses, fAuName, start, end, pageRequest);
     }
 
     @Override
-    public Page<Post> getAllByStatusAndFAuNameAndFAuEmployeeAndSubmitTime(List<Integer> statuses, String fAuName, String fAuEmployee, Date start, Date end, Integer number, Integer size, Boolean ascend) {
-        return null;
+    public Page<Post> getAllByStatusAndFAuNameAndFAuEmployer(List<Integer> statuses, String fAuName, String fAuEmployer, Integer number, Integer size, Boolean ascend) {
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByStatusInAndFAuNameLikeAndFAuEmployerLike(statuses, fAuName, fAuEmployer, pageRequest);
     }
 
+    @Override
+    public Page<Post> getAllByStatusAndFAuNameAndFAuEmployerAndSubmitTime(List<Integer> statuses, String fAuName, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend) {
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByStatusInAndFAuNameLikeAndFAuEmployerLikeAndSubmitTimeAfterAndSubmitTimeBefore(statuses, fAuName, fAuEmployer, start, end, pageRequest);
+    }
+
+    @Override
+    public Page<Post> getAllByStatusAndCertificateUploadTime(List<Integer> statuses, Date start, Date end, Integer number, Integer size, Boolean ascend) {
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByStatusInAndCertificateUploadTimeAfterAndCertificateUploadTimeBefore(statuses, start, end, pageRequest);
+    }
+
+    @Override
+    public Page<Post> getAllByStatusAndFAuEmployerAndCertificateUploadTime(List<Integer> statuses, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend) {
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByStatusInAndFAuEmployerLikeAndCertificateUploadTimeAfterAndCertificateUploadTimeBefore(statuses, fAuEmployer, start, end, pageRequest);
+    }
+
+    @Override
+    public Page<Post> getAllByStatusAndFAuNameAndCertificateUploadTime(List<Integer> statuses, String fAuName, Date start, Date end, Integer number, Integer size, Boolean ascend) {
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByStatusInAndFAuNameLikeAndCertificateUploadTimeAfterAndCertificateUploadTimeBefore(statuses, fAuName, start, end, pageRequest);
+    }
+
+    @Override
+    public Page<Post> getAllByStatusAndFAuNameAndFAuEmployerAndCertificateUploadTime(List<Integer> statuses, String fAuName, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend) {
+        // 新建分页选项
+        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
+
+        // 查询分页结果
+        return postRepository.findByStatusInAndFAuNameLikeAndFAuEmployerLikeAndCertificateUploadTimeAfterAndCertificateUploadTimeBefore(statuses, fAuName, fAuEmployer, start, end, pageRequest);
+    }
 
     private Post fetchPost(int id) {
         // 查询是否存在该id的投稿

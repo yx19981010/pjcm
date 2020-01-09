@@ -59,11 +59,11 @@ public interface PostService {
     /**
      * 根据投稿人id和稿件状态获取稿件分页
      *
-     * @param uid    投稿人id
+     * @param uid      投稿人id
      * @param statuses 稿件状态列表
-     * @param number 页号
-     * @param size   页面大小
-     * @param ascend 是否升序
+     * @param number   页号
+     * @param size     页面大小
+     * @param ascend   是否升序
      * @return 稿件分页
      */
     Page<Post> getAllByCtrUidAndStatus(int uid, List<Integer> statuses, int number, int size, boolean ascend);
@@ -72,13 +72,13 @@ public interface PostService {
     /**
      * 根据投稿人id和稿件状态获取某段时间内提交的稿件分页
      *
-     * @param uid    投稿人id
+     * @param uid      投稿人id
      * @param statuses 稿件状态列表
-     * @param start  开始时间
-     * @param end    结束时间
-     * @param number 页号
-     * @param size   页面大小
-     * @param ascend 是否升序
+     * @param start    开始时间
+     * @param end      结束时间
+     * @param number   页号
+     * @param size     页面大小
+     * @param ascend   是否升序
      * @return 稿件分页
      */
     Page<Post> getAllByCtrUidAndStatusAndSubmitTime(int uid, List<Integer> statuses, Date start, Date end, int number, int size, boolean ascend);
@@ -202,19 +202,163 @@ public interface PostService {
      */
     void deletePost(int id);
 
+    /**
+     * 根据状态获得所有稿件
+     *
+     * @param statuses 稿件状态列表
+     * @param number   页号
+     * @param size     页面大小
+     * @param ascend   是否升序
+     * @return 稿件分页
+     */
     Page<Post> getAllByStatus(List<Integer> statuses, Integer number, Integer size, Boolean ascend);
 
-    Page<Post> getAllByStatusAndFAuEmployee(List<Integer> statuses, String fAuEmployee, Integer number, Integer size, Boolean ascend);
+    /**
+     * 根据状态和一作单位获得所有稿件
+     *
+     * @param statuses    稿件状态列表
+     * @param fAuEmployer 一作工作单位
+     * @param number      页号
+     * @param size        页面大小
+     * @param ascend      是否升序
+     * @return 稿件分页
+     */
+    Page<Post> getAllByStatusAndFAuEmployer(List<Integer> statuses, String fAuEmployer, Integer number, Integer size, Boolean ascend);
 
+    /**
+     * 根据状态和一作姓名获得所有稿件
+     *
+     * @param statuses 稿件状态列表
+     * @param fAuName  一作姓名
+     * @param number   页号
+     * @param size     页面大小
+     * @param ascend   是否升序
+     * @return 稿件分页
+     */
     Page<Post> getAllByStatusAndFAuName(List<Integer> statuses, String fAuName, Integer number, Integer size, Boolean ascend);
 
-    Page<Post> getAllByStatusAndFAuNameAndFAuEmployee(List<Integer> statuses, String fAuName, String fAuEmployee, Integer number, Integer size, Boolean ascend);
+    /**
+     * 根据状态、一作姓名和一作单位获得稿件列表
+     *
+     * @param statuses    稿件状态列表
+     * @param fAuName     一作姓名
+     * @param fAuEmployer 一作单位
+     * @param number      页号
+     * @param size        页面大小
+     * @param ascend      是否升序
+     * @return 稿件分页
+     */
+    Page<Post> getAllByStatusAndFAuNameAndFAuEmployer(List<Integer> statuses, String fAuName, String fAuEmployer, Integer number, Integer size, Boolean ascend);
 
+    /**
+     * 根据状态和提交时间获得稿件分页
+     *
+     * @param statuses 状态列表
+     * @param start    开始时间
+     * @param end      结束时间
+     * @param number   页号
+     * @param size     页面大小
+     * @param ascend   是否升序
+     * @return 稿件分页
+     */
     Page<Post> getAllByStatusAndSubmitTime(List<Integer> statuses, Date start, Date end, Integer number, Integer size, Boolean ascend);
 
-    Page<Post> getAllByStatusAndFAuEmployeeAndSubmitTime(List<Integer> statuses, String fAuEmployee, Date start, Date end, Integer number, Integer size, Boolean ascend);
+    /**
+     * 根据状态、一作单位和提交时间获得稿件分页
+     *
+     * @param statuses    状态列表
+     * @param fAuEmployer 一作单位
+     * @param start       开始时间
+     * @param end         结束时间
+     * @param number      页号
+     * @param size        页面大小
+     * @param ascend      是否升序
+     * @return 稿件分页
+     */
+    Page<Post> getAllByStatusAndFAuEmployerAndSubmitTime(List<Integer> statuses, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend);
 
+    /**
+     * 根据状态、一作姓名和提交时间获得稿件分页
+     *
+     * @param statuses 状态列表
+     * @param fAuName  一作姓名
+     * @param start    开始时间
+     * @param end      结束时间
+     * @param number   页号
+     * @param size     页面大小
+     * @param ascend   是否升序
+     * @return 稿件分页
+     */
     Page<Post> getAllByStatusAndFAuNameAndSubmitTime(List<Integer> statuses, String fAuName, Date start, Date end, Integer number, Integer size, Boolean ascend);
 
-    Page<Post> getAllByStatusAndFAuNameAndFAuEmployeeAndSubmitTime(List<Integer> statuses, String fAuName, String fAuEmployee, Date start, Date end, Integer number, Integer size, Boolean ascend);
+    /**
+     * 根据状态、一作姓名、一作工作单位和提交时间获得稿件分页
+     *
+     * @param statuses    状态列表
+     * @param fAuName     一作姓名
+     * @param fAuEmployer 一作工作单位
+     * @param start       开始时间
+     * @param end         结束时间
+     * @param number      页号
+     * @param size        页面大小
+     * @param ascend      是否升序
+     * @return 稿件分页
+     */
+    Page<Post> getAllByStatusAndFAuNameAndFAuEmployerAndSubmitTime(List<Integer> statuses, String fAuName, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend);
+
+    /**
+     * 根据稿件状态、缴费证明上传时间获得稿件分页
+     *
+     * @param statuses 稿件状态列表
+     * @param start    开始时间
+     * @param end      结束时间
+     * @param number   页号
+     * @param size     页面大小
+     * @param ascend   是否升序
+     * @return 稿件分页
+     */
+    Page<Post> getAllByStatusAndCertificateUploadTime(List<Integer> statuses, Date start, Date end, Integer number, Integer size, Boolean ascend);
+
+    /**
+     * 根据稿件状态、一作工作单位、缴费证明上传时间获得稿件分页
+     *
+     * @param statuses    稿件状态列表
+     * @param fAuEmployer 一作工作单位
+     * @param start       开始时间
+     * @param end         结束时间
+     * @param number      页号
+     * @param size        页面大小
+     * @param ascend      是否升序
+     * @return 稿件分页
+     */
+    Page<Post> getAllByStatusAndFAuEmployerAndCertificateUploadTime(List<Integer> statuses, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend);
+
+    /**
+     * 根据稿件状态、一作姓名、缴费证明上传时间获得稿件分页
+     *
+     * @param statuses 稿件状态列表
+     * @param fAuName  一作姓名
+     * @param start    开始时间
+     * @param end      结束时间
+     * @param number   页号
+     * @param size     分页大小
+     * @param ascend   是否升序
+     * @return 稿件分页
+     */
+    Page<Post> getAllByStatusAndFAuNameAndCertificateUploadTime(List<Integer> statuses, String fAuName, Date start, Date end, Integer number, Integer size, Boolean ascend);
+
+    /**
+     * 根据稿件状态、一作姓名、一作工作单位、缴费证明上传时间获得稿件分页
+     * 
+     * @param statuses    稿件状态列表
+     * @param fAuName     一作姓名
+     * @param fAuEmployer 一作工作单位
+     * @param start       开始时间
+     * @param end         结束时间
+     * @param number      页号
+     * @param size        分页大小
+     * @param ascend      是否升序
+     * @return 稿件分页
+     */
+    Page<Post> getAllByStatusAndFAuNameAndFAuEmployerAndCertificateUploadTime(List<Integer> statuses, String fAuName, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend);
 }

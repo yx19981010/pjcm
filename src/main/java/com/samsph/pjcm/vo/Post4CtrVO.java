@@ -212,4 +212,9 @@ public class Post4CtrVO extends Post4CtrSimpleVO {
      * 缴费证明的审阅时间
      */
     private Date certificateCommentTime;
+
+    /**
+     * 缴费截止时间
+     */
+    private Date deadline;
 }

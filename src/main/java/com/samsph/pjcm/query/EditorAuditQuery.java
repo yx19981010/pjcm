@@ -12,13 +12,13 @@ import javax.validation.constraints.Size;
  * @author hujahao
  */
 @Data
-@ApiModel(description = "编辑审核请求实体（初审/退回修改/发表前审核/审缴费证明）")
+@ApiModel(description = "编辑审核请求实体（初审/退回修改/发表前&格式审核/审缴费证明）")
 public class EditorAuditQuery {
     @ApiModelProperty("标识号")
     @NotNull(message = "id不能为空")
     private Integer id;
 
-    @ApiModelProperty("是否通过初审/退回修改/通过缴费证明审核")
+    @ApiModelProperty("是否 通过初审/退回修改/返给审稿人/通过缴费证明审核")
     @NotNull(message = "pass不能为空")
     private Boolean pass;
 

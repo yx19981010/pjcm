@@ -2,7 +2,6 @@ package com.samsph.pjcm.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import com.samsph.pjcm.config.PageDataT;
 import com.samsph.pjcm.config.constant.*;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.exception.CustomException;
@@ -33,6 +32,7 @@ import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -59,14 +59,16 @@ public class PostController {
     PostService postService;
 
     @Resource
+    UserService userService;
+
+    @Resource
     MailService mailService;
 
     @Resource
-    PostReviewerService postReviewerService;
+    PostNoOffsetService postNoOffsetService;
 
     @Resource
-    UserService userService;
-
+    PostReviewerService postReviewerService;
 
     @Resource
     private EditorFieldService editorFieldService;
@@ -81,21 +83,17 @@ public class PostController {
     @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "投稿人创建稿件记录")
     @ApiImplicitParam(name = "postQuery",
-            value = "必填：field、title、genre、fundLevel、writersInfo\n" +
-                    "不填：id\n" +
-                    "备注：前端需确定中英文关键词和作者信息的格式\n" +
-                    "TODO：服务器端对中英文关键词和作者信息做格式校验",
+            value = "必填：field、title、genre、fundLevel、writersInfo、correspondenceAuthor\n" +
+                    "不填：id\n",
             dataType = "PostQuery")
     public AjaxResponse savePost(@Validated({Add.class}) @RequestBody PostQuery postQuery) {
 
-        // TODO: 检查关键字和作者信息格式
+        // 检查 PostQuery 格式
+        checkPostQuery(postQuery);
 
-//        int uid = currentUser.getCurrentUser().getUserId();
+        // int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
-//        int size = editorFieldService.findByFieldId(postQuery.getField().getCode()).size();
-//        if (size == 0) {
-//            throw new CustomException(CustomExceptionType.SYSTEM_ERROR, "该领域下无编辑");
-//        }
+
         Post post = postService.savePost(postQuery, uid);
 
         Post4CtrSimpleVO post4CtrSimpleVO = dozerMapper.map(post, Post4CtrSimpleVO.class);
@@ -141,7 +139,7 @@ public class PostController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
 
-        // TODO: 检查关键字和作者信息格式
+        checkPostQuery(postQuery);
 
         // 更新稿件基本信息
         BeanUtil.copyProperties(postQuery, post,
@@ -157,7 +155,7 @@ public class PostController {
     public AjaxResponse updatePost2(@NotNull(message = "id不能为空") @PathVariable Integer id) {
         Post post = postService.getPost(id);
 
-//        int uid = currentUser.getCurrentUser().getUserId();
+//      int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         // 检查其为稿件投稿人
@@ -173,14 +171,14 @@ public class PostController {
         // 检查稿件信息填写完整，能提交初审
         checkPostCanSubmit(post);
 
-//        int size = editorFieldService.findByFieldId(post.getField()).size();
-//        if (size == 0) {
-//            throw new CustomException(CustomExceptionType.SYSTEM_ERROR, "该领域下无编辑");
-//        }
-//        int num = (int) (1 + Math.random() * (size - 1 + 1));
+        int size = editorFieldService.findByFieldId(post.getField()).size();
+        if (size == 0) {
+            throw new CustomException(CustomExceptionType.SYSTEM_ERROR, "该领域下无编辑");
+        }
+        int num = (int) (1 + Math.random() * (size - 1 + 1));
 
-//        int editorId = editorFieldService.findByFieldId(post.getField()).get(num - 1).getEditorUid();
-        int editorId = 8;
+//      int editorId = editorFieldService.findByFieldId(post.getField()).get(num - 1).getEditorUid();
+        int editorId = EDITOR_ID;
 
         post.setEditorUid(editorId);
         post.setStatus(PostStatus.PENDING_FIRST_EXAM.getCode());
@@ -204,9 +202,7 @@ public class PostController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_EDITOR);
         }
 
-        Post4EdVO retData = dozerMapper.map(post, Post4EdVO.class);
-        retData.setContributor(getName(post.getContributorUid()));
-        return AjaxResponse.success(retData);
+        return AjaxResponse.success(dozerMapper.map(post, Post4EdVO.class));
     }
 
     @PutMapping("type=examFirst")
@@ -288,7 +284,7 @@ public class PostController {
     @ApiOperation(value = "审稿人根据id获取待答复的稿件")
     public AjaxResponse getPost3(@NotNull @PathVariable Integer id) {
 
-        //        int uid = currentUser.getCurrentUser().getUserId();
+        // int uid = currentUser.getCurrentUser().getUserId();
         int uid = REVIEWER_ID;
 
         // 检查该审稿人未答复
@@ -383,7 +379,6 @@ public class PostController {
         if (editorAuditQuery.getPass()) {
             // 编辑决定退回修改
             post.setStatus(PostStatus.TO_BE_REVISED.getCode());
-            post.setCount(post.getCount() + 1);
             // 给投稿人发送邮件
             notifyContributor(post);
 
@@ -408,11 +403,11 @@ public class PostController {
             dataType = "PostQuery")
     public AjaxResponse updatePost5(@Validated({Update2.class}) @RequestBody PostQuery postQuery) {
 
-        // TODO: 检查关键字和作者信息格式
+        // TODO: 检查关键字和参考文献格式
 
         Post post = postService.getPost(postQuery.getId());
 
-        //        int uid = currentUser.getCurrentUser().getUserId();
+        // int uid = currentUser.getCurrentUser().getUserId();
         int uid = CONTRIBUTOR_ID;
 
         // 检查其为稿件投稿人
@@ -435,7 +430,7 @@ public class PostController {
 
     @PutMapping("{id}/type=revise")
     @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
-    @ApiOperation(value = "稿件状态为待修改，投稿人提交待审稿人再审/编辑出版前审核")
+    @ApiOperation(value = "稿件状态为待修改，投稿人修改后提交给编辑")
     public AjaxResponse updatePost6(@NotNull(message = "id不能为空") @PathVariable Integer id) {
 
         //        int uid = currentUser.getCurrentUser().getUserId();
@@ -460,17 +455,17 @@ public class PostController {
             // 如果审稿人无需再审
             post.setStatus(PostStatus.FORMAT_OR_BF_PUB_TO_BE_REVIEWED.getCode());
         } else {
-            // 提醒审稿人
-            post.setStatus(PostStatus.RE_REVIEW.getCode());
+            // 如果审稿人还需再审
+            post.setStatus(PostStatus.REVIEW_TO_BE_APPROVED.getCode());
         }
         postService.updatePost(post);
 
         return AjaxResponse.success();
     }
 
-    @PutMapping("type=examBfPub")
+    @PutMapping("type=examToRev")
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
-    @ApiOperation(value = "稿件状态为出版前待审，编辑进行审核")
+    @ApiOperation(value = "稿件状态为待通过审稿，编辑选择退给投稿人修改/ 返给审稿人审稿")
     public AjaxResponse updatePost13(@Validated @RequestBody EditorAuditQuery editorAuditQuery) {
         //        int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
@@ -483,21 +478,24 @@ public class PostController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_EDITOR);
         }
 
-        if (post.getStatus() != PostStatus.FORMAT_OR_BF_PUB_TO_BE_REVIEWED.getCode()) {
+        // 检查稿件状态
+        if (post.getStatus() != PostStatus.REVIEW_TO_BE_APPROVED.getCode()) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
 
         String comment = editorAuditQuery.getComment();
         if (editorAuditQuery.getPass()) {
-            // 审核通过进入格式待审核状态
-            post.setStatus(PostStatus.FORMAT_OR_BF_PUB_TO_BE_REVIEWED.getCode());
+            // 允许审稿，进入再审搞状态，审稿轮数加一
+            post.setStatus(PostStatus.RE_REVIEW.getCode());
+            post.setCount(post.getCount() + 1);
+            // TODO: 通知审稿人进行再审稿
         } else {
-            // 不通过则回到待修改状态
-            if (comment == null || StringUtils.isBlank(comment)) {
+            // 不允许审稿则回到待修改状态
+            if (comment == null || comment.isEmpty()) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.TO_BE_REVISED.getCode());
-            // TODO: 通知投稿人
+            notifyContributor(post);
         }
 
         post.setEditorComment(comment);
@@ -506,11 +504,11 @@ public class PostController {
         return AjaxResponse.success();
     }
 
-    @PutMapping("type=examFormat")
+    @PutMapping("type=examFormatOrBfPub")
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
-    @ApiOperation(value = "稿件状态为格式待审核，编辑进行格式审核")
+    @ApiOperation(value = "稿件状态为出版前待审/格式待审核，编辑进行审核")
     public AjaxResponse updatePost7(@Validated @RequestBody EditorAuditQuery editorAuditQuery) {
-        //        int uid = currentUser.getCurrentUser().getUserId();
+        //  int uid = currentUser.getCurrentUser().getUserId();
         int uid = EDITOR_ID;
 
         // 获取稿件
@@ -528,7 +526,9 @@ public class PostController {
 
         String comment = editorAuditQuery.getComment();
         if (editorAuditQuery.getPass()) {
-            // 格式审核通过
+            // 审核通过
+            int year = Calendar.getInstance().get(Calendar.YEAR);
+            post.setNo(String.format("%d%04d", year, postNoOffsetService.getOffsetAndIncrease(year)));
             post.setStatus(PostStatus.LAYOUT_FEE_TO_BE_DETERMINED.getCode());
         } else {
             // 格式审核不通过
@@ -536,7 +536,8 @@ public class PostController {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.FORMAT_OR_BF_PUB_TO_BE_MODIFIED.getCode());
-            // TODO: 通知投稿人
+            // 通知投稿人
+            notifyContributor(post);
         }
         post.setEditorComment(comment);
         post.setEditorCommentTime(new Date());
@@ -544,9 +545,9 @@ public class PostController {
         return AjaxResponse.success();
     }
 
-    @PutMapping("{id}/type=format")
+    @PutMapping("{id}/type=formatOrBfPub")
     @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
-    @ApiOperation(value = "稿件状态为格式待修改，投稿人提交待格式审核")
+    @ApiOperation(value = "稿件状态为出版前待修改/格式待待修改，投稿人提交待编辑审核")
     public AjaxResponse updatePost8(@NotNull(message = "id不能为空") @PathVariable Integer id) {
 
         //        int uid = currentUser.getCurrentUser().getUserId();
@@ -565,6 +566,43 @@ public class PostController {
 
         // 更新稿件状态
         post.setStatus(PostStatus.FORMAT_OR_BF_PUB_TO_BE_REVIEWED.getCode());
+        postService.updatePost(post);
+
+        return AjaxResponse.success();
+    }
+
+    @PutMapping("type=fee")
+    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
+    @ApiOperation(value = "稿件状态为待确定版面费，编辑确定版面费，发录用通知")
+    public AjaxResponse updatePost9(@Validated @RequestBody PostLayOutFeeQuery postLayOutFeeQuery) {
+        Post post = postService.getPost(postLayOutFeeQuery.getId());
+
+        // int uid = currentUser.getCurrentUser().getUserId();
+        int uid = EDITOR_ID;
+
+        // 检查操作用户为编辑
+        if (uid != post.getEditorUid()) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_EDITOR);
+        }
+
+        // 检查状态为待确定版面费
+        if (post.getStatus() != PostStatus.LAYOUT_FEE_TO_BE_DETERMINED.getCode()) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
+        }
+
+        // 设置版面费、税率和状态
+        post.setFee(Double.valueOf(postLayOutFeeQuery.getFee()));
+        post.setTaxRate(postLayOutFeeQuery.getTaxRate());
+        post.setStatus(PostStatus.CERTIFICATE_TO_BE_UPLOADED.getCode());
+
+        post.setAcceptanceNoticeTime(new Date());
+
+        // TODO: 生成录用通知
+        String path = "";
+        post.setAcceptanceNoticePath(path);
+
+        // TODO: 通知录用和缴费
+
         postService.updatePost(post);
 
         return AjaxResponse.success();
@@ -605,36 +643,6 @@ public class PostController {
         post.setCertificateComment(comment);
         post.setCertificateCommentTime(new Date());
         postService.updatePost(post);
-        return AjaxResponse.success();
-    }
-
-    @PutMapping("type=fee")
-    @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
-    @ApiOperation(value = "稿件状态为待确定版面费，编辑确定版面费")
-    public AjaxResponse updatePost9(@Validated @RequestBody PostLayOutFeeQuery postLayOutFeeQuery) {
-        Post post = postService.getPost(postLayOutFeeQuery.getId());
-
-        //        int uid = currentUser.getCurrentUser().getUserId();
-        int uid = EDITOR_ID;
-
-        // 检查操作用户为编辑
-        if (uid != post.getEditorUid()) {
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_EDITOR);
-        }
-
-        // 检查状态为待确定版面费
-        if (post.getStatus() != PostStatus.LAYOUT_FEE_TO_BE_DETERMINED.getCode()) {
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
-        }
-
-        // 设置版面费和状态
-        post.setFee(Double.valueOf(postLayOutFeeQuery.getFee()));
-        post.setStatus(PostStatus.CERTIFICATE_TO_BE_UPLOADED.getCode());
-
-        // TODO: 通知缴费
-
-        postService.updatePost(post);
-
         return AjaxResponse.success();
     }
 
@@ -687,7 +695,7 @@ public class PostController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
 
-        // 检查收据信息、缴费证明是否完整
+        // 检查收据信息、缴费证明、授权书是否完整
         checkPaymentInfo(post);
 
         // 更新稿件状态
@@ -697,7 +705,7 @@ public class PostController {
         return AjaxResponse.success();
     }
 
-    @ApiOperation(value = "管理员根据id删除期刊记录")
+    @ApiOperation(value = "管理员根据id删除稿件记录")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public AjaxResponse deletePost(@NotNull(message = "id不能为空") @PathVariable Integer id) {
@@ -728,7 +736,7 @@ public class PostController {
             @ApiImplicitParam(name = "number", value = "分页页号", required = true, dataType = "int"),
             @ApiImplicitParam(name = "size", value = "分页大小", required = true, dataType = "int"),
             @ApiImplicitParam(name = "ascend", value = "是否升序，默认为true", dataType = "boolean"),
-            @ApiImplicitParam(name = "statuses", value = "要筛选的状态，默认为所有状态", allowMultiple = true,dataType = "int"),
+            @ApiImplicitParam(name = "statuses", value = "要筛选的状态，默认为所有状态", allowMultiple = true, dataType = "int"),
             @ApiImplicitParam(name = "start", value = "开始提交日期，start与end成对使用，默认为所有时间", dataType = "date-time"),
             @ApiImplicitParam(name = "end", value = "结束提交日期，start与end成对使用，默认为所有时间", dataType = "date-time")
     })
@@ -757,7 +765,7 @@ public class PostController {
             }
         } else {
             // 检查statuses列表
-            for(Integer code: statuses){
+            for (Integer code : statuses) {
                 PostStatus postStatus = PostStatus.getItem(code);
                 if (postStatus == null) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_STATUS);
@@ -771,7 +779,7 @@ public class PostController {
             }
         }
 
-        return AjaxResponse.success(DozerUtil.mapPageT(page, Post4CtrSimpleVO.class));
+        return AjaxResponse.success(DozerUtil.mapPage(page, Post4CtrSimpleVO.class));
     }
 
     @GetMapping("role=ed")
@@ -781,7 +789,7 @@ public class PostController {
             @ApiImplicitParam(name = "number", value = "分页页号", required = true, dataType = "int"),
             @ApiImplicitParam(name = "size", value = "分页大小", required = true, dataType = "int"),
             @ApiImplicitParam(name = "ascend", value = "是否升序，默认为true", dataType = "boolean"),
-            @ApiImplicitParam(name = "statuses", value = "要筛选的状态，默认为所有状态", allowMultiple = true,dataType = "int"),
+            @ApiImplicitParam(name = "statuses", value = "要筛选的状态，默认为所有状态", allowMultiple = true, dataType = "int"),
             @ApiImplicitParam(name = "start", value = "开始提交日期，start与end成对使用，默认为所有时间", dataType = "date-time"),
             @ApiImplicitParam(name = "end", value = "结束提交日期，start与end成对使用，默认为所有时间", dataType = "date-time")
     })
@@ -810,7 +818,7 @@ public class PostController {
             }
         } else {
             // 检查statuses列表
-            for(Integer code: statuses){
+            for (Integer code : statuses) {
                 PostStatus postStatus = PostStatus.getItem(code);
                 if (postStatus == null) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_STATUS);
@@ -823,18 +831,77 @@ public class PostController {
             }
         }
 
-        List<Post> pageContent = page.getContent();
-        PageDataT<Post4EdSimpleVO> retData = DozerUtil.mapPageT(page, Post4EdSimpleVO.class);
-
-        for (int i = 0; i < page.getNumberOfElements(); i++) {
-            Post4EdSimpleVO item = retData.getList().get(i);
-            item.setContributor(getName(pageContent.get(i).getContributorUid()));
-        }
-
-        return AjaxResponse.success(retData);
+        return AjaxResponse.success(DozerUtil.mapPage(page, Post4EdSimpleVO.class));
     }
 
-    // TODO: 支持更多类型的通知
+    // TODO
+    @GetMapping("export")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @ApiOperation(value = "管理员导出稿件列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "number", value = "分页页号", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "分页大小", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "ascend", value = "是否升序，默认为true", dataType = "boolean"),
+            @ApiImplicitParam(name = "statuses", value = "要筛选的状态", allowMultiple = true, required = true, dataType = "int"),
+            @ApiImplicitParam(name = "start", value = "开始提交日期，start与end成对使用，默认为所有时间", dataType = "date-time"),
+            @ApiImplicitParam(name = "end", value = "结束提交日期，start与end成对使用，默认为所有时间", dataType = "date-time")
+    })
+    public AjaxResponse export(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
+                               @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
+                               @RequestParam(value = "ascend", required = false) Boolean ascend,
+                               @RequestParam(value = "statuses") List<Integer> statuses,
+                               @RequestParam(value = "start", required = false) Date start,
+                               @RequestParam(value = "end", required = false) Date end,
+                               @RequestParam(value = "fAuName",required = false) String fAuName,
+                               @RequestParam(value = "fAuEmployee",required = false) String fAuEmployee) {
+        checkStartAndEndTime(start, end);
+
+        // 检查statuses列表
+        if (statuses == null || statuses.isEmpty()) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.STATUSES_NEEDED);
+        } else {
+            for (Integer code : statuses) {
+                PostStatus postStatus = PostStatus.getItem(code);
+                if (postStatus == null) {
+                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_STATUS);
+                }
+            }
+        }
+
+        Page<Post> page;
+        if (start == null) {
+//            page = postService.getAllByStatus(statuses, number, size, ascend);
+        } else {
+//            page = postService.getAllByStatusAndSubmitTime(statuses, start, end, number, size, ascend);
+        }
+
+//        return AjaxResponse.success(DozerUtil.mapPage(page, PostExportVO.class));
+        return AjaxResponse.success();
+    }
+
+    // TODO
+    @GetMapping("exportInvoice")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @ApiOperation(value = "管理员导出发票信息列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "number", value = "分页页号", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "分页大小", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "ascend", value = "是否升序，默认为true", dataType = "boolean"),
+            @ApiImplicitParam(name = "statuses", value = "要筛选的状态，默认为所有状态", allowMultiple = true, dataType = "int"),
+            @ApiImplicitParam(name = "start", value = "开始提交日期，start与end成对使用，默认为所有时间", dataType = "date-time"),
+            @ApiImplicitParam(name = "end", value = "结束提交日期，start与end成对使用，默认为所有时间", dataType = "date-time")
+    })
+    public AjaxResponse exportInvoice(@NotNull(message = "number不能为空") @RequestParam("number") Integer number,
+                                      @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
+                                      @RequestParam(value = "ascend", required = false) Boolean ascend,
+                                      @RequestParam(value = "statuses", required = false) List<Integer> statuses,
+                                      @RequestParam(value = "start", required = false) Date start,
+                                      @RequestParam(value = "end", required = false) Date end) {
+        return AjaxResponse.success();
+    }
+
+    // TODO: 支持更多类型（改稿/录用缴费/退稿）的通知
+    // TODO: 支持对审稿人再审搞的通知
 
     private void notifyContributor(Post post) {
         // 给投稿人发送邮件
@@ -846,19 +913,6 @@ public class PostController {
         mailService.sendHtmlMailForContributor(ctr.getEmail(), post.getTitle(), ctr.getUserName());
     }
 
-    private void notifyReviewer(Post post) {
-        // 给审稿人发送邮件
-        List<PostReviewer> postReviewers = postReviewerService.getAllByPidAndFlag(post.getId(), true);
-        for (PostReviewer item : postReviewers) {
-            Optional<User> userOptional = userService.findUserByUid(item.getReviewerUid());
-            if (!userOptional.isPresent()) {
-                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CONTRIBUTOR_NOT_FOUND);
-            }
-            User rev = userOptional.get();
-            mailService.sendHtmlMailForReviewer(rev.getEmail(), post.getTitle(), rev.getUserName());
-        }
-    }
-
     private void checkStartAndEndTime(Date start, Date end) {
         if (start == null && end != null || end == null && start != null) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_TIME);
@@ -866,6 +920,19 @@ public class PostController {
         if (start != null && start.after(end)) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_TIME);
         }
+    }
+
+    private void checkPostQuery(PostQuery postQuery) {
+
+        // TODO: 检查投稿领域范围
+
+        // 检查基金级别
+        Integer fundLevel = postQuery.getFundLevel();
+        if (fundLevel != null && FundLevel.getItem(fundLevel) == null) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_FUND_LEVEL);
+        }
+
+        // TODO: 检查....
     }
 
     private void checkGenre(Post post) {
@@ -888,7 +955,7 @@ public class PostController {
         boolean hasTitleEn = titleEn != null && !StringUtils.isBlank(titleEn);
 
         if (genre == WORKS.getCode()) {
-            // TODO: 假设专著也需要英文标题
+            // 假设专著也需要英文标题
             if (!(hasTitleEn && hasZhKw && hasEnKw && hasZhAbstract && hasEnAbstract)) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.INCOMPLETE_INFO_REQUIRED_FOR_THE_GENRE);
             }
@@ -922,6 +989,16 @@ public class PostController {
         if (writersInfo == null || StringUtils.isBlank(writersInfo)) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRITERS_INFO_NEEDED);
         }
+        String correspondenceAuthor = post.getCorAuName();
+        if (correspondenceAuthor == null || correspondenceAuthor.isEmpty()) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CORRESPONDENCE_AUTHOR_NEEDED);
+        }
+
+        // TODO: 检查....
+        String references = post.getReferencesList();
+        if (references == null || references.isEmpty()) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REFERENCES_NEEDED);
+        }
 
         // 检查基金级别
         Integer fundLevel = post.getFundLevel();
@@ -937,7 +1014,6 @@ public class PostController {
         if (post.getPostPath() == null || post.getLetterPath() == null || post.getEthicsApprovalPath() == null) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.INCOMPLETE_POST_FILES);
         }
-        System.out.println("aaaa"+fundLevel+FundLevel.NO.getCode());
         if (fundLevel != FundLevel.NO.getCode() && fundApprovalPath == null) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.INCOMPLETE_POST_FILES);
         }
@@ -949,10 +1025,9 @@ public class PostController {
         String taxpayerId = post.getTaxpayerId();
         String address = post.getReceiptAddress();
         String receiver = post.getReceiptReceiver();
-        String certificate = post.getCertificatePath();
 
-        // 检查缴费证明是否上传
-        if (certificate == null) {
+        // 检查缴费证明、授权书是否上传
+        if (post.getCertificatePath() == null || post.getAssignmentPath() == null) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.PAYMENT_FILE_NOT_UPLOADED);
         }
 
@@ -968,18 +1043,5 @@ public class PostController {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.INCOMPLETE_INVOICE_INFO);
             }
         }
-    }
-
-    private String getName(int uid) {
-        final int WRITTEN_OFF = -1;
-        String ret;
-        Optional<User> userOptional = userService.findUserByUid(uid);
-        if (userOptional.isPresent()) {
-            User u = userOptional.get();
-            ret = u.getActive() == WRITTEN_OFF ? Names.WRITTEN_OFF_USER : u.getUserName();
-        } else {
-            ret = Names.DELETED_USER;
-        }
-        return ret;
     }
 }

@@ -1,6 +1,7 @@
 package com.samsph.pjcm.dao;
 
 import com.samsph.pjcm.model.Post;
+import com.samsph.pjcm.vo.PostExportVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,17 +18,6 @@ import java.util.List;
  * @author hujiahao
  */
 public interface PostRepository extends JpaRepository<Post, Integer> {
-
-//    /**
-//     * 获取某一期刊包含的投稿列表
-//     *
-//     * @param jid  期刊id
-//     * @param page 分页请求
-//     * @return List<Post>
-//     */
-//    Page<Post> findByJid(int jid, Pageable page);
-
-
     /**
      * 以分页的方式查询投稿人的所有投稿
      *
@@ -186,4 +176,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                     " WHERE pr.reviewer_uid = ?1 AND pr.accept = 1 AND pr.flag=0",
             nativeQuery = true)
     Page<Post> findByReviewerUidAndFlagFalse(int uid, Pageable page);
+
+//    Page<PostExportVO> exportPosts();
 }

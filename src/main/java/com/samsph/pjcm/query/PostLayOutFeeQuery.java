@@ -4,9 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 
 /**
  * @author hujiahao
@@ -22,4 +20,10 @@ public class PostLayOutFeeQuery {
     @NotNull(message = "fee不能为空")
     @Pattern(regexp = "^(([1-9]\\d*)|([0]))(\\.(\\d){0,2})?$",message ="fee小数不能超过两位" )
     private String fee;
+
+    @ApiModelProperty("税率")
+    @NotNull(message = "taxRate不能为空")
+    @Max(value = 100)
+    @Min(value = 0)
+    private Double taxRate;
 }

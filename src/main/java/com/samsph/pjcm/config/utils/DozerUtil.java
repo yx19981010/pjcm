@@ -2,7 +2,6 @@ package com.samsph.pjcm.config.utils;
 
 import com.google.common.collect.Lists;
 import com.samsph.pjcm.config.PageData;
-import com.samsph.pjcm.config.PageDataT;
 import org.dozer.DozerBeanMapper;
 import org.springframework.data.domain.Page;
 
@@ -30,15 +29,6 @@ public class DozerUtil {
 
     public static <T> PageData mapPage(Page page, Class<T> destinationClass) {
         return new PageData(
-                page.getTotalPages(),
-                (int) page.getTotalElements(),
-                page.getNumber() + 1,
-                page.getNumberOfElements(),
-                mapList(page.getContent(), destinationClass));
-    }
-
-    public static <T> PageDataT mapPageT(Page page, Class<T> destinationClass) {
-        return new PageDataT<T>(
                 page.getTotalPages(),
                 (int) page.getTotalElements(),
                 page.getNumber() + 1,

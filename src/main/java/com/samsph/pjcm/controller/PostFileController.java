@@ -57,8 +57,8 @@ public class PostFileController {
     @PutMapping("upload")
     @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiImplicitParam(name = "type", required = true, dataType = "int",
-            value = "1稿件；2伦理委员会批文；3推荐信；4基金批文；5缴费证明")
-    @ApiOperation(value = "投稿人上传稿件/推荐信/伦理委员会批文/基金批文/缴费证明")
+            value = "1稿件；2伦理委员会批文；3推荐信；4基金批文；5缴费证明；6授权书")
+    @ApiOperation(value = "投稿人上传稿件/推荐信/伦理委员会批文/基金批文/缴费证明、授权书")
     public AjaxResponse upload(@NotNull @RequestParam Integer id,
                                @NotNull @RequestParam Integer type,
                                @NotNull @RequestParam MultipartFile file) {
@@ -85,25 +85,25 @@ public class PostFileController {
         switch (fileType) {
             case POST:
                 if (status != PostStatus.TO_BE_SUBMITTED && status != PostStatus.TO_BE_REVISED && status != PostStatus.FORMAT_OR_BF_PUB_TO_BE_MODIFIED) {
-                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.POST_FILE_CANNOT_UPLOAD);
+                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
                 }
                 oldPath = post.getPostPath();
                 break;
             case LETTER:
                 if (status != PostStatus.TO_BE_SUBMITTED) {
-                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.LETTER_FILE_CANNOT_UPLOAD);
+                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
                 }
                 oldPath = post.getLetterPath();
                 break;
             case ETHICS:
                 if (status != PostStatus.TO_BE_SUBMITTED) {
-                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.ETHICS_FILE_CANNOT_UPLOAD);
+                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
                 }
                 oldPath = post.getEthicsApprovalPath();
                 break;
             case FUND:
                 if (status != PostStatus.TO_BE_SUBMITTED) {
-                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.FUND_FILE_CANNOT_UPLOAD);
+                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
                 }
                 if (post.getFundLevel() == null || post.getFundLevel() == FundLevel.NO.getCode()) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.NOT_FUND_PROJECT);
@@ -112,9 +112,15 @@ public class PostFileController {
                 break;
             case PAYMENT:
                 if (status != PostStatus.CERTIFICATE_TO_BE_UPLOADED) {
-                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.PAYMENT_FILE_CANNOT_UPLOAD);
+                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
                 }
                 oldPath = post.getCertificatePath();
+                break;
+            case ASSIGNMENT:
+                if (status != PostStatus.CERTIFICATE_TO_BE_UPLOADED) {
+                    throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
+                }
+                oldPath = post.getAssignmentPath();
                 break;
             default:
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_POST_FILE_TYPE);
@@ -156,6 +162,10 @@ public class PostFileController {
                 post.setCertificatePath(path);
                 post.setCertificateUploadTime(time);
                 break;
+            case ASSIGNMENT:
+                post.setAssignmentPath(path);
+                post.setAssignmentUploadTime(time);
+                break;
             default:
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_POST_FILE_TYPE);
         }
@@ -167,10 +177,10 @@ public class PostFileController {
     @GetMapping("download/role=ctr/id={id}&type={type}")
     @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiImplicitParam(name = "type", required = true, dataType = "int",
-            value = "1稿件；2伦理委员会批文；3推荐信；4基金批文；5缴费证明")
-    @ApiOperation(value = "投稿人下载稿件/推荐信/伦理委员会批文/基金批文/缴费证明")
+            value = "1稿件；2伦理委员会批文；3推荐信；4基金批文；5缴费证明；6授权书；7录用通知")
+    @ApiOperation(value = "投稿人下载稿件/推荐信/伦理委员会批文/基金批文/缴费证明/授权书/录用通知")
     public void ctrDownload(@NotNull(message = "稿件id不能为空") @Min(value = 1, message = "稿件id必须是正整数") @PathVariable(value = "id") Integer id,
-                            @NotNull(message = "稿件type不能为空") @Min(value = 1, message = "类型最小值为1") @Max(value = 5, message = "类型最大值为5") @PathVariable(value = "type") Integer type,
+                            @NotNull(message = "稿件type不能为空") @PathVariable(value = "type") Integer type,
                             HttpServletResponse response,
                             HttpServletRequest request) {
         Post post = postService.getPost(id);
@@ -195,8 +205,8 @@ public class PostFileController {
     @GetMapping("download/role=ed/id={id}&type={type}")
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiImplicitParam(name = "type", required = true, dataType = "int",
-            value = "1稿件；2伦理委员会批文；3推荐信；4基金批文；5缴费证明")
-    @ApiOperation(value = "编辑下载稿件/推荐信/伦理委员会批文/基金批文/缴费证明")
+            value = "1稿件；2伦理委员会批文；3推荐信；4基金批文；5缴费证明；6授权书；7录用通知")
+    @ApiOperation(value = "编辑下载稿件/推荐信/伦理委员会批文/基金批文/缴费证明/授权书/录用通知")
     public void edDownload(@NotNull(message = "稿件id不能为空") @Min(value = 1, message = "稿件id必须是正整数") @PathVariable(value = "id") Integer id,
                            @NotNull(message = "稿件type不能为空") @Min(value = 1, message = "类型最小值为1") @Max(value = 5, message = "类型最大值为5") @PathVariable(value = "type") Integer type,
                            HttpServletResponse response,
@@ -222,7 +232,7 @@ public class PostFileController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRONG_STATUS);
         }
 
-        download(getPath(post, fileType), response, request, getFileName(post,fileType));
+        download(getPath(post, fileType), response, request, getFileName(post, fileType));
     }
 
     @GetMapping("download/role=rev/id={id}")
@@ -269,6 +279,12 @@ public class PostFileController {
             case PAYMENT:
                 path = post.getCertificatePath();
                 break;
+            case ASSIGNMENT:
+                path = post.getAssignmentPath();
+                break;
+            case ACCEPTANCE:
+                path = post.getAcceptanceNoticePath();
+                break;
             default:
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_POST_FILE_TYPE);
         }
@@ -292,6 +308,10 @@ public class PostFileController {
                 return post.getTitle() + "_基金批文_" + post.getId();
             case PAYMENT:
                 return post.getTitle() + "_缴费证明_" + post.getId();
+            case ASSIGNMENT:
+                return post.getTitle() + "_授权转让书_" + post.getId();
+            case ACCEPTANCE:
+                return post.getTitle() + "_录用通知_" + post.getId();
             default:
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_POST_FILE_TYPE);
         }

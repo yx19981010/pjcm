@@ -31,7 +31,17 @@ public enum PostFileType {
     /**
      * 缴费证明
      */
-    PAYMENT(5);
+    PAYMENT(5),
+
+    /**
+     * 授权书
+     */
+    ASSIGNMENT(6),
+
+    /**
+     * 录用通知
+     */
+    ACCEPTANCE(7);
 
     private final int code;
 

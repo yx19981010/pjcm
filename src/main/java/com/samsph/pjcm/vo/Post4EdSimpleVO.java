@@ -20,10 +20,10 @@ public class Post4EdSimpleVO {
     @ApiModelProperty("标题")
     private String title;
 
-    @ApiModelProperty("投稿人")
-    private String contributor;
+    @ApiModelProperty("一作")
+    private String fAuName;
 
-    @ApiModelProperty("状态")
+    @ApiModelProperty("稿件状态")
     private Integer status;
 
     @ApiModelProperty("投稿时间")

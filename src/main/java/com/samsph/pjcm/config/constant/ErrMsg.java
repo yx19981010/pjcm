@@ -34,16 +34,6 @@ public enum ErrMsg {
 
     REVIEWER_HAS_REPLIED(1010, "审稿人已答复审稿"),
 
-    POST_FILE_CANNOT_UPLOAD(1003, "无法上传稿件"),
-
-    LETTER_FILE_CANNOT_UPLOAD(1004, "无法上传推荐信"),
-
-    ETHICS_FILE_CANNOT_UPLOAD(1005, "无法上传伦理委员会批文"),
-
-    FUND_FILE_CANNOT_UPLOAD(1006, "无法上传基金批文"),
-
-    PAYMENT_FILE_CANNOT_UPLOAD(1007, "无法上传缴费证明"),
-
     UNSUPPORTED_POST_FILE_TYPE(1008, "不支持的稿件相关文件类型"),
 
     POST_FILE_NOT_EXISTS(2000, "文件不存在"),
@@ -74,7 +64,11 @@ public enum ErrMsg {
 
     WRITERS_INFO_NEEDED(1000, "缺少作者信息"),
 
+    CORRESPONDENCE_AUTHOR_NEEDED(1000,"缺少通讯作者信息"),
+
     FUND_LEVEL_NEEDED(1000, "缺少基金等级信息"),
+
+    REFERENCES_NEEDED(1000,"缺少参考文献信息"),
 
     INCOMPLETE_POST_FILES(1000, "文件上传不全"),
 
@@ -82,7 +76,9 @@ public enum ErrMsg {
 
     UNSUPPORTED_GENRE(1000, "不支持的体裁"),
 
-    PAYMENT_FILE_NOT_UPLOADED(1000, "缴费证明未上传"),
+    UNSUPPORTED_FUND_LEVEL(1000,"不支持的基金级别"),
+
+    PAYMENT_FILE_NOT_UPLOADED(1000, "缴费证明或授权转让书未上传"),
 
     INVOICE_REQUIRED_OR_NOT_NEEDED(1000, "缺少是否需要发票"),
 
@@ -94,7 +90,9 @@ public enum ErrMsg {
 
     CONTRIBUTOR_NOT_FOUND(1000, "投稿人未找到"),
 
-    REVIEWER_NOT_FOUND(1000, "审稿人未找到");
+    REVIEWER_NOT_FOUND(1000, "审稿人未找到"),
+
+    STATUSES_NEEDED(1000,"缺少稿件状态信息");
 
     @Getter
     private final int code;

@@ -188,17 +188,6 @@ public interface PostService {
      */
     Page<Post> getAllByRevUidAndFlagAndSubmitTime(int uid, boolean flag, Date start, Date end, int number, int size, boolean ascend);
 
-//    /**
-//     * 根据期刊id获取稿件分页
-//     *
-//     * @param jid    期刊id
-//     * @param number 页号
-//     * @param size   页面大小
-//     * @param ascend 是否升序
-//     * @return 稿件分页
-//     */
-//    Page<Post> getAllByJid(int jid, int number, int size, boolean ascend);
-
     /**
      * 更新稿件记录
      *

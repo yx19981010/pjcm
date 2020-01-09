@@ -19,7 +19,7 @@ public class Post4RevSimpleVO {
     @ApiModelProperty("标题")
     private String title;
 
-    @ApiModelProperty("投稿领域")
+    @ApiModelProperty("领域")
     private Integer field;
 
     @ApiModelProperty("状态")

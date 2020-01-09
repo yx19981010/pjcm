@@ -13,5 +13,4 @@ import lombok.EqualsAndHashCode;
 @ApiModel(description = "稿件VO-游客")
 public class Post4TurVO extends Post4TurSimpleVO {
 
-
 }

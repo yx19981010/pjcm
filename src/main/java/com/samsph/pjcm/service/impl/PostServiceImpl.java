@@ -185,17 +185,6 @@ public class PostServiceImpl implements PostService {
         return postRepository.findByReviewerUidAndFlagAndSubmitTimeAfterAndSubmitTimeBefore(uid, flag ? MyBoolean.TRUE.getCode() : MyBoolean.FALSE.getCode(), start, end, pageRequest);
     }
 
-//    @Override
-//    public Page<Post> getAllByJid(int jid, int number, int size, boolean ascend) {
-//
-//        // 新建分页选项
-//        Sort.Direction direction = ascend ? Sort.Direction.ASC : Sort.Direction.DESC;
-//        PageRequest pageRequest = PageRequest.of(number - 1, size, direction, "id");
-//
-//        // 查询分页结果
-//        return postRepository.findByJid(jid, pageRequest);
-//    }
-
     @Override
     public void deletePost(int id) {
         fetchPost(id);

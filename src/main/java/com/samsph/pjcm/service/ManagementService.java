@@ -6,5 +6,9 @@ package com.samsph.pjcm.service;
  * @author hujahao
  */
 public interface ManagementService {
+    /**
+     * 获取流量
+     * @return
+     */
     long getTraffic();
 }

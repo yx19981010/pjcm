@@ -36,6 +36,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.samsph.pjcm.config.DevUserId.*;
+import static com.samsph.pjcm.config.constant.Field.LEAST_FIELD;
+import static com.samsph.pjcm.config.constant.Field.TOTAL_FIELD;
 import static com.samsph.pjcm.config.constant.FileUploadPath.PostFileUploadPath;
 import static com.samsph.pjcm.config.constant.FileUploadPath.PublicationNoticePath;
 import static com.samsph.pjcm.config.constant.Genre.*;
@@ -231,7 +233,7 @@ public class PostController {
             post.setStatus(PostStatus.REVIEWER_TO_BE_SELECTED.getCode());
         } else {
             // 初审不通过
-            if (comment == null || StringUtils.isBlank(comment)) {
+            if (StringUtils.isBlank(comment)) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.FIRST_EXAM_REJECTED.getCode());
@@ -384,7 +386,7 @@ public class PostController {
 
         } else {
             // 编辑退稿
-            if (comment == null || StringUtils.isBlank(comment)) {
+            if (StringUtils.isBlank(comment)) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.EDITOR_REJECT.getCode());
@@ -491,7 +493,7 @@ public class PostController {
             // TODO: 通知审稿人进行再审稿
         } else {
             // 不允许审稿则回到待修改状态
-            if (comment == null || comment.isEmpty()) {
+            if (StringUtils.isBlank(comment)) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.TO_BE_REVISED.getCode());
@@ -532,7 +534,7 @@ public class PostController {
             post.setStatus(PostStatus.LAYOUT_FEE_TO_BE_DETERMINED.getCode());
         } else {
             // 格式审核不通过
-            if (comment == null || StringUtils.isBlank(comment)) {
+            if (StringUtils.isBlank(comment)) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.FORMAT_OR_BF_PUB_TO_BE_MODIFIED.getCode());
@@ -606,8 +608,8 @@ public class PostController {
         map.put("month", "10");
         map.put("day", "10");
         map.put("fee", postLayOutFeeQuery.getFee());
-        WorderToNewWordUtils.changWord(PublicationNoticePath,PostFileUploadPath+"/publication"+FileUtil.getRandomFileName()+".docx",map);
-        String path = PostFileUploadPath+"/publication"+FileUtil.getRandomFileName()+".docx";
+        WorderToNewWordUtils.changWord(PublicationNoticePath, PostFileUploadPath + "/publication" + FileUtil.getRandomFileName() + ".docx", map);
+        String path = PostFileUploadPath + "/publication" + FileUtil.getRandomFileName() + ".docx";
         post.setAcceptanceNoticePath(path);
 
         // TODO: 通知录用和缴费
@@ -644,7 +646,7 @@ public class PostController {
             post.setStatus(PostStatus.SUCCESS.getCode());
         } else {
             // 缴费证明审核不通过
-            if (comment == null || StringUtils.isBlank(comment)) {
+            if (StringUtils.isBlank(comment)) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REJECT_COMMENT_NEEDED);
             }
             post.setStatus(PostStatus.CERTIFICATE_TO_BE_UPLOADED.getCode());
@@ -1004,8 +1006,11 @@ public class PostController {
     }
 
     private void checkPostQuery(PostQuery postQuery) {
-
-        // TODO: 检查投稿领域范围
+        // 检查投稿领域范围
+        Integer field = postQuery.getField();
+        if (field != null && (field > TOTAL_FIELD || field < LEAST_FIELD)) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_FIELD);
+        }
 
         // 检查基金级别
         Integer fundLevel = postQuery.getFundLevel();
@@ -1013,13 +1018,17 @@ public class PostController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.UNSUPPORTED_FUND_LEVEL);
         }
 
-        // TODO: 检查....
+        // 检查投稿体裁
+        Integer genre = postQuery.getGenre();
+        if (genre == null || Genre.getItem(genre) == null) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.GENRE_NEEDED);
+        }
     }
 
     private void checkGenre(Post post) {
 
         Integer genre = post.getGenre();
-        if (genre == null || Genre.getItem(post.getGenre()) == null) {
+        if (genre == null || Genre.getItem(genre) == null) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.GENRE_NEEDED);
         }
 
@@ -1056,39 +1065,50 @@ public class PostController {
     private void checkPostCanSubmit(Post post) {
         // 检查标题信息
         String title = post.getTitle();
-        if (title == null || StringUtils.isBlank(title)) {
+        if (StringUtils.isBlank(title)) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.TITLE_NEEDED);
         }
 
         // 检查稿件领域信息
-        if (post.getField() == null || post.getField() < Field.LEAST_FIELD || post.getField() > Field.TOTAL_FIELD) {
+        if (post.getField() == null) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.FIELD_NEEDED);
-        }
-
-        // 检查作者信息
-        String writersInfo = post.getWritersInfo();
-        if (writersInfo == null || StringUtils.isBlank(writersInfo)) {
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRITERS_INFO_NEEDED);
-        }
-        String correspondenceAuthor = post.getCorAuName();
-        if (correspondenceAuthor == null || correspondenceAuthor.isEmpty()) {
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CORRESPONDENCE_AUTHOR_NEEDED);
-        }
-
-        // TODO: 检查....
-        String references = post.getReferencesList();
-        if (references == null || references.isEmpty()) {
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REFERENCES_NEEDED);
         }
 
         // 检查基金级别
         Integer fundLevel = post.getFundLevel();
-        if (fundLevel == null || FundLevel.getItem(fundLevel) == null) {
+        if (fundLevel == null) {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.FUND_LEVEL_NEEDED);
         }
 
-        // 检查体裁的中英文关键字和中英摘要等情况
+        // 检查作者信息
+        String writersInfo = post.getWritersInfo();
+        if (StringUtils.isBlank(writersInfo)) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.WRITERS_INFO_NEEDED);
+        }
+        // 通讯作者
+        String corAuName = post.getCorAuName();
+        if (StringUtils.isBlank(corAuName)) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.CORRESPONDENCE_AUTHOR_NEEDED);
+        }
+
+        // 第一作者
+        String fAuName = post.getFAuName();
+        String fAuEmployer = post.getFAuEmployer();
+        String fAuEmail = post.getFAuEmail();
+        String fAuPhone = post.getFAuEmail();
+        String fAuTitle = post.getFAuTitle();
+        String fAuEducation = post.getFAuEducation();
+        if (StringUtils.isAnyBlank(fAuEducation, fAuEmail, fAuName, fAuEmployer, fAuName, fAuPhone, fAuTitle)) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.INCOMPLETE_FIRST_AUTHOR_INFO);
+        }
+        // 检查体裁、英文标题、中英文关键字和中英摘要等情况
         checkGenre(post);
+
+        // 检查参考文献
+        String references = post.getReferencesList();
+        if (StringUtils.isBlank(references)) {
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.REFERENCES_NEEDED);
+        }
 
         // 检查文件上传情况
         String fundApprovalPath = post.getFundApprovalPath();
@@ -1117,10 +1137,7 @@ public class PostController {
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.INVOICE_REQUIRED_OR_NOT_NEEDED);
         } else if (invoiceNeeded == MyBoolean.TRUE.getCode()) {
             // 如果需要发票，检查相关信息是否填写完整
-            if (taxpayerId == null || StringUtils.isBlank(taxpayerId) ||
-                    address == null || StringUtils.isBlank(address) ||
-                    receiver == null || StringUtils.isBlank(receiver) ||
-                    invoiceTitle == null || StringUtils.isBlank(invoiceTitle)) {
+            if (StringUtils.isAnyBlank(taxpayerId, address, receiver, invoiceTitle)) {
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, ErrMsg.INCOMPLETE_INVOICE_INFO);
             }
         }

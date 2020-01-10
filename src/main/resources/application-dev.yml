@@ -9,7 +9,7 @@ server:
 #    key-store-password: newsroom
 spring:
   datasource:
-    url: jdbc:mysql://192.168.0.102:3306/newsroom?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=CTT&serverTimezone=GMT%2B8
+    url: jdbc:mysql://127.0.0.1:3306/newsroom?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=CTT&serverTimezone=GMT%2B8
 #    url: jdbc:mysql://116.62.6.114:3306/newsroom?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=CTT&serverTimezone=GMT%2B8
     username: root
     password: 123456

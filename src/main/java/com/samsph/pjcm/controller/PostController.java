@@ -8,6 +8,7 @@ import com.samsph.pjcm.config.exception.CustomException;
 import com.samsph.pjcm.config.exception.CustomExceptionType;
 import com.samsph.pjcm.config.utils.DozerUtil;
 import com.samsph.pjcm.config.utils.FileUtil;
+import com.samsph.pjcm.config.utils.WorderToNewWordUtils;
 import com.samsph.pjcm.model.Post;
 import com.samsph.pjcm.model.PostReviewer;
 import com.samsph.pjcm.model.User;
@@ -35,6 +36,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.samsph.pjcm.config.DevUserId.*;
+import static com.samsph.pjcm.config.constant.FileUploadPath.PostFileUploadPath;
+import static com.samsph.pjcm.config.constant.FileUploadPath.PublicationNoticePath;
 import static com.samsph.pjcm.config.constant.Genre.*;
 
 
@@ -596,7 +599,15 @@ public class PostController {
         post.setAcceptanceNoticeTime(new Date());
 
         // TODO: 生成录用通知
-        String path = "";
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("name", userService.findUserByUid(post.getContributorUid()).get().getUserName());
+        map.put("post_name", post.getTitle());
+        map.put("post_num", post.getNo());
+        map.put("month", "10");
+        map.put("day", "10");
+        map.put("fee", postLayOutFeeQuery.getFee());
+        WorderToNewWordUtils.changWord(PublicationNoticePath,PostFileUploadPath+"/publication"+FileUtil.getRandomFileName()+".docx",map);
+        String path = PostFileUploadPath+"/publication"+FileUtil.getRandomFileName()+".docx";
         post.setAcceptanceNoticePath(path);
 
         // TODO: 通知录用和缴费
@@ -867,6 +878,10 @@ public class PostController {
             }
         }
 
+        if (ascend == null) {
+            ascend = true;
+        }
+
         Page<Post> page;
         if (start == null) {
             if (fAuName == null) {
@@ -923,6 +938,10 @@ public class PostController {
                                       @RequestParam(value = "fAuEmployer", required = false) String fAuEmployer) {
 
         checkStartAndEndTime(start, end);
+
+        if (ascend == null) {
+            ascend = true;
+        }
 
         List<Integer> successStatus = new ArrayList<>();
         successStatus.add(PostStatus.SUCCESS.getCode());

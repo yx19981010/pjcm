@@ -51,8 +51,8 @@ PostQuery {
     private String corAuName;
 
     @ApiModelProperty("一作姓名")
-    @NotBlank(message = "corAuName不能为空", groups = {Add.class})
-    @Null(message = "corAuName必须为空", groups = {Update2.class})
+    @NotBlank(message = "fAuName不能为空", groups = {Add.class})
+    @Null(message = "fAuName必须为空", groups = {Update2.class})
     private String fAuName;
 
     @ApiModelProperty("一作工作单位")

@@ -1,9 +1,7 @@
 package com.samsph.pjcm.dao;
 
 import com.samsph.pjcm.model.Post;
-import com.samsph.pjcm.vo.PostExportVO;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -184,7 +182,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param pageRequest 分页请求
      * @return 稿件分页
      */
-    Page<Post> findByStatusIn(List<Integer> statuses, PageRequest pageRequest);
+    Page<Post> findByStatusIn(List<Integer> statuses, Pageable pageRequest);
 
     /**
      * 以分页的形式获取某些状态且在某段时间提交的所有稿件
@@ -195,7 +193,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param end         结束时间
      * @return 稿件分页
      */
-    Page<Post> findByStatusInAndSubmitTimeAfterAndSubmitTimeBefore(List<Integer> statuses, Date start, Date end, PageRequest pageRequest);
+    Page<Post> findByStatusInAndSubmitTimeAfterAndSubmitTimeBefore(List<Integer> statuses, Date start, Date end, Pageable pageRequest);
 
     /**
      * 以分页的形式获取某些状态、某些单位的所有稿件
@@ -205,7 +203,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param pageRequest 分页请求
      * @return 稿件分页
      */
-    Page<Post> findByStatusInAndFAuEmployerLike(List<Integer> statuses, String fAuEmployer, PageRequest pageRequest);
+    Page<Post> findByStatusInAndFAuEmployerLike(List<Integer> statuses, String fAuEmployer, Pageable pageRequest);
 
     /**
      * 以分页的形式获取某些状态、某些单位且在某段时间提交的所有稿件
@@ -217,7 +215,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param pageRequest 分页请求
      * @return 稿件分页
      */
-    Page<Post> findByStatusInAndFAuEmployerLikeAndSubmitTimeAfterAndSubmitTimeBefore(List<Integer> statuses, String fAuEmployer, Date start, Date end, PageRequest pageRequest);
+    Page<Post> findByStatusInAndFAuEmployerLikeAndSubmitTimeAfterAndSubmitTimeBefore(List<Integer> statuses, String fAuEmployer, Date start, Date end, Pageable pageRequest);
 
     /**
      * 以分页的形式获取某些状态、某些作者的所有稿件
@@ -227,7 +225,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param pageRequest 分页请求
      * @return 稿件分页
      */
-    Page<Post> findByStatusInAndFAuNameLike(List<Integer> statuses, String fAuName, PageRequest pageRequest);
+    Page<Post> findByStatusInAndFAuNameLike(List<Integer> statuses, String fAuName, Pageable pageRequest);
 
     /**
      * 以分页的形式获取某些状态、某些作者在某段时间提交的所有稿件
@@ -239,7 +237,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param pageRequest 分页请求
      * @return 稿件分页
      */
-    Page<Post> findByStatusInAndFAuNameLikeAndSubmitTimeAfterAndSubmitTimeBefore(List<Integer> statuses, String fAuName, Date start, Date end, PageRequest pageRequest);
+    Page<Post> findByStatusInAndFAuNameLikeAndSubmitTimeAfterAndSubmitTimeBefore(List<Integer> statuses, String fAuName, Date start, Date end, Pageable pageRequest);
 
     /**
      * 以分页的形式获取某些状态、某些单位、某些作者在某段时间提交的所有稿件
@@ -250,7 +248,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param pageRequest 分页请求
      * @return 稿件分页
      */
-    Page<Post> findByStatusInAndFAuNameLikeAndFAuEmployerLike(List<Integer> statuses, String fAuName, String fAuEmployer, PageRequest pageRequest);
+    Page<Post> findByStatusInAndFAuNameLikeAndFAuEmployerLike(List<Integer> statuses, String fAuName, String fAuEmployer, Pageable pageRequest);
 
     /**
      * 以分页的形式获取某些状态、某些单位、某些作者在某段时间提交的所有稿件
@@ -263,7 +261,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param pageRequest 分页请求
      * @return 稿件分页
      */
-    Page<Post> findByStatusInAndFAuNameLikeAndFAuEmployerLikeAndSubmitTimeAfterAndSubmitTimeBefore(List<Integer> statuses, String fAuName, String fAuEmployer, Date start, Date end, PageRequest pageRequest);
+    Page<Post> findByStatusInAndFAuNameLikeAndFAuEmployerLikeAndSubmitTimeAfterAndSubmitTimeBefore(List<Integer> statuses, String fAuName, String fAuEmployer, Date start, Date end, Pageable pageRequest);
 
     /**
      * 以分页的形式获取某些状态、某段时间上传缴费证明的所有稿件
@@ -274,7 +272,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param pageRequest 分页请求
      * @return 稿件分页
      */
-    Page<Post> findByStatusInAndCertificateUploadTimeAfterAndCertificateUploadTimeBefore(List<Integer> statuses, Date start, Date end, PageRequest pageRequest);
+    Page<Post> findByStatusInAndCertificateUploadTimeAfterAndCertificateUploadTimeBefore(List<Integer> statuses, Date start, Date end, Pageable pageRequest);
 
     /**
      * 以分页的形式获取某些状态、某些单位、某段时间上传缴费证明的所有稿件
@@ -286,7 +284,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param pageRequest 分页请求
      * @return 稿件分页
      */
-    Page<Post> findByStatusInAndFAuEmployerLikeAndCertificateUploadTimeAfterAndCertificateUploadTimeBefore(List<Integer> statuses, String fAuEmployer, Date start, Date end, PageRequest pageRequest);
+    Page<Post> findByStatusInAndFAuEmployerLikeAndCertificateUploadTimeAfterAndCertificateUploadTimeBefore(List<Integer> statuses, String fAuEmployer, Date start, Date end, Pageable pageRequest);
 
     /**
      * 以分页的形式获取某些状态、某些作者、某段时间上传缴费证明的所有稿件
@@ -298,7 +296,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param pageRequest 分页请求
      * @return 稿件分页
      */
-    Page<Post> findByStatusInAndFAuNameLikeAndCertificateUploadTimeAfterAndCertificateUploadTimeBefore(List<Integer> statuses, String fAuName, Date start, Date end, PageRequest pageRequest);
+    Page<Post> findByStatusInAndFAuNameLikeAndCertificateUploadTimeAfterAndCertificateUploadTimeBefore(List<Integer> statuses, String fAuName, Date start, Date end, Pageable pageRequest);
 
     /**
      * 以分页的形式获取某些状态、某些单位、某些作者、某段时间上传缴费证明的所有稿件
@@ -311,5 +309,5 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param pageRequest 分页请求
      * @return 稿件分页
      */
-    Page<Post> findByStatusInAndFAuNameLikeAndFAuEmployerLikeAndCertificateUploadTimeAfterAndCertificateUploadTimeBefore(List<Integer> statuses, String fAuName, String fAuEmployer, Date start, Date end, PageRequest pageRequest);
+    Page<Post> findByStatusInAndFAuNameLikeAndFAuEmployerLikeAndCertificateUploadTimeAfterAndCertificateUploadTimeBefore(List<Integer> statuses, String fAuName, String fAuEmployer, Date start, Date end, Pageable pageRequest);
 }

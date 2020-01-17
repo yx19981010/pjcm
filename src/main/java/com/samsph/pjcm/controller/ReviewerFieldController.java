@@ -111,6 +111,14 @@ public class ReviewerFieldController {
         return AjaxResponse.success(reviewerFieldService.findAll());
     }
 
+    @ApiOperation(value = "得到选择审稿人时的审稿人-领域信息")
+    @GetMapping("/reviewerFields/select/id={id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR')")
+    public AjaxResponse findSelectReviewerFields(@NotNull(message = "id不能为空")@Min(value = 1,message = "id必须是正整数") @PathVariable Integer id){
+
+        return AjaxResponse.success(reviewerFieldService.findSelect(id));
+    }
+
     @ApiOperation(value = "通过领域id得到审稿人-领域信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name="fieldId",value="领域id"),
@@ -123,19 +131,23 @@ public class ReviewerFieldController {
                                            @NotNull(message = "未传入页数")@Min(value = 1,message = "页数必须是正整数") @RequestParam("page") Integer page,
                                            @NotNull(message = "未传入每页的大小")@Min(value = 1,message = "每页的大小必须是正整数") @RequestParam("size") Integer size){
         PageRequest pageRequest = PageRequest.of(page-1,size);
-        Page<ReviewerField> reviewerFieldPage = reviewerFieldService.findReviewerFieldsByFieldId(fieldId, pageRequest);
-        List<ReviewerField> reviewerFields = reviewerFieldPage.getContent();
-        List<ReviewerFieldVoGetReviewer> reviewerFieldVoGetReviewers =  new ArrayList<>();
-        for(ReviewerField reviewerField : reviewerFields){
-            User user = userService.findUserByUid(reviewerField.getReviewerUid()).get();
-            ReviewerFieldVoGetReviewer reviewerFieldVoGetReviewer = new ReviewerFieldVoGetReviewer();
-            reviewerFieldVoGetReviewer.setId(reviewerField.getId());
-            reviewerFieldVoGetReviewer.setReviewerUid(reviewerField.getReviewerUid());
-            reviewerFieldVoGetReviewer.setEmail(user.getEmail());
-            reviewerFieldVoGetReviewer.setUserName(user.getUserName());
-            reviewerFieldVoGetReviewers.add(reviewerFieldVoGetReviewer);
+        if (reviewerFieldService.findReviewerFieldsByFieldId(fieldId, pageRequest) != null) {
+            Page<ReviewerField> reviewerFieldPage = reviewerFieldService.findReviewerFieldsByFieldId(fieldId, pageRequest);
+            List<ReviewerField> reviewerFields = reviewerFieldPage.getContent();
+            List<ReviewerFieldVoGetReviewer> reviewerFieldVoGetReviewers =  new ArrayList<>();
+            for(ReviewerField reviewerField : reviewerFields){
+                User user = userService.findUserByUid(reviewerField.getReviewerUid()).get();
+                ReviewerFieldVoGetReviewer reviewerFieldVoGetReviewer = new ReviewerFieldVoGetReviewer();
+                reviewerFieldVoGetReviewer.setId(reviewerField.getId());
+                reviewerFieldVoGetReviewer.setReviewerUid(reviewerField.getReviewerUid());
+                reviewerFieldVoGetReviewer.setEmail(user.getEmail());
+                reviewerFieldVoGetReviewer.setUserName(user.getUserName());
+                reviewerFieldVoGetReviewers.add(reviewerFieldVoGetReviewer);
+            }
+            PageData pageData = new PageData(reviewerFieldPage.getTotalPages(), (int) reviewerFieldPage.getTotalElements(), page, reviewerFieldVoGetReviewers.size(), reviewerFieldVoGetReviewers);
+            return AjaxResponse.success(pageData);
+        } else{
+            return AjaxResponse.success(new PageData(0, 0, page, 0, new ArrayList<>()));
         }
-        PageData pageData = new PageData(reviewerFieldPage.getTotalPages(), (int) reviewerFieldPage.getTotalElements(), page, reviewerFieldVoGetReviewers.size(), reviewerFieldVoGetReviewers);
-        return AjaxResponse.success(pageData);
     }
 }

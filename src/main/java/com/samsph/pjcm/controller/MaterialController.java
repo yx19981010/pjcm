@@ -1,6 +1,7 @@
 package com.samsph.pjcm.controller;
 
 import com.samsph.pjcm.config.PageData;
+import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.exception.CustomException;
 import com.samsph.pjcm.config.exception.CustomExceptionType;
@@ -45,7 +46,7 @@ public class MaterialController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/materials")
     public AjaxResponse addMaterial(@Size(min = 1,max = 50) @RequestParam("name") String name,
-                                    @Size(min = 1,max = 100) @RequestParam(name = "content",required = false) String content,
+                                    @Size(min = 1,max = 300) @RequestParam(name = "content",required = false) String content,
                                     @RequestParam("filename") MultipartFile file) {
         //权限检测 用户身份是管理员且登录
         String pathname = FileUtil.FileUpload(FileUploadPath.MaterialFileUploadPath, file);
@@ -53,8 +54,7 @@ public class MaterialController {
         Material material = new Material();
         material.setContent(content);
         //定义为登录后管理员的id
-//        material.setCreateByUid(currentUser.getCurrentUser().getUserId());
-        material.setCreateByUid(7);
+        material.setCreateByUid(new CurrentUser().getCurrentUser().getUserId());
         material.setCreateTime(time);
         material.setName(name);
         material.setPath(pathname);

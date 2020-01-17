@@ -63,28 +63,31 @@ public class AccessLogInterceptor implements HandlerInterceptor {
         // 获取请求错误码，根据需求存入数据库，这里不保存
         int status = response.getStatus();
         accessLog.setHttpStatus(status);
+        CurrentUser currentUser = new CurrentUser();
+        if(currentUser.getCurrentUser()!=null) {
+            switch (currentUser.getCurrentUser().getUserRole()) {
+                case 1:
+                    accessLog.setUserRole("admin");
+                    break;
+                case 2:
+                    accessLog.setUserRole("editor");
+                    break;
+                case 3:
+                    accessLog.setUserRole("reviewer");
+                    break;
+                case 4:
+                    accessLog.setUserRole("contributor");
+                    break;
+            }
+            accessLog.setUserId(currentUser.getCurrentUser().getUserId());
+            accessLog.setUsername(currentUser.getCurrentUser().getUserEmail());
+        }
+        else{
+            accessLog.setUserRole("tur");
+            accessLog.setUserId(0);
+            accessLog.setUsername("tur");
+        }
 
-
-//        switch (currentUser.getCurrentUser().getUserRole()){
-//            case 1:
-//                accessLog.setUserRole("admin");
-//                break;
-//            case 2:
-//                accessLog.setUserRole("editor");
-//                break;
-//            case 3:
-//                accessLog.setUserRole("reviewer");
-//                break;
-//            case 4:
-//                accessLog.setUserRole("contributor");
-//                break;
-//        }
-//        accessLog.setUserId(currentUser.getCurrentUser().getUserId());
-//        accessLog.setUsername(currentUser.getCurrentUser().getUserEmail());
-
-        accessLog.setUserRole("admin");
-        accessLog.setUsername("test@qq.com");
-        accessLog.setUserId(666);
         //当前时间
         long currentTime = System.currentTimeMillis();
 

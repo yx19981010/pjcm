@@ -126,19 +126,23 @@ public class EditorFieldController {
                                          @NotNull(message = "未传入页数")@Min(value = 1,message = "页数必须是正整数") @RequestParam("page") Integer page,
                                          @NotNull(message = "未传入每页的大小")@Min(value = 1,message = "每页的大小必须是正整数") @RequestParam("size") Integer size){
         PageRequest pageRequest = PageRequest.of(page-1,size);
-        Page<EditorField> editorFieldPage = editorFieldService.findEditorFieldsByFieldId(fieldId, pageRequest);
-        List<EditorField> editorFields = editorFieldPage.getContent();
-        List<EditorFieldVoGetEditor> editorFieldVoGetEditors =  new ArrayList<>();
-        for(EditorField editorField : editorFields){
-            User user = userService.findUserByUid(editorField.getEditorUid()).get();
-            EditorFieldVoGetEditor editorFieldVoGetEditor = new EditorFieldVoGetEditor();
-            editorFieldVoGetEditor.setId(editorField.getId());
-            editorFieldVoGetEditor.setEditorUid(editorField.getEditorUid());
-            editorFieldVoGetEditor.setEmail(user.getEmail());
-            editorFieldVoGetEditor.setUserName(user.getUserName());
-            editorFieldVoGetEditors.add(editorFieldVoGetEditor);
+        if(editorFieldService.findEditorFieldsByFieldId(fieldId, pageRequest) != null) {
+            Page<EditorField> editorFieldPage = editorFieldService.findEditorFieldsByFieldId(fieldId, pageRequest);
+            List<EditorField> editorFields = editorFieldPage.getContent();
+            List<EditorFieldVoGetEditor> editorFieldVoGetEditors = new ArrayList<>();
+            for (EditorField editorField : editorFields) {
+                User user = userService.findUserByUid(editorField.getEditorUid()).get();
+                EditorFieldVoGetEditor editorFieldVoGetEditor = new EditorFieldVoGetEditor();
+                editorFieldVoGetEditor.setId(editorField.getId());
+                editorFieldVoGetEditor.setEditorUid(editorField.getEditorUid());
+                editorFieldVoGetEditor.setEmail(user.getEmail());
+                editorFieldVoGetEditor.setUserName(user.getUserName());
+                editorFieldVoGetEditors.add(editorFieldVoGetEditor);
+            }
+            PageData pageData = new PageData(editorFieldPage.getTotalPages(), (int) editorFieldPage.getTotalElements(), page, editorFieldVoGetEditors.size(), editorFieldVoGetEditors);
+            return AjaxResponse.success(pageData);
+        }else{
+            return AjaxResponse.success(new PageData(0, 0, page, 0, new ArrayList<>()));
         }
-        PageData pageData = new PageData(editorFieldPage.getTotalPages(), (int) editorFieldPage.getTotalElements(), page, editorFieldVoGetEditors.size(), editorFieldVoGetEditors);
-        return AjaxResponse.success(pageData);
     }
 }

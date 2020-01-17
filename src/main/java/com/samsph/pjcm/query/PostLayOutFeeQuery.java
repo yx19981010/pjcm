@@ -1,10 +1,15 @@
 package com.samsph.pjcm.query;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 
 import javax.validation.constraints.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -13,6 +18,7 @@ import java.util.Date;
 @ApiModel(description = "更新版面费时请求实体")
 @Data
 public class PostLayOutFeeQuery {
+
     @ApiModelProperty("标识号")
     @NotNull(message = "id不能为空")
     private Integer id;
@@ -30,6 +36,7 @@ public class PostLayOutFeeQuery {
 
     @ApiModelProperty("截止日期")
     @NotNull(message = "deadline不能为空")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date deadline;
 
 }

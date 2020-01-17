@@ -44,20 +44,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addUser(UserERVoPost userERVoPost) {
         java.sql.Date time = new java.sql.Date(new java.util.Date().getTime());
-//        String code = UUIDUtil.getUUID()+ UUIDUtil.getUUID();
+        String code = UUIDUtil.getUUID()+ UUIDUtil.getUUID();
         String password = UUIDUtil.getPasswordUUID();
         User user = new User();
-//        user.setActive(0);
-        user.setActive(1);
+        user.setActive(0);
+//        user.setActive(1);
         user.setCreateTime(time);
         user.setPhone(userERVoPost.getPhone());
         user.setUserName(userERVoPost.getUserName());
         user.setSex(userERVoPost.getSex());
         user.setEmail(userERVoPost.getEmail());
-        user.setPasswordHash(Sha256Util.getSHA256StrJava("12345678"));
-//        user.setCode(code);
+        user.setPasswordHash(Sha256Util.getSHA256StrJava(password));
+        user.setCode(code);
         userRepository.save(user);
-//        mailService.sendHtmlMailForSystemUserActive(user.getEmail(),code,"12345678");
+        mailService.sendHtmlMailForSystemUserActive(user.getEmail(),code,password);
     }
 
     @Override
@@ -132,6 +132,35 @@ public class UserServiceImpl implements UserService {
                 if (userRoleService.findUserHasRole(optionalUser.get().getId(), RoleType.CONTRIBUTOR_ROLE)) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "用户已经被注册!!!");
                 } else {
+                    User user = optionalUser.get();
+                    if (userVoPost.getAddress() != null) {
+                        user.setAddress(userVoPost.getAddress());
+                    }
+                    if (userVoPost.getEducation() != null) {
+                        user.setEducation(userVoPost.getEducation());
+                    }
+                    if (userVoPost.getEmployer() != null) {
+                        user.setEmployer(userVoPost.getEmployer());
+                    }
+                    if (userVoPost.getMajor() != null) {
+                        user.setMajor(userVoPost.getMajor());
+                    }
+                    if (userVoPost.getPhone() != null) {
+                        user.setPhone(userVoPost.getPhone());
+                    }
+                    if (userVoPost.getSex() != null) {
+                        user.setSex(userVoPost.getSex());
+                    }
+                    if (userVoPost.getTitle() != null) {
+                        user.setTitle(userVoPost.getTitle());
+                    }
+                    if (userVoPost.getUserName() != null) {
+                        user.setUserName(userVoPost.getUserName());
+                    }
+                    if (userVoPost.getZipCode() != null) {
+                        user.setZipCode(userVoPost.getZipCode());
+                    }
+                    userRepository.save(user);
                     UserRole userRole = new UserRole();
                     userRole.setRole(RoleType.CONTRIBUTOR_ROLE);
                     userRole.setUid(optionalUser.get().getId());
@@ -140,11 +169,11 @@ public class UserServiceImpl implements UserService {
             }
         } else {
             User user = new User();
-//            String code = UUIDUtil.getUUID() + UUIDUtil.getUUID();
+            String code = UUIDUtil.getUUID() + UUIDUtil.getUUID();
             user.setEmail(userVoPost.getEmail());
             user.setPasswordHash(Sha256Util.getSHA256StrJava(userVoPost.getPassword()));
-//            user.setActive(0);
-            user.setActive(1);
+            user.setActive(0);
+//            user.setActive(1);
             user.setCreateTime(new Date(new java.util.Date().getTime()));
             user.setAddress(userVoPost.getAddress());
             user.setBankAccount(userVoPost.getBankAccount());
@@ -157,13 +186,13 @@ public class UserServiceImpl implements UserService {
             user.setTitle(userVoPost.getTitle());
             user.setUserName(userVoPost.getUserName());
             user.setZipCode(userVoPost.getZipCode());
-//            user.setCode(code);
+            user.setCode(code);
             userRepository.save(user);
             UserRole userRole = new UserRole();
             userRole.setRole(RoleType.CONTRIBUTOR_ROLE);
             userRole.setUid(userRepository.findByEmail(user.getEmail()).get().getId());
             userRoleService.addUserRole(userRole);
-//            mailService.sendHtmlMailForContributorActive(user.getEmail(), code);
+            mailService.sendHtmlMailForContributorActive(user.getEmail(), code);
         }
     }
 }

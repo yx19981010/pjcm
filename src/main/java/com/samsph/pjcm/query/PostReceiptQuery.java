@@ -23,7 +23,9 @@ public class PostReceiptQuery {
 
     @ApiModelProperty("是否需要发票")
     @NotNull(message = "receiptedNeeded不能为空")
-    private boolean invoiceNeeded;
+    @Min(value = 0)
+    @Max(value = 1)
+    private Integer invoiceNeeded;
 
     @ApiModelProperty("发票抬头")
     private String invoiceTitle;

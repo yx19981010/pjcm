@@ -31,32 +31,32 @@ public class Post4CtrVO extends Post4CtrSimpleVO {
     /**
      * 第一作者姓名
      */
-    private String fAuName;
+    private String auName;
 
     /**
      * 第一作者单位
      */
-    private String fAuEmployer;
+    private String auEmployer;
 
     /**
      * 第一作者邮箱
      */
-    private String fAuEmail;
+    private String auEmail;
 
     /**
      * 第一作者手机号
      */
-    private String fAuPhone;
+    private String auPhone;
 
     /**
      * 第一作者职称
      */
-    private String fAuTitle;
+    private String auTitle;
 
     /**
      * 第一作者学历
      */
-    private String fAuEducation;
+    private String auEducation;
 
     /**
      * 通讯作者姓名
@@ -103,10 +103,10 @@ public class Post4CtrVO extends Post4CtrSimpleVO {
      */
     private String abstractEn;
 
-    /**
-     * 参考文献
-     */
-    private String referencesList;
+//    /**
+//     * 参考文献
+//     */
+//    private String referencesList;
 
     /**
      * 创建时间
@@ -142,11 +142,6 @@ public class Post4CtrVO extends Post4CtrSimpleVO {
      * 编辑提出意见时间
      */
     private Date editorCommentTime;
-
-    /**
-     * 稿件编号
-     */
-    private String no;
 
     /**
      * 税率
@@ -213,8 +208,4 @@ public class Post4CtrVO extends Post4CtrSimpleVO {
      */
     private Date certificateCommentTime;
 
-    /**
-     * 缴费截止时间
-     */
-    private Date deadline;
 }

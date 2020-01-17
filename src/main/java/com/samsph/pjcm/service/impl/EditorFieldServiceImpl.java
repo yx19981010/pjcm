@@ -101,7 +101,7 @@ public class EditorFieldServiceImpl implements EditorFieldService {
             }
             return list1;
         }else{
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"系统无对应角色的用户!!!");
+            return list1;
         }
     }
 
@@ -128,7 +128,7 @@ public class EditorFieldServiceImpl implements EditorFieldService {
             };
             return editorFieldRepository.findAll(specification, pageable);
         }else{
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"系统领域下无对应的编辑!!!");
+            return null;
         }
     }
 }

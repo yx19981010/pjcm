@@ -21,7 +21,7 @@ public class CurrentUser {
 
     public  UserLogined getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() != null) {
+        if (authentication != null && authentication.getPrincipal() != null && !authentication.getPrincipal().equals("anonymousUser")) {
             String email = (String) authentication.getPrincipal();
             if(!userService.findUserByEmail(email).isPresent()){
                 throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"邮箱错误");

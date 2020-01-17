@@ -46,12 +46,7 @@ public class PjcmApplication extends SpringBootServletInitializer {
 //        connector.setPort(8080);
 //        connector.setSecure(false);
 //        //监听到http的端口号后转向到的https的端口号
-//        connector.setRedirectPort(433);
+//        connector.setRedirectPort(443);
 //        return connector;
-//    }
-//
-//    @Override
-//    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-//        return builder.sources(PjcmApplication.class);
 //    }
 }

@@ -3,11 +3,13 @@ import com.samsph.pjcm.config.constant.RoleType;
 import com.samsph.pjcm.config.exception.CustomException;
 import com.samsph.pjcm.config.exception.CustomExceptionType;
 import com.samsph.pjcm.config.utils.DozerUtil;
+import com.samsph.pjcm.dao.PostReviewerRepository;
 import com.samsph.pjcm.dao.ReviewerFieldRepository;
 import com.samsph.pjcm.dao.UserRepository;
 import com.samsph.pjcm.model.ReviewerField;
 import com.samsph.pjcm.model.User;
 import com.samsph.pjcm.model.UserRole;
+import com.samsph.pjcm.service.PostReviewerService;
 import com.samsph.pjcm.service.ReviewerFieldService;
 import com.samsph.pjcm.service.UserRoleService;
 import com.samsph.pjcm.vo.ReviewerFieldVoGet;
@@ -36,6 +38,8 @@ public class ReviewerFieldServiceImpl implements ReviewerFieldService {
     private UserRepository userRepository;
     @Autowired
     private UserRoleService userRoleService;
+    @Autowired
+    private PostReviewerRepository postReviewerRepository;
 
     @Override
     public void addReviewerField(ReviewerField reviewerField) {
@@ -98,15 +102,41 @@ public class ReviewerFieldServiceImpl implements ReviewerFieldService {
             }
             return list1;
         }else{
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"系统无对应角色的用户!!!");
+            return list1;
+        }
+    }
+
+    @Override
+    public List<ReviewerFieldVoGet> findSelect(int id) {
+        List<UserRole> list = userRoleService.findUserRolesByRole(RoleType.REVIEWER_ROLE);
+        List<ReviewerFieldVoGet> list1 = new ArrayList<>();
+        if(list != null && list.size() > 0) {
+            for (UserRole i : list) {
+                User user = userRepository.findById(i.getUid()).get();
+                List<ReviewerField> list2 = findByReviewerUid(i.getUid());
+                if(postReviewerRepository.findByPidAndReviewerUid(id,i.getUid()).isPresent() || user.getActive() != 1 || (list2 == null ||list2.size()==0) ){
+                    continue;
+                }
+                List<ReviewerFieldVoGetField> list3 = DozerUtil.mapList(list2,ReviewerFieldVoGetField.class);
+                ReviewerFieldVoGet reviewerFieldVoGet = new ReviewerFieldVoGet();
+                reviewerFieldVoGet.setReviewerUid(user.getId());
+                reviewerFieldVoGet.setEmail(user.getEmail());
+                reviewerFieldVoGet.setUserName(user.getUserName());
+                reviewerFieldVoGet.setField(list3);
+                reviewerFieldVoGet.setActive(user.getActive());
+                list1.add(reviewerFieldVoGet);
+            }
+            return list1;
+        }else{
+            return list1;
         }
     }
 
     @Override
     public Page<ReviewerField> findReviewerFieldsByFieldId(int fieldId, Pageable pageable) {
         List<ReviewerField> list = findByFieldId(fieldId);
+        List<Integer> reviewerFieldList = new ArrayList<>();
         if(list != null && list.size() > 0){
-            List<Integer> reviewerFieldList = new ArrayList<>();
             for(ReviewerField i : list){
                 reviewerFieldList.add(i.getId());
             }
@@ -125,7 +155,7 @@ public class ReviewerFieldServiceImpl implements ReviewerFieldService {
             };
             return reviewerFieldRepository.findAll(specification, pageable);
         }else{
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"系统领域下无对应的审稿人!!!");
+            return null;
         }
     }
 }

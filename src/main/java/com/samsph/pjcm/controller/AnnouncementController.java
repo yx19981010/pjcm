@@ -1,6 +1,7 @@
 package com.samsph.pjcm.controller;
 
 import com.samsph.pjcm.config.PageData;
+import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.exception.CustomException;
 import com.samsph.pjcm.config.exception.CustomExceptionType;
@@ -47,8 +48,7 @@ public class AnnouncementController {
         announcement.setTitle(announcementVoPost.getTitle());
         announcement.setContent(announcementVoPost.getContent());
         //定义为登录后管理员的id
-//        announcement.setCreateByUid(currentUser.getCurrentUser().getUserId());
-        announcement.setCreateByUid(7);
+        announcement.setCreateByUid(new CurrentUser().getCurrentUser().getUserId());
         announcementService.addAnnouncement(announcement);
         return AjaxResponse.success();
     }

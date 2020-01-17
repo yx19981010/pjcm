@@ -38,6 +38,12 @@ public class ReviewRecordVO {
     private Integer uid;
 
     /**
+     * 审稿人姓名
+     */
+    @ApiModelProperty("审稿人姓名")
+    private String review_name;
+
+    /**
      * 属于第几轮审阅
      */
     @ApiModelProperty("属于第几轮审阅")

@@ -2,6 +2,7 @@ package com.samsph.pjcm.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.utils.DozerUtil;
 import com.samsph.pjcm.model.Journal;
@@ -47,8 +48,7 @@ public class JournalController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @ApiImplicitParam(name = "journalQuery", value = "必填：year、month、day、content\n不填：id", dataType = "JournalQuery")
     public AjaxResponse saveJournal(@Validated({Add.class}) @RequestBody JournalQuery journalQuery) {
-//        int uid = currentUser.getCurrentUser().getUserId();
-        int uid = ADMIN_ID;
+        int uid = new CurrentUser().getCurrentUser().getUserId();
         Journal journal = journalService.saveJournal(journalQuery, uid);
         return AjaxResponse.success(dozerMapper.map(journal, JournalSimpleVO.class));
     }
@@ -77,7 +77,7 @@ public class JournalController {
                                @NotNull(message = "size不能为空") @RequestParam("size") Integer size,
                                @RequestParam(value = "ascend", required = false) Boolean ascend) {
         if (ascend == null) {
-            ascend = true;
+            ascend = false;
         }
 
         Page<Journal> journalPage = journalService.getAll(number, size, ascend);

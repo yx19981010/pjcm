@@ -1,6 +1,7 @@
 package com.samsph.pjcm.controller;
 
 import com.samsph.pjcm.config.PageData;
+import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.exception.CustomException;
 import com.samsph.pjcm.config.exception.CustomExceptionType;
@@ -52,8 +53,7 @@ public class CertificatesController {
         Date time = new Date(new java.util.Date().getTime());
         Certificate certificate = new Certificate();
         //定义为登录后管理员的id
-//        certificate.setCreateByUid(currentUser.getCurrentUser().getUserId());
-        certificate.setCreateByUid(7);
+        certificate.setCreateByUid(new CurrentUser().getCurrentUser().getUserId());
         certificate.setCreateTime(time);
         certificate.setDescription(description);
         certificate.setName(name);

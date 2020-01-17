@@ -5,4 +5,5 @@ public class FileUploadPath {
     public static final String MaterialFileUploadPath = "./file/material/";
     public static final String CertificateFileUploadPath = "./file/certificate/";
     public static final String PublicationNoticePath = "./file/material/publication_notice.docx";
+    public static final String AssignmentPath = "./file/material/assignment.docx";
 }

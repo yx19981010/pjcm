@@ -116,22 +116,4 @@ public class WorderToNewWordUtils {
         return value;
     }
 
-    public static void main(String[] args) {
-        //模板文件地址
-        String inputUrl = PublicationNoticePath;
-        //新生产的模板文件
-        String outputUrl = PostFileUploadPath+"/publication"+FileUtil.getRandomFileName()+".docx";
-
-        Map<String, String> testMap = new HashMap<String, String>();
-        testMap.put("name", "小明");
-        testMap.put("post_name", "啦啦啦");
-        testMap.put("post_num", "P20191010");
-        testMap.put("month", "10");
-        testMap.put("day", "10");
-        testMap.put("fee", "20.8");
-//        testMap.put("address", "软件园");
-//        testMap.put("phone", "88888888");
-
-        WorderToNewWordUtils.changWord(inputUrl, outputUrl, testMap);
-    }
 }

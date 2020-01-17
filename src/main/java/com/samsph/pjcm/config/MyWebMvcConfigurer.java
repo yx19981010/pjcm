@@ -1,10 +1,7 @@
 package com.samsph.pjcm.config;
 
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;
-import org.springframework.web.filter.ShallowEtagHeaderFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -52,6 +49,8 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
                 CacheControl.maxAge(0, TimeUnit.SECONDS)
                         .cachePublic());
         registry.addResourceHandler("/images/**").addResourceLocations("file:./file/certificate/");
+        registry.addResourceHandler("/files/**").addResourceLocations("file:./file/post/");
+        registry.addResourceHandler("/materials/**").addResourceLocations("file:./file/material/");
         registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }

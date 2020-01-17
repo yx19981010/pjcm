@@ -16,6 +16,9 @@ public class Post4RevSimpleVO {
     @ApiModelProperty("标识号")
     private Integer id;
 
+    @ApiModelProperty("文章编号")
+    private String no;
+
     @ApiModelProperty("标题")
     private String title;
 

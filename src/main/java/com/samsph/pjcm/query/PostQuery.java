@@ -51,34 +51,34 @@ PostQuery {
     private String corAuName;
 
     @ApiModelProperty("一作姓名")
-    @NotBlank(message = "fAuName不能为空", groups = {Add.class})
-    @Null(message = "fAuName必须为空", groups = {Update2.class})
-    private String fAuName;
+    @NotBlank(message = "auName不能为空", groups = {Add.class})
+    @Null(message = "auName必须为空", groups = {Update2.class})
+    private String auName;
 
     @ApiModelProperty("一作工作单位")
-    @NotBlank(message = "fAuEmployer不能为空", groups = {Add.class})
-    @Null(message = "fAuEmployer必须为空", groups = {Update2.class})
-    private String fAuEmployer;
+    @NotBlank(message = "auEmployer不能为空", groups = {Add.class})
+    @Null(message = "auEmployer必须为空", groups = {Update2.class})
+    private String auEmployer;
 
     @ApiModelProperty("一作邮箱")
-    @NotBlank(message = "fAuEmail不能为空", groups = {Add.class})
-    @Null(message = "fAuEmail必须为空", groups = {Update2.class})
-    private String fAuEmail;
+    @NotBlank(message = "auEmail不能为空", groups = {Add.class})
+    @Null(message = "auEmail必须为空", groups = {Update2.class})
+    private String auEmail;
 
     @ApiModelProperty("一作手机号")
-    @NotBlank(message = "fAuPhone不能为空", groups = {Add.class})
-    @Null(message = "fAuPhone必须为空", groups = {Update2.class})
-    private String fAuPhone;
+    @NotBlank(message = "auPhone不能为空", groups = {Add.class})
+    @Null(message = "auPhone必须为空", groups = {Update2.class})
+    private String auPhone;
 
     @ApiModelProperty("一作职称")
-    @NotBlank(message = "fAuTitle不能为空", groups = {Add.class})
-    @Null(message = "fAuTitle必须为空", groups = {Update2.class})
-    private String fAuTitle;
+    @NotBlank(message = "auTitle不能为空", groups = {Add.class})
+    @Null(message = "auTitle必须为空", groups = {Update2.class})
+    private String auTitle;
 
     @ApiModelProperty("一作学历")
     @NotBlank(message = "fAuEducation不能为空", groups = {Add.class})
     @Null(message = "fAuEducation必须为空", groups = {Update2.class})
-    private String fAuEducation;
+    private String auEducation;
 
     @ApiModelProperty("文章标题")
     @Length(max = 30, message = "标题不能超过30字")
@@ -109,6 +109,6 @@ PostQuery {
     @Length(max = 2400, groups = {Add.class, Update.class, Update2.class}, message = "abstractEn不能超过2400字")
     private String abstractEn;
 
-    @ApiModelProperty("参考文献")
-    private String referencesList;
+//    @ApiModelProperty("参考文献")
+//    private String referencesList;
 }

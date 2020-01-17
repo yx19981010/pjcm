@@ -47,38 +47,38 @@ public class Post {
     /**
      * 第一作者姓名
      */
-    @Column(name="f_au_name")
-    private String fAuName;
+    @Column(name="au_name")
+    private String auName;
 
     /**
      * 第一作者单位
      */
-    @Column(name="f_au_employer")
-    private String fAuEmployer;
+    @Column(name="au_employer")
+    private String auEmployer;
 
     /**
      * 第一作者邮箱
      */
-    @Column(name="f_au_email")
-    private String fAuEmail;
+    @Column(name="au_email")
+    private String auEmail;
 
     /**
      * 第一作者手机号
      */
-    @Column(name="f_au_phone")
-    private String fAuPhone;
+    @Column(name="au_phone")
+    private String auPhone;
 
     /**
      * 第一作者职称
      */
-    @Column(name="f_au_title")
-    private String fAuTitle;
+    @Column(name="au_title")
+    private String auTitle;
 
     /**
      * 第一作者学历
      */
-    @Column(name="f_au_education")
-    private String fAuEducation;
+    @Column(name="au_education")
+    private String auEducation;
 
     /**
      * 通讯作者姓名

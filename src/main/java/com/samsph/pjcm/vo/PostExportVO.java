@@ -37,22 +37,22 @@ public class PostExportVO {
     private String taxpayerId;
 
     @ApiModelProperty("一作名")
-    private String fAuName;
+    private String auName;
 
     @ApiModelProperty("单位")
-    private String fAuEmployer;
+    private String auEmployer;
 
     @ApiModelProperty("手机号")
-    private String fAuPhone;
+    private String auPhone;
 
     @ApiModelProperty("邮箱")
-    private String fAuEmail;
+    private String auEmail;
 
     @ApiModelProperty("职称")
-    private String fAuTitle;
+    private String auTitle;
 
     @ApiModelProperty("学历")
-    private String fAuEducation;
+    private String auEducation;
 
     @ApiModelProperty("地区")
     private String receiptAddress;

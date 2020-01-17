@@ -3,18 +3,23 @@ package com.samsph.pjcm.service.impl;
 import com.samsph.pjcm.config.constant.MyBoolean;
 import com.samsph.pjcm.config.exception.CustomException;
 import com.samsph.pjcm.config.exception.CustomExceptionType;
+import com.samsph.pjcm.config.utils.DozerUtil;
 import com.samsph.pjcm.dao.PostRepository;
 import com.samsph.pjcm.dao.ReviewRecordRepository;
 import com.samsph.pjcm.model.Post;
 import com.samsph.pjcm.model.ReviewRecord;
 import com.samsph.pjcm.query.ReviewRecordQuery;
 import com.samsph.pjcm.service.ReviewRecordService;
+import com.samsph.pjcm.service.UserService;
+import com.samsph.pjcm.vo.ReviewRecordVO;
+import com.samsph.pjcm.vo.ReviewerFieldVoGetField;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +35,9 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
 
     @Resource
     private ReviewRecordRepository reviewRecordRepository;
+
+    @Resource
+    private UserService userService;
 
     @Override
     public ReviewRecord save(ReviewRecordQuery reviewRecordQuery, int uid, int cnt) {
@@ -104,8 +112,13 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
     }
 
     @Override
-    public List<ReviewRecord> getAllByPid(int pid) {
-        return reviewRecordRepository.findByPid(pid);
+    public List<ReviewRecordVO> getAllByPid(int pid) {
+        List<ReviewRecord> list = reviewRecordRepository.findByPid(pid);
+        List<ReviewRecordVO> list1 = DozerUtil.mapList(list,ReviewRecordVO.class);
+        for(ReviewRecordVO reviewRecordVo : list1){
+            reviewRecordVo.setReview_name(userService.findUserByUid(reviewRecordVo.getUid()).get().getUserName());
+        }
+        return list1;
     }
 
     @Override

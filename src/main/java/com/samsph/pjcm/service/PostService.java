@@ -223,7 +223,7 @@ public interface PostService {
      * @param ascend      是否升序
      * @return 稿件分页
      */
-    Page<Post> getAllByStatusAndFAuEmployer(List<Integer> statuses, String fAuEmployer, Integer number, Integer size, Boolean ascend);
+    Page<Post> getAllByStatusAndAuEmployer(List<Integer> statuses, String fAuEmployer, Integer number, Integer size, Boolean ascend);
 
     /**
      * 根据状态和一作姓名获得所有稿件
@@ -235,7 +235,7 @@ public interface PostService {
      * @param ascend   是否升序
      * @return 稿件分页
      */
-    Page<Post> getAllByStatusAndFAuName(List<Integer> statuses, String fAuName, Integer number, Integer size, Boolean ascend);
+    Page<Post> getAllByStatusAndAuName(List<Integer> statuses, String fAuName, Integer number, Integer size, Boolean ascend);
 
     /**
      * 根据状态、一作姓名和一作单位获得稿件列表
@@ -248,7 +248,7 @@ public interface PostService {
      * @param ascend      是否升序
      * @return 稿件分页
      */
-    Page<Post> getAllByStatusAndFAuNameAndFAuEmployer(List<Integer> statuses, String fAuName, String fAuEmployer, Integer number, Integer size, Boolean ascend);
+    Page<Post> getAllByStatusAndAuNameAndAuEmployer(List<Integer> statuses, String fAuName, String fAuEmployer, Integer number, Integer size, Boolean ascend);
 
     /**
      * 根据状态和提交时间获得稿件分页
@@ -275,7 +275,7 @@ public interface PostService {
      * @param ascend      是否升序
      * @return 稿件分页
      */
-    Page<Post> getAllByStatusAndFAuEmployerAndSubmitTime(List<Integer> statuses, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend);
+    Page<Post> getAllByStatusAndAuEmployerAndSubmitTime(List<Integer> statuses, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend);
 
     /**
      * 根据状态、一作姓名和提交时间获得稿件分页
@@ -289,7 +289,7 @@ public interface PostService {
      * @param ascend   是否升序
      * @return 稿件分页
      */
-    Page<Post> getAllByStatusAndFAuNameAndSubmitTime(List<Integer> statuses, String fAuName, Date start, Date end, Integer number, Integer size, Boolean ascend);
+    Page<Post> getAllByStatusAndAuNameAndSubmitTime(List<Integer> statuses, String fAuName, Date start, Date end, Integer number, Integer size, Boolean ascend);
 
     /**
      * 根据状态、一作姓名、一作工作单位和提交时间获得稿件分页
@@ -304,7 +304,7 @@ public interface PostService {
      * @param ascend      是否升序
      * @return 稿件分页
      */
-    Page<Post> getAllByStatusAndFAuNameAndFAuEmployerAndSubmitTime(List<Integer> statuses, String fAuName, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend);
+    Page<Post> getAllByStatusAndAuNameAndAuEmployerAndSubmitTime(List<Integer> statuses, String fAuName, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend);
 
     /**
      * 根据稿件状态、缴费证明上传时间获得稿件分页
@@ -331,7 +331,7 @@ public interface PostService {
      * @param ascend      是否升序
      * @return 稿件分页
      */
-    Page<Post> getAllByStatusAndFAuEmployerAndCertificateUploadTime(List<Integer> statuses, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend);
+    Page<Post> getAllByStatusAndAuEmployerAndCertificateUploadTime(List<Integer> statuses, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend);
 
     /**
      * 根据稿件状态、一作姓名、缴费证明上传时间获得稿件分页
@@ -345,7 +345,7 @@ public interface PostService {
      * @param ascend   是否升序
      * @return 稿件分页
      */
-    Page<Post> getAllByStatusAndFAuNameAndCertificateUploadTime(List<Integer> statuses, String fAuName, Date start, Date end, Integer number, Integer size, Boolean ascend);
+    Page<Post> getAllByStatusAndAuNameAndCertificateUploadTime(List<Integer> statuses, String fAuName, Date start, Date end, Integer number, Integer size, Boolean ascend);
 
     /**
      * 根据稿件状态、一作姓名、一作工作单位、缴费证明上传时间获得稿件分页
@@ -360,5 +360,5 @@ public interface PostService {
      * @param ascend      是否升序
      * @return 稿件分页
      */
-    Page<Post> getAllByStatusAndFAuNameAndFAuEmployerAndCertificateUploadTime(List<Integer> statuses, String fAuName, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend);
+    Page<Post> getAllByStatusAndAuNameAndAuEmployerAndCertificateUploadTime(List<Integer> statuses, String fAuName, String fAuEmployer, Date start, Date end, Integer number, Integer size, Boolean ascend);
 }

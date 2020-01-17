@@ -57,10 +57,17 @@ public interface ReviewerFieldService {
      List<ReviewerFieldVoGet> findAll();
 
      /**
+      *得到选择审稿人的所有审稿人领域列表
+      * @return 审稿人领域列表
+      */
+     List<ReviewerFieldVoGet> findSelect(int id);
+
+     /**
       *根据领域id得到分页后的审稿人领域列表
       * @param fieldId 领域id
       * @param pageable 分页参数
       * @return 分页后的审稿人领域列表
       */
      Page<ReviewerField> findReviewerFieldsByFieldId(int fieldId, Pageable pageable);
+
 }

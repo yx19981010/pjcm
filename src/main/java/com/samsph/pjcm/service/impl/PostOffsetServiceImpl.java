@@ -25,11 +25,10 @@ public class PostOffsetServiceImpl implements PostNoOffsetService {
 
         postNoOffset = optional.orElseGet(
                 () -> new PostNoOffset(null, year, 0));
-
-        return postNoOffsetRepository.save(postNoOffset).getOffset();
+        int offset = postNoOffset.getOffset();
+        postNoOffset.setOffset(offset+1);
+        postNoOffsetRepository.save(postNoOffset);
+        return offset+1;
     }
-
-
-
 
 }

@@ -15,6 +15,9 @@ public class Post4CtrSimpleVO {
     @ApiModelProperty("标识号")
     private Integer id;
 
+    @ApiModelProperty("文章编号")
+    private String no;
+
     @ApiModelProperty("标题")
     private String title;
 
@@ -26,4 +29,7 @@ public class Post4CtrSimpleVO {
 
     @ApiModelProperty("版面费")
     private Double fee;
+
+    @ApiModelProperty("缴费截止时间")
+    private Date deadline;
 }

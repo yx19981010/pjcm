@@ -39,14 +39,14 @@ public class MailServiceImpl implements MailService {
     }
 
     public void sendHtmlMailForContributorActive(String to,String code) {
-        String subject = "来自省医院编辑部的激活邮件";
+        String subject = "来自四川省人民医院实用医学临床杂志论文编辑投审平台的激活邮件";
         String content = "<html>" +
                 "<body>" +
                 "<p>尊敬的用户:</p>" +
                 "<p>&nbsp;&nbsp;您好！</p>" +
                 "<p>&nbsp;&nbsp;感谢您在我们的系统中注册</p>" +
                 "<p>请点击下面的链接，进行激活。</p>" +
-                "<a href=\""+ SecurityConstants.SERVICE_URL+"/api/v1/users/checkCode?code="+code+"\">省医院编辑部激活请点击</a>" +
+                "<a href=\""+ SecurityConstants.SERVICE_URL+"/api/v1/users/checkCode?code="+code+"\">四川省人民医院实用医学临床杂志论文编辑投审平台激活请点击</a>" +
                 "<p>&nbsp;&nbsp;祝您生活愉快！万事如意！</p>" +
                 "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;《实用医院临床杂志》</p>" +
@@ -57,7 +57,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendHtmlMailForSystemUserActive(String to, String code, String password) {
-        String subject = "来自省医院编辑部的激活邮件";
+        String subject = "来自四川省人民医院实用医学临床杂志论文编辑投审平台的激活邮件";
         String content = "<html>" +
                 "<body>" +
                 "<p>尊敬的用户:</p>" +
@@ -67,7 +67,7 @@ public class MailServiceImpl implements MailService {
                 "<p>&nbsp;&nbsp;您的密码："+password+"</p>" +
                 "<p>&nbsp;&nbsp;请在登录系统后及时修改</p>" +
                 "<p>请点击下面的链接，进行激活。</p>" +
-                "<a href=\""+ SecurityConstants.SERVICE_URL+"/api/v1/users/checkCode?code="+code+"\">省医院编辑部激活请点击</a>" +
+                "<a href=\""+ SecurityConstants.SERVICE_URL+"/api/v1/users/checkCode?code="+code+"\">四川省人民医院实用医学临床杂志论文编辑投审平台激活请点击</a>" +
                 "<p>&nbsp;&nbsp;祝您生活愉快！万事如意！</p>" +
                 "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;《实用医院临床杂志》</p>" +
@@ -78,7 +78,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendHtmlMailForNewEmailActive(String to, String code, String password) {
-        String subject = "来自省医院编辑部的激活邮件";
+        String subject = "来自四川省人民医院实用医学临床杂志论文编辑投审平台的激活邮件";
         String content = "<html>" +
                 "<body>" +
                 "<p>尊敬的用户:</p>" +
@@ -87,7 +87,7 @@ public class MailServiceImpl implements MailService {
                 "<p>&nbsp;&nbsp;您的新密码："+password+"</p>" +
                 "<p>&nbsp;&nbsp;请在登录系统后及时修改</p>" +
                 "<p>请点击下面的链接，进行激活。</p>" +
-                "<a href=\""+ SecurityConstants.SERVICE_URL+"/api/v1/users/checkCode?code="+code+"\">省医院编辑部激活请点击</a>" +
+                "<a href=\""+ SecurityConstants.SERVICE_URL+"/api/v1/users/checkCode?code="+code+"\">四川省人民医院实用医学临床杂志论文编辑投审平台激活请点击</a>" +
                 "<p>&nbsp;&nbsp;祝您生活愉快！万事如意！</p>" +
                 "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;《实用医院临床杂志》</p>" +
@@ -98,7 +98,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendHtmlMailForChangeEmail(String to, String code, String newEmail) {
-        String subject = "来自省医院编辑部的邮箱更改通知";
+        String subject = "来自四川省人民医院实用医学临床杂志论文编辑投审平台的邮箱更改通知";
         String content = "<html>" +
                 "<body>" +
                 "<p>尊敬的用户:</p>" +
@@ -118,7 +118,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendHtmlMailForChangePassword(String to, String code, String newPassword) {
-        String subject = "来自省医院编辑部的邮箱更改通知";
+        String subject = "来自四川省人民医院实用医学临床杂志论文编辑投审平台的密码更改通知";
         String content = "<html>" +
                 "<body>" +
                 "<p>尊敬的用户:</p>" +
@@ -136,7 +136,7 @@ public class MailServiceImpl implements MailService {
     }
 
     public void sendHtmlMailForContributor(String to,String postName,String contributorName) {
-        String subject = "来自省医院编辑部的稿件修改通知";
+        String subject = "来自四川省人民医院实用医学临床杂志论文编辑投审平台的稿件修改通知";
         String content = "<html>" +
                 "<body>" +
                 "<p>尊敬的"+contributorName+"作者:</p>" +
@@ -145,7 +145,7 @@ public class MailServiceImpl implements MailService {
                 "经审核，退回到您的“退改”稿件中，请再登录我刊在线投稿系统，<br />" +
                 " 在“待修改稿件”中按要求修改并上传（具体步骤请参照首页公告栏“论文修改步骤”）。<br />" +
                 " 请于3日内按要求修回，逾期未修回将视为退稿处理！</p>" +
-                "<p>您可以点击下面的链接，登录网站进行修改。</p>" +
+                "<p>您可以点击下面的链接，登录四川省人民医院实用医学临床杂志论文编辑投审平台进行修改。</p>" +
                 "<a href=\""+ SecurityConstants.SERVICE_URL+"\">省医院编辑部</a>" +
                 "<p>&nbsp;&nbsp;祝您生活愉快！万事如意！</p>" +
                 "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
@@ -156,16 +156,16 @@ public class MailServiceImpl implements MailService {
     }
 
     public void sendHtmlMailForReviewer(String to,String postName,String reviewerName) {
-        String subject = "来自省医院编辑部的稿件审阅通知";
+        String subject = "来自四川省人民医院实用医学临床杂志论文编辑投审平台的稿件审阅通知";
         String content = "<html>" +
                 "<body>" +
                 "<p>尊敬的"+reviewerName+"专家:</p>" +
                 "<p>&nbsp;&nbsp;您好！</p>" +
-                "<p>&nbsp;&nbsp;鉴于您的学术成就，现奉上稿件一篇请您评审，如果您同意审理，建议您于10日内审<br />" +
-                "回。若您因故不能审阅该稿，亦请推荐合适的审稿人评审或尽快退回原稿。此外，论文意见<br />" +
-                " 请尽量具有针对性和可操作性，以便于作者修改。</p>" +
+                "<p>&nbsp;&nbsp;鉴于您的学术成就，现奉上稿件一篇请您评审，如果您同意审理，建议您于10日内审回。<br />" +
+                "若您因故不能审阅该稿，亦请推荐合适的审稿人评审或尽快退回原稿。<br />" +
+                "此外，论文意见请尽量具有针对性和可操作性，以便于作者修改。</p>" +
                 "<p>稿件题目:"+postName+"</p>" +
-                "<p>请您点击下面的链接，登录网站进行审阅。</p>" +
+                "<p>请您点击下面的链接，登录四川省人民医院实用医学临床杂志论文编辑投审平台进行审阅。</p>" +
                 "<a href=\""+ SecurityConstants.SERVICE_URL+"\">省医院编辑部</a>" +
                 "<p>&nbsp;&nbsp;衷心感谢您对实用医院临床杂志工作的大力支持，本刊对审稿人姓名保密，并按规定付给审稿费。</p>" +
                 "<p>&nbsp;&nbsp;此致</p>" +

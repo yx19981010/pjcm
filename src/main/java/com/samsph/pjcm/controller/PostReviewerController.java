@@ -1,5 +1,6 @@
 package com.samsph.pjcm.controller;
 
+import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.constant.ErrMsg;
 import com.samsph.pjcm.config.constant.MyBoolean;
 import com.samsph.pjcm.config.constant.PostStatus;
@@ -72,8 +73,8 @@ public class PostReviewerController {
         int pid = postReviewerQuery.getPid();
         int reviewerUid = postReviewerQuery.getReviewerUid();
 
-        //        int uid = currentUser.getCurrentUser().getUserId();
-        int uid = EDITOR_ID;
+                int uid = new CurrentUser().getCurrentUser().getUserId();
+//        int uid = EDITOR_ID;
 
         // 检查操作者为该稿件编辑
         Post post = postService.getPost(pid);
@@ -104,7 +105,7 @@ public class PostReviewerController {
         postService.updatePost(post);
 
         // 给审稿人发送通知邮件
-        mailService.sendHtmlMailForReviewer(reviewer.getEmail(), post.getTitle(), reviewer.getUserName());
+//        mailService.sendHtmlMailForReviewer(reviewer.getEmail(), post.getTitle(), reviewer.getUserName());
 
         return AjaxResponse.success(dozerMapper.map(postReviewer, PostReviewerVO.class));
     }
@@ -119,8 +120,8 @@ public class PostReviewerController {
         int pid = postReviewerQuery.getPid();
         boolean accept = postReviewerQuery.getAccept();
 
-        //        int uid = currentUser.getCurrentUser().getUserId();
-        int uid = REVIEWER_ID;
+                int uid = new CurrentUser().getCurrentUser().getUserId();
+//        int uid = REVIEWER_ID;
 
         // 检查该审稿人未答复
         PostReviewer postReviewer = postReviewerService.getPostReviewer(pid, uid);
@@ -153,8 +154,8 @@ public class PostReviewerController {
     @ApiOperation("编辑取消稿件的审稿人")
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     public AjaxResponse deleteReviewer(@NotNull(message = "稿件id不能为空") @PathVariable Integer id) {
-        //        int uid = currentUser.getCurrentUser().getUserId();
-        int uid = EDITOR_ID;
+                int uid = new CurrentUser().getCurrentUser().getUserId();
+//        int uid = EDITOR_ID;
 
         // 检查操作者为该稿件编辑
         Post post = postService.getPost(id);

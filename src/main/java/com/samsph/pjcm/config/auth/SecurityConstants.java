@@ -13,6 +13,9 @@ public class SecurityConstants {
     public static final String SERVICE_URL = "http://192.168.0.102:8080";
 
 //    public static final String SERVICE_URL = "http://116.62.6.114:8080";
+
+//    public static final String SERVICE_URL = "http://47.108.145.8:8080";
+
     /**
      * 角色的key
      **/

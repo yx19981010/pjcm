@@ -1,6 +1,7 @@
 package com.samsph.pjcm.controller;
 
 import com.samsph.pjcm.config.PageData;
+import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.constant.RoleType;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.exception.CustomException;
@@ -66,6 +67,16 @@ public class UserController {
                 if(userRoleService.findUserHasRole(user1.getId(),role)) {
                     throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "该邮箱已被注册");
                 }else{
+                    if (userERVoPost.getPhone() != null) {
+                        user1.setPhone(userERVoPost.getPhone());
+                    }
+                    if (userERVoPost.getSex() != null) {
+                        user1.setSex(userERVoPost.getSex());
+                    }
+                    if (userERVoPost.getUserName() != null) {
+                        user1.setUserName(userERVoPost.getUserName());
+                    }
+                    userService.updateUser(user1);
                     UserRole userRole = new UserRole();
                     userRole.setUid(user1.getId());
                     userRole.setRole(role);
@@ -197,13 +208,11 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR','ROLE_REVIEWER','ROLE_CONTRIBUTOR')")
     public AjaxResponse changePassword(@Size(min = 8,max = 20)@RequestParam("oldPassword") String oldPassword,
                                        @Size(min = 8,max = 20)@RequestParam("newPassword") String newPassword,
-                                       @NotNull(message = "未传入用户id")@Min(value = 1,message = "用户id必须是正整数") @RequestParam("id") Integer id,
-                                       HttpServletRequest request,
-                                       HttpServletResponse response){
+                                       @NotNull(message = "未传入用户id")@Min(value = 1,message = "用户id必须是正整数") @RequestParam("id") Integer id){
         //用户登录检测
-//        if(currentUser.getCurrentUser().getUserId() != id){
-//            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"无权修改其他人的密码");
-//        }
+        if(new CurrentUser().getCurrentUser().getUserId() != id){
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"无权修改其他人的密码");
+        }
         if(!userService.findUserByUid(id).isPresent()){
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户不存在");
         }else{
@@ -232,9 +241,9 @@ public class UserController {
     public AjaxResponse changeEmail( @Email @RequestParam("newEmail") String newEmail,
                                      @NotNull(message = "未传入用户id")@Min(value = 1,message = "用户id必须是正整数") @RequestParam("id") Integer id){
         //用户登录检测
-//        if(currentUser.getCurrentUser().getUserId() != id){
-//            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"无权修改其他人的邮箱");
-//        }
+        if(new CurrentUser().getCurrentUser().getUserId() != id){
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"无权修改其他人的邮箱");
+        }
         if(!userService.findUserByUid(id).isPresent()){
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户不存在");
         }else{
@@ -318,9 +327,9 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR','ROLE_REVIEWER','ROLE_CONTRIBUTOR')")
     public AjaxResponse updateUser(@Valid @RequestBody UserVoPut userVoPut){
         //用户登录检测
-//        if(currentUser.getCurrentUser().getUserId() != userVoPut.getId()){
-//            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"无权修改其他人的信息");
-//        }
+        if(new CurrentUser().getCurrentUser().getUserId() != userVoPut.getId()){
+            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"无权修改其他人的信息");
+        }
         if(!userService.findUserByUid(userVoPut.getId()).isPresent()){
             throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"该用户不存在");
         }else{
@@ -418,11 +427,12 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EDITOR','ROLE_REVIEWER','ROLE_CONTRIBUTOR')")
     public AjaxResponse findUserByUidAndRid(@NotNull(message = "uid不能为空")@Min(value = 1,message = "uid必须是正整数") @PathVariable Integer uid,
                                             @NotNull(message = "rid不能为空")@Min(value = RoleType.ADMIN_ROLE)@Max(value = RoleType.CONTRIBUTOR_ROLE) @PathVariable Integer rid){
-//        if(currentUser.getCurrentUser().getUserRole() != RoleType.ADMIN_ROLE) {
-//            if (currentUser.getCurrentUser().getUserId() != uid || currentUser.getCurrentUser().getUserRole() != rid) {
-//                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "无权查看其他人的信息");
-//            }
-//        }
+        CurrentUser currentUser = new CurrentUser();
+        if(currentUser.getCurrentUser().getUserRole() != RoleType.ADMIN_ROLE) {
+            if (currentUser.getCurrentUser().getUserId() != uid || currentUser.getCurrentUser().getUserRole() != rid) {
+                throw new CustomException(CustomExceptionType.USER_INPUT_ERROR, "无权查看其他人的信息");
+            }
+        }
         Optional<User> userOptional = userService.findUserByUid(uid);
         if(userOptional.isPresent()) {
             if(!userRoleService.findUserHasRole(uid,rid)){
@@ -535,7 +545,7 @@ public class UserController {
                     throw new CustomException(CustomExceptionType.OTHER_ERROR,"系统出现未知错误");
             }
         }else {
-            throw new CustomException(CustomExceptionType.USER_INPUT_ERROR,"系统无对应角色的用户!!!");
+            return AjaxResponse.success(new PageData(0, 0, page, 0, new ArrayList<>()));
         }
     }
 }

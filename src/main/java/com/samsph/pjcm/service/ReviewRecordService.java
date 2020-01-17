@@ -2,6 +2,7 @@ package com.samsph.pjcm.service;
 
 import com.samsph.pjcm.model.ReviewRecord;
 import com.samsph.pjcm.query.ReviewRecordQuery;
+import com.samsph.pjcm.vo.ReviewRecordVO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public interface ReviewRecordService {
      * @param pid    稿件id
      * @return 审稿记录页面
      */
-    List<ReviewRecord> getAllByPid(int pid);
+    List<ReviewRecordVO> getAllByPid(int pid);
 
     /**
      * 获得某稿件某审稿人的所有编辑记录

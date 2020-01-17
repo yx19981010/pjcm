@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import com.samsph.pjcm.config.auth.AccountLogin;
-import com.samsph.pjcm.config.auth.JSONResult;
-import com.samsph.pjcm.config.auth.SecurityConstants;
-import com.samsph.pjcm.config.auth.UserLogined;
+import com.samsph.pjcm.config.auth.*;
 import com.samsph.pjcm.config.constant.RoleType;
 import com.samsph.pjcm.config.exception.AjaxResponse;
 import com.samsph.pjcm.config.exception.CustomException;
@@ -32,9 +29,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
@@ -69,7 +66,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
                 throw new BadCredentialsException("用户未激活或已注销");
             }
         }else {
-            throw new BadCredentialsException("邮箱错误~");
+            throw new BadCredentialsException("邮箱不存在");
         }
         // 返回一个验证令牌
         switch (role){
@@ -101,11 +98,19 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
         List<String> roles = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
         String token = JwtTokenUtil.createToken(email,password,roles);
         res.setHeader(SecurityConstants.TOKEN_HEADER,token);
-        res.setContentType("application/json");
+        res.setContentType("application/json;charset=utf-8");
         res.setStatus(HttpServletResponse.SC_OK);
-        res.getOutputStream().println(JSONResult.fillResultString(true,200,"ok",new UserLogined(userService.findUserByEmail(email).get().getId(),role,email)));
+        SimpleDateFormat simpleDateFormat;
+        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String str = simpleDateFormat.format(date);
+        PrintWriter pw = res.getWriter();
+        pw.print(JSONResult.fillResultString(true,200,"ok",
+                new UserVo(userService.findUserByEmail(email).get().getId(),
+                        role,
+                        userService.findUserByEmail(email).get().getUserName(),
+                        str)));
     }
-
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException authenticationException) throws IOException {

@@ -128,13 +128,13 @@ public class WebExceptionController {
         StringBuilder wholeStr = new StringBuilder();
         wholeStr.append("IP地址：").append(AddressIpUtil.getIpAddress(q)).append("\n")
                 .append("请求方法：").append(request.getMethod()).append("\n")
-                .append("请求URL:").append(q.getRequestURL()).append("\n")
-                .append("请求实体：");
+                .append("请求URL:").append(q.getRequestURL());
+//                .append("请求实体：");
 
-        BufferedReader br = q.getReader();
-        while ((str = br.readLine()) != null) {
-            wholeStr.append(str);
-        }
+//        BufferedReader br = q.getReader();
+//        while ((str = br.readLine()) != null) {
+//            wholeStr.append(str);
+//        }
 
         return wholeStr.toString();
     }

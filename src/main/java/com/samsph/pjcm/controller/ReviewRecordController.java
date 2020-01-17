@@ -1,5 +1,6 @@
 package com.samsph.pjcm.controller;
 
+import com.samsph.pjcm.config.auth.CurrentUser;
 import com.samsph.pjcm.config.constant.ErrMsg;
 import com.samsph.pjcm.config.constant.MyBoolean;
 import com.samsph.pjcm.config.constant.PostStatus;
@@ -100,8 +101,8 @@ public class ReviewRecordController {
             }
         }
 
-        //        int uid = currentUser.getCurrentUser().getUserId();
-        int uid = REVIEWER_ID;
+                int uid = new CurrentUser().getCurrentUser().getUserId();
+//        int uid = REVIEWER_ID;
 
         // 检查稿件状态
         Post post = postService.getPost(pid);
@@ -181,8 +182,8 @@ public class ReviewRecordController {
             }
         }
 
-        //        int uid = currentUser.getCurrentUser().getUserId();
-        int uid = REVIEWER_ID;
+                int uid = new CurrentUser().getCurrentUser().getUserId();
+//        int uid = REVIEWER_ID;
 
         // 检查稿件状态
         Post post = postService.getPost(pid);
@@ -229,8 +230,8 @@ public class ReviewRecordController {
     @PreAuthorize("hasAnyRole('ROLE_EDITOR')")
     @ApiOperation(value = "编辑根据pid获得某一稿件的所有审稿记录")
     public AjaxResponse getAll1(@NotNull(message = "id不能为空") @PathVariable Integer pid) {
-        //        int uid = currentUser.getCurrentUser().getUserId();
-        int uid = EDITOR_ID;
+                int uid = new CurrentUser().getCurrentUser().getUserId();
+//        int uid = EDITOR_ID;
 
         // 检查操作者为该稿件编辑
         Post post = postService.getPost(pid);
@@ -245,8 +246,8 @@ public class ReviewRecordController {
     @PreAuthorize("hasAnyRole('ROLE_CONTRIBUTOR')")
     @ApiOperation(value = "投稿人根据id获得某一稿件的审稿记录")
     public AjaxResponse getAll2(@NotNull(message = "id不能为空") @PathVariable Integer pid) {
-        //        int uid = currentUser.getCurrentUser().getUserId();
-        int uid = CONTRIBUTOR_ID;
+                int uid = new CurrentUser().getCurrentUser().getUserId();
+//        int uid = CONTRIBUTOR_ID;
 
         // 检查操作者为该稿件投稿人
         Post post = postService.getPost(pid);
@@ -261,8 +262,8 @@ public class ReviewRecordController {
     @PreAuthorize("hasAnyRole('ROLE_REVIEWER')")
     @ApiOperation(value = "审稿人根据id获得自己对某一稿件的审稿记录")
     public AjaxResponse getAll3(@NotNull(message = "id不能为空") @PathVariable Integer pid) {
-        //        int uid = currentUser.getCurrentUser().getUserId();
-        int uid = REVIEWER_ID;
+                int uid = new CurrentUser().getCurrentUser().getUserId();
+//        int uid = REVIEWER_ID;
 
         // 检查操作者为该稿件投稿人
         // 检查当前用户是否接受了审稿
